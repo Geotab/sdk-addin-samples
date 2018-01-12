@@ -16,7 +16,7 @@
   "dev": {
     "root": "engineDataButton",
     "dist": {
-      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/addin-engine-data-button/"
+      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-engine-data-button/dist/"
     }
   }
 }
