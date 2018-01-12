@@ -1,8 +1,7 @@
 language: node_js
 node_js:
+  - v8
   - v6
-  - v5
-  - v4
 env:
   - TEST_DIR=addin-engine-data-button
 script: cd $TEST_DIR && npm install -g gulp-cli bower && npm install && bower install && gulp build && gulp test
