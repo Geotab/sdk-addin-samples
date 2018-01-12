@@ -5,4 +5,4 @@ node_js:
   - v4
 env:
   - TEST_DIR=addin-engine-data-button
-script: cd $TEST_DIR && npm install -g gulp-cli bower && npm install && bower install && gulp test
+script: cd $TEST_DIR && npm install -g gulp-cli bower && npm install && bower install && gulp build && gulp test
