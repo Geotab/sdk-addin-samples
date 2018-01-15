@@ -237,7 +237,7 @@ gulp.task('test', ['styles', 'scripts', 'fonts'], () => {
       read: false
     })
     .pipe($.mocha({
-      reporter: 'nyan',
+      reporter: 'spec',
       timeout: 10000
     }))
     .on('error', function () {
