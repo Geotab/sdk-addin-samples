@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - v8
   - v6
 env:
   - TEST_DIR=addin-engine-data-button
