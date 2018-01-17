@@ -1,5 +1,7 @@
-#heatmap,
-#heatmap-map,
+#heatmap-map {
+    height: calc(100% + 40px);
+}
+
 .cssGrid,
 .cssGrid>div {
     height: 100%;
