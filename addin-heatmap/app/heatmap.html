@@ -15,6 +15,7 @@
   <!-- endbuild -->
 
   <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/spinner.css">
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild -->
 
@@ -28,51 +29,53 @@
   <!-- build:js scripts/main.js -->
   <script src="scripts/main.js"></script>
   <!-- endbuild -->
-  
+
 </head>
 
 <body>
 
-  <div id="heatmap" class="hidden">
-    
-    <div id="heatmap-map"></div>
-    <div id="heatmap-controls">
-    
-      <h3>Heatmap</h3>
-      <p class="heatmap-header-paragraph">
-        This Add-In demonstrates how to create an Add-In to visualize your location history using a heat map.
-      </p>
-      
-      <h5>Instructions</h5>
-      <p class="heatmap-header-paragraph">
-        Select a vehicle and then select a date range to display where the vehicle has been.
-        Areas of the map colored which appear <i>hot</i> indicates that the vehicle has spent time at that location.
-      </p>
-      
-      <hr/>
-      
-      <select id="heatmap-vehicles">
-        <option disabled="disabled">Select a vehicle</option>
-      </select>
-      
-      <h4>From</h4>
-              <input id="heatmap-from" type="datetime-local" />
-      
-      <br/>
-      
-      <h4>To</h4>
-      <input id="heatmap-to" type="datetime-local" />
-      
-      <hr/>
-      
-      <div id="heatmap-error"></div>
-      <div id="heatmap-loading">
-        <img src="images/loading.gif" alt="" />
-      </div>
-    </div>
-    
-  </div>
+  <div id="heatmap" style="height: 100%">
 
+    <div class="cssGrid sm-part-12">
+      <div class="md-part-3 sm-part-12">
+        <div id="heatmap-controls">
+
+          <h2>Heatmap</h2>
+          <p class="heatmap-header-paragraph">
+            This example demonstrates how to create an add-in to visualize location history using a heat map.
+          </p>
+
+          <h3>Instructions</h3>
+          <p class="heatmap-header-paragraph">
+            Select a vehicle and then select a date range to display where the vehicle has been. Areas of the map colored which appear
+            <i>hot</i> indicates that the vehicle has spent time at that location.
+          </p>
+
+          <label for="heatmap-vehicles">Vehicle</label>
+          <select id="heatmap-vehicles" class="checkmateFormEditField">
+            <option disabled="disabled">Select a vehicle</option>
+          </select>
+
+          <label for="heatmap-from">From</label>
+          <input id="heatmap-from" type="datetime-local" class="checkmateFormEditField" />
+
+          <label for="heatmap-to">To</label>
+          <input id="heatmap-to" type="datetime-local" class="checkmateFormEditField" />
+
+          <div id="heatmap-error"></div>
+
+          <div id="heatmap-loading" class="spinner" style="display:none">
+              <div></div>
+              <div></div>
+              <div></div>
+          </div>
+        </div>
+      </div>
+      <div class="md-part-9 sm-part-12">
+          <div id="heatmap-map" style="width:100%"></div>
+        </div>
+    </div>
+  </div>
 </body>
 
 </html>

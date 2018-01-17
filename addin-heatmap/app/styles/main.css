@@ -1,99 +1,42 @@
-#heatmap {
-	height: 100%;
+#heatmap,
+#heatmap-map,
+.cssGrid,
+.cssGrid>div {
+    height: 100%;
 }
 
-input[type="text"], select {
-	padding: 5px;
-	width: 295px;
+.checkmateFormEditField {
+    width: calc(100% - 1em);
+    max-width: 100%;
 }
 
-input[type="datetime-local"] {
-	padding: 5px;
-	width: 280px;
+select.checkmateFormEditField {
+    width: 100%;
 }
 
-h3 {
-	margin: 0;
-	font-size: 1.5em;
-}
-
-h4 {
-	margin: 20px 0 0;
-	font-size: 1.2em;
-}
-
-h5 {
-	margin: 20px 0 0;
-	font-size: 1.1em;
-	font-weight: normal;
-}
-
-small {
-	color: #777;
-}
-
-hr {
-	margin-top: 20px;
-	margin-bottom: 20px;
-	border: 1px solid #eee;
-}
-
-a.button {
-    margin-top: 20px;
-    color: #fff;
-    text-decoration: none;
-    background-color: #246591;
-    border-color: #0099cc;
-    display: inline-block;
-    padding: 6px 18px;
-    font-size: 14px;
-    text-align: center;
-    line-height: 1.428571429;
-    white-space: nowrap;
-    vertical-align: middle;
-    cursor: pointer;
-    background-image: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-
-a.button:hover {
-	background-color: #2972A3;
-}
-
-.heatmap-header-paragraph  {
-	margin-top: 5px;
-}
-
-#heatmap-loading {
-	position: absolute;
-	bottom: 40px;
-	right: 105px;
-	display: none;
-}
-
-#heatmap-map {
-	height: 100%;
-	right: 341px;
+label {
+    padding-top: 1em;
+    display: block;
+    padding-bottom: 0.5em;
 }
 
 #heatmap-controls {
-	position: absolute;
-	width: 300px;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	padding: 20px;
-	background-color: #f7f7f7;
-	border-left: 1px solid #aaa;
+    height: 100%;
+    padding: 20px;
+    background-color: #e5f2fa;
+    border-right: 1px solid #ddd;
+}
+
+#heatmap-loading {
+    transform: scale(0.5);
+}
+
+#heatmap-loading>div {
+    background: #2c7ab1;
+    ;
 }
 
 #heatmap-error {
-	margin-top: 20px;
-	color: #cc0000;
+    margin-top: 20px;
+    color: #cc0000;
 }
