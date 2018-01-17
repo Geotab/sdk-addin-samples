@@ -58,6 +58,7 @@ geotab.addin.heatmap = () => {
 
     api.call('Get', {
       typeName: 'LogRecord',
+      resultsLimit: 10000,
       search: {
         deviceSearch: {
           id: deviceId
@@ -200,6 +201,7 @@ geotab.addin.heatmap = () => {
 
       api.call('Get', {
         typeName: 'Device',
+        resultsLimit: 1000,
         search: {
           fromDate: new Date().toISOString()
         }
