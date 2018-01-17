@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Heat Map</title>
+
+  <!-- build:css styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
+  <!-- endbower -->
+  <!-- endbuild -->
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild -->
+
+  <!-- build:js scripts/vendor.js -->
+  <!-- bower:js -->
+  <script src="bower_components/leaflet/dist/leaflet.js"></script>
+  <script src="bower_components/leaflet.heat/dist/leaflet-heat.js"></script>
+  <!-- endbower -->
+  <!-- endbuild -->
+
+  <!-- build:js scripts/main.js -->
+  <script src="scripts/main.js"></script>
+  <!-- endbuild -->
+  
+</head>
+
+<body>
+
+  <div id="heatmap" class="hidden">
+    
+    <div id="heatmap-map"></div>
+    <div id="heatmap-controls">
+    
+      <h3>Heatmap</h3>
+      <p class="heatmap-header-paragraph">
+        This Add-In demonstrates how to create an Add-In to visualize your location history using a heat map.
+      </p>
+      
+      <h5>Instructions</h5>
+      <p class="heatmap-header-paragraph">
+        Select a vehicle and then select a date range to display where the vehicle has been.
+        Areas of the map colored which appear <i>hot</i> indicates that the vehicle has spent time at that location.
+      </p>
+      
+      <hr/>
+      
+      <select id="heatmap-vehicles">
+        <option disabled="disabled">Select a vehicle</option>
+      </select>
+      
+      <h4>From</h4>
+              <input id="heatmap-from" type="datetime-local" />
+      
+      <br/>
+      
+      <h4>To</h4>
+      <input id="heatmap-to" type="datetime-local" />
+      
+      <hr/>
+      
+      <div id="heatmap-error"></div>
+      <div id="heatmap-loading">
+        <img src="images/loading.gif" alt="" />
+      </div>
+    </div>
+    
+  </div>
+
+</body>
+
+</html>

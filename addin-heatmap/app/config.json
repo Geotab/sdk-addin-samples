@@ -1,0 +1,21 @@
+{
+  "name": "Heat Map",
+  "supportEmail": "support@geotab.com",
+  "version": "0.0.1",
+  "items": [{
+    
+    "url": "heatmap.html",
+    "path": "ActivityLink/",
+    "menuName": {
+      "en": "Heat Map"
+    },
+    
+    "icon": "images/icon.svg"
+  }],
+  "dev": {
+    "root": "heatmap",
+    "dist": {
+      "host": ""
+    }
+  }
+}
