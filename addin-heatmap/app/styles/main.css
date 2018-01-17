@@ -1,4 +1,4 @@
-#heatmap-map {
+#map {
     height: calc(100% + 40px);
 }
 
@@ -22,23 +22,23 @@ label {
     padding-bottom: 0.5em;
 }
 
-#heatmap-controls {
+#controls {
     height: 100%;
     padding: 20px;
     background-color: #e5f2fa;
     border-right: 1px solid #ddd;
 }
 
-#heatmap-loading {
+#loading {
     transform: scale(0.5);
 }
 
-#heatmap-loading>div {
+#loading>div {
     background: #2c7ab1;
     ;
 }
 
-#heatmap-error {
+#error {
     margin-top: 20px;
     color: #cc0000;
 }

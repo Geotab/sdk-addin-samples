@@ -101,7 +101,7 @@ geotab.addin.heatmap = () => {
    */
   let initializeInterface = coords => {
     // setup the map
-    map = new L.Map('heatmap-map').setView(new L.LatLng(coords.latitude, coords.longitude), 13);
+    map = new L.Map('map').setView(new L.LatLng(coords.latitude, coords.longitude), 13);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ2VvdGFiIiwiYSI6ImNpd2NlaW02MjAxc28yeW9idTR3dmRxdTMifQ.ZH0koA2g2YMMBOcx6EYbwQ').addTo(map);
 
@@ -121,11 +121,11 @@ geotab.addin.heatmap = () => {
     }).addTo(map);
 
     // find reused elements
-    elVehicleSelect = document.getElementById('heatmap-vehicles');
-    elDateFromInput = document.getElementById('heatmap-from');
-    elDateToInput = document.getElementById('heatmap-to');
-    elError = document.getElementById('heatmap-error');
-    elLoading = document.getElementById('heatmap-loading');
+    elVehicleSelect = document.getElementById('vehicles');
+    elDateFromInput = document.getElementById('from');
+    elDateToInput = document.getElementById('to');
+    elError = document.getElementById('error');
+    elLoading = document.getElementById('loading');
 
     // set up dates
     let now = new Date();
@@ -145,17 +145,17 @@ geotab.addin.heatmap = () => {
     elDateToInput.value = yy + '-' + mm + '-' + dd + 'T' + '23:59';
 
     // events
-    document.getElementById('heatmap-vehicles').addEventListener('change', event => {
+    document.getElementById('vehicles').addEventListener('change', event => {
       event.preventDefault();
       displayHeatMap();
     });
 
-    document.getElementById('heatmap-from').addEventListener('change', event => {
+    document.getElementById('from').addEventListener('change', event => {
       event.preventDefault();
       displayHeatMap();
     });
 
-    document.getElementById('heatmap-to').addEventListener('change', event => {
+    document.getElementById('to').addEventListener('change', event => {
       event.preventDefault();
       displayHeatMap();
     });
