@@ -3,4 +3,5 @@ node_js:
   - v6
 env:
   - TEST_DIR=addin-engine-data-button
+  - TEST_DIR=addin-heatmap
 script: cd $TEST_DIR && npm install -g gulp-cli bower && npm install && bower install && gulp build && gulp test
