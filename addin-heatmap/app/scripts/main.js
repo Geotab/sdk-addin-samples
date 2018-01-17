@@ -196,14 +196,15 @@ geotab.addin.heatmap = () => {
       }
 
     },
-    focus(freshApi) {
+    focus(freshApi, freshState) {
       api = freshApi;
 
       api.call('Get', {
         typeName: 'Device',
         resultsLimit: 1000,
         search: {
-          fromDate: new Date().toISOString()
+          fromDate: new Date().toISOString(),
+          groups: freshState.getGroupFilter()
         }
       }, vehicles => {
         if (!vehicles || vehicles.length < 0) {
