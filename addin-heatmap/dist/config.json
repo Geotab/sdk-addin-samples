@@ -1,0 +1,13 @@
+{
+  "name": "Heat Map",
+  "supportEmail": "support@geotab.com",
+  "version": "0.0.1",
+  "items": [{
+    "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/heatmap.html",
+    "path": "ActivityLink/",
+    "menuName": {
+      "en": "Heat Map"
+    },
+    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/images/icon.svg"
+  }]
+}
