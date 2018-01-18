@@ -7,7 +7,7 @@ This add-in was developed using [generator-addin](https://github.com/Geotab/gene
 
 * Install [nodejs](https://nodejs.org/en/) latest LTS
 * Install dependencies: npm install -g yo gulp-cli bower
-* Clone the samples repository 'git clone https://github.com/Geotab/sdk-addin-samples.git sdk-addin-samples
+* Clone the samples repository `git clone https://github.com/Geotab/sdk-addin-samples.git sdk-addin-samples`
 * Naviagte to the working directory `cd sdk-addin-samples/addin-engine-data-button`
 * Run the sample `> gulp serve`
 
