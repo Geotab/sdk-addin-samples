@@ -1,0 +1,21 @@
+{
+  "name": "Import KML Zones",
+  "supportEmail": "support@geotab.com",
+  "version": "1.0.0",
+  "items": [{
+    
+    "url": "importKmlZones.html",
+    "path": "ZoneAndMessagesLink/",
+    "menuName": {
+      "en": "Import KML Zones"
+    },
+    
+    "icon": "images/icon.svg"
+  }],
+  "dev": {
+    "root": "importKmlZones",
+    "dist": {
+      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/"
+    }
+  }
+}

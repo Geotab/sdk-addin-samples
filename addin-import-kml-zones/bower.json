@@ -1,0 +1,13 @@
+{
+  "name": "importkmlzones",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.6.8",
+    "jQuery": "^3.2.1",
+    "spinjs": "^2.3.2",
+    "jscolor-picker": "^2.0.4"
+  },
+  "devDependencies": {
+    "dialog-polyfill": "^0.4.3"
+  }
+}
