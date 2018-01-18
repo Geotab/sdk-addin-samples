@@ -1,0 +1,21 @@
+{
+  "name": "IOX Output",
+  "supportEmail": "support@geotab.com",
+  "version": "1.0.0",
+  "items": [{
+    
+    "url": "ioxOutput.html",
+    "path": "AdministrationLink/",
+    "menuName": {
+      "en": "IOX Output"
+    },
+    
+    "icon": "images/icon.svg"
+  }],
+  "dev": {
+    "root": "ioxOutput",
+    "dist": {
+      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/"
+    }
+  }
+}
