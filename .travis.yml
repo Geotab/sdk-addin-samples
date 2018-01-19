@@ -5,4 +5,6 @@ env:
   - TEST_DIR=addin-engine-data-button
   - TEST_DIR=addin-heatmap
   - TEST_DIR=addin-import-kml-zones
+  - TEST_DIR=addin-iox-output
+  - TEST_DIR=addin-proximity
 script: cd $TEST_DIR && npm install -g gulp-cli bower && npm install && bower install && gulp build && gulp test

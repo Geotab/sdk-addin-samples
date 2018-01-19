@@ -1,0 +1,21 @@
+{
+  "name": "Proximity",
+  "supportEmail": "support@geotab.com",
+  "version": "1.0.0",
+  "items": [{
+    
+    "url": "proximity.html",
+    "path": "ActivityLink/",
+    "menuName": {
+      "en": "Proximity"
+    },
+    
+    "icon": "images/icon.svg"
+  }],
+  "dev": {
+    "root": "proximity",
+    "dist": {
+      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-proximity/dist/"
+    }
+  }
+}
