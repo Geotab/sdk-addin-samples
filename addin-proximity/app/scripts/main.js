@@ -7,8 +7,8 @@ geotab.addin.proximity = () => {
     let api;
 
     let map;
-
     let markers;
+    let circles;
 
     let vehicleMultiselect;
     let elAddressInput;
@@ -87,6 +87,7 @@ geotab.addin.proximity = () => {
      */
     let clearMap = () => {
         markers.clearLayers();
+        circles.clearLayers();
     };
 
     /**
@@ -182,11 +183,11 @@ geotab.addin.proximity = () => {
             // setup map
             map.setView(new L.LatLng(center.latitude, center.longitude), 14);
 
-            boundary5.addTo(map);
-            boundary4.addTo(map);
-            boundary3.addTo(map);
-            boundary2.addTo(map);
-            boundary1.addTo(map);
+            circles.addLayer(boundary1);
+            circles.addLayer(boundary2);
+            circles.addLayer(boundary3);
+            circles.addLayer(boundary4);
+            circles.addLayer(boundary5);
 
             // compile selected devices devices
             let devicesToQuery = selectAll ? Object.keys(deviceLookup).map(device => {
@@ -271,6 +272,7 @@ geotab.addin.proximity = () => {
         L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ2VvdGFiIiwiYSI6ImNpd2NlaW02MjAxc28yeW9idTR3dmRxdTMifQ.ZH0koA2g2YMMBOcx6EYbwQ').addTo(map);
 
         markers = L.layerGroup().addTo(map);
+        circles = L.layerGroup().addTo(map);
 
         // DOM elements used more than once
         elAddressInput = document.getElementById('proximity-address');
