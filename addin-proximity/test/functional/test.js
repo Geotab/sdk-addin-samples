@@ -3,11 +3,11 @@ const nock = require('nock');
 const mocks = require('./mocks/mocks.js');
 
 // JSON-RPC helpers
-var rpcRequest = body => {
+const rpcRequest = body => {
     return JSON.parse(body['JSON-RPC']);
 };
 
-var rpcResponse = (response, err) => {
+const rpcResponse = (response, err) => {
     return {
         id: -1,
         result: response,
@@ -29,7 +29,7 @@ nockApi
     })
     .reply(200, rpcResponse(mocks.credentials), responseHeaders)
     .post('/apiv1', body => {
-        var request = rpcRequest(body); console.log(body);
+        var request = rpcRequest(body);
         return request.method === 'Get' && request.params.typeName === 'Device';
     })
     .reply(200, rpcResponse([mocks.device]), responseHeaders)
