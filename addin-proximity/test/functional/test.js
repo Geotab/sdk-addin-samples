@@ -3,72 +3,77 @@ const nock = require('nock');
 const mocks = require('./mocks/mocks.js');
 
 // JSON-RPC helpers
-var rpcRequest = function (body) {
-  return JSON.parse(body['JSON-RPC']);
+var rpcRequest = body => {
+    return JSON.parse(body['JSON-RPC']);
 };
 
-var rpcResponse = function (response, err) {
-  return {
-    id: -1,
-    result: response,
-    error: err
-  };
+var rpcResponse = (response, err) => {
+    return {
+        id: -1,
+        result: response,
+        error: err
+    };
 };
 
 // Mocks
-var mockServer = mocks.server;
-
-var nockApi = nock('https://' + mockServer);
+const mockServer = mocks.server;
+const responseHeaders = {
+    'Access-Control-Allow-Origin': '*'
+};
+const nockApi = nock('http://' + mockServer);
 
 nockApi
-  .post('/apiv1', function (body) {
-    var request = rpcRequest(body);
-    return request.method === 'Authenticate';
-  })
-  .reply(200, rpcResponse(mocks.credentials))
-  .post('/apiv1', function (body) {
-    var request = rpcRequest(body);
-    return request.method === 'Get' && request.params.typeName === 'Device';
-  })
-  .reply(200, rpcResponse([mocks.device]))
-  .post('/apiv1', function (body) {
-    var request = rpcRequest(body);
-    return request.method === 'Get' && request.params.typeName === 'User';
-  })
-  .reply(200, rpcResponse([mocks.user]));
+    .post('/apiv1', body => {
+        var request = rpcRequest(body);
+        return request.method === 'Authenticate';
+    })
+    .reply(200, rpcResponse(mocks.credentials), responseHeaders)
+    .post('/apiv1', body => {
+        var request = rpcRequest(body); console.log(body);
+        return request.method === 'Get' && request.params.typeName === 'Device';
+    })
+    .reply(200, rpcResponse([mocks.device]), responseHeaders)
+    .post('/apiv1', body => {
+        var request = rpcRequest(body);
+        return request.method === 'Get' && request.params.typeName === 'User';
+    })
+    .reply(200, rpcResponse([mocks.user]), responseHeaders);
 
-describe('User visits addin', function () {
+// test
+describe('User visits addin', () => {
 
-  const browser = new Browser();
+    const browser = new Browser();
 
-  // to enable zombie debugging, uncomment this line
-  // browser.debug();
+    // to enable zombie debugging, uncomment this line
+    // browser.debug();
 
-  // open page
-  before(function (done) {
-    return browser.visit('http://localhost:9000/', done);
-  });
-
-  // login (only part of local add-in debugging)
-  before(function (done) {
-    browser
-      .fill('Email', mocks.login.userName)
-      .fill('Password', mocks.login.password)
-      .fill('Database', mocks.login.database)
-      .fill('Server', mockServer)
-      .clickLink('Login', done);
-  });
-
-  
-
-  it('should be loaded', function () {
-    browser.assert.success();
-  });
-
-  describe('Show addin content after initialized and focus is called', function () {
-    it('should display root div', function () {
-      browser.assert.style('#proximity', 'display', '');
+    // open page
+    before(done => {
+        return browser.visit('http://localhost:9000/', done);
     });
-  });
+
+    // login (only part of local add-in debugging)
+    before(done => {
+        browser
+            .fill('Email', mocks.login.userName)
+            .fill('Password', mocks.login.password)
+            .fill('Database', mocks.login.database)
+            .fill('Server', mockServer)
+            .clickLink('Login', done);
+    });
+
+    it('should be loaded', () => {
+        browser.assert.success();
+    });
+
+    describe('Show addin content after initialized and focus is called', () => {
+        it('should display root div', () => {
+            browser.assert.style('#proximity', 'display', '');
+        });
+
+        it('should display device', () => {
+            browser.assert.text('.choices__item', mocks.device.name);
+        });
+    });
 
 });

@@ -356,18 +356,16 @@ geotab.addin.proximity = () => {
         }
 
         api.getSession(token => {
-            if (token && token.userName) {
-                api.call('Get', {
-                    typeName: 'User',
-                    search: {
-                        name: token.userName
-                    }
-                }, result => {
-                    callback(result.length > 0 && !!result[0].isMetric);
-                }, () => {
-                    callback(false);
-                });
-            }
+            api.call('Get', {
+                typeName: 'User',
+                search: {
+                    name: token.userName
+                }
+            }, result => {
+                callback(result.length > 0 && !!result[0].isMetric);
+            }, () => {
+                callback(false);
+            });
         }, false);
     };
 
