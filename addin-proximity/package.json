@@ -35,7 +35,7 @@
         "main-bower-files": "^2.5.0",
         "nock": "^7.2.2",
         "wiredep": "^2.2.2",
-        "zombie": "^4.2.1"
+        "zombie": "^5.0.7"
     },
     "eslintConfig": {
         "env": {
