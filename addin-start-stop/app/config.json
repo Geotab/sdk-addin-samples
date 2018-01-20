@@ -1,0 +1,21 @@
+{
+  "name": "Start Stop",
+  "supportEmail": "support@geotab.com",
+  "version": "1.0.0",
+  "items": [{
+    
+    "url": "startStop.html",
+    "path": "EngineMaintenanceLink/",
+    "menuName": {
+      "en": "Start-Stop Savings"
+    },
+    
+    "icon": "images/icon.svg"
+  }],
+  "dev": {
+    "root": "startStop",
+    "dist": {
+      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/"
+    }
+  }
+}
