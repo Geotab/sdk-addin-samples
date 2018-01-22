@@ -13,96 +13,64 @@ Alternativly, you can install the add-ins on your production database individual
     "name": "SDK Add-In Samples",
     "supportEmail": "support@geotab.com",
     "version": "1.0.0",
-    "items": [{
-        "path": "/",
-        "menuId": "sdkAddinsLink",
-        "menuName": {
-            "en": "Add-In Samples",
+    "items": [
+        {
+            "path": "/",
+            "menuId": "sdkAddinsLink",
+            "menuName": {
+                "en": "Add-In Samples"
+            },
+            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/icon.svg"
         },
-        "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/icon.svg"
-    }, {
-        "name": "Heat Map",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        {
             "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/heatmap.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Heat Map"
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/images/icon.svg"
-        }
-        ]
-    }, {
-        "name": "Proximity",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        },
+        {
             "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-proximity/dist/proximity.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Proximity"
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-proximity/dist/images/icon.svg"
-        }
-        ]
-    }, {
-        "name": "Trips Timeline",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        },
+        {
             "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-trips-timeline/dist/tripsTimeline.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Trips Timeline"
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-trips-timeline/dist/images/icon.svg"
-        }
-        ]
-    }, {
-        "name": "Import KML Zones",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        },
+        {
             "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/importKmlZones.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Import KML Zones"
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/images/icon.svg"
-        }
-        ]
-    }, {
-        "name": "Start Stop",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        },
+        {
             "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/startStop.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Start-Stop Savings"
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/images/icon.svg"
-        }
-        ]
-    }, {
-        "name": "IOX Output",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        },
+        {
             "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/ioxOutput.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "IOX Output"
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/images/icon.svg"
-        }
-        ]
-    }, {
-        "name": "Engine Data Button",
-        "supportEmail": "support@geotab.com",
-        "version": "1.0.0",
-        "items": [{
+        },
+        {
             "page": "device",
             "click": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-engine-data-button/dist/scripts/engineDataButton.js",
             "buttonName": {
@@ -113,9 +81,8 @@ Alternativly, you can install the add-ins on your production database individual
             },
             "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-engine-data-button/dist/images/icon.svg"
         }
-        ]
-    }
-    ]
+    ],
+    "isSigned": false
 }
 
 ```
