@@ -199,6 +199,10 @@ geotab.addin.heatmap = () => {
     focus(freshApi, freshState) {
       api = freshApi;
 
+      while (elVehicleSelect.firstChild) {
+        elVehicleSelect.removeChild(elVehicleSelect.firstChild);
+      }
+
       api.call('Get', {
         typeName: 'Device',
         resultsLimit: 1000,
