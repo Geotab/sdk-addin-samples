@@ -8,4 +8,5 @@ env:
   - TEST_DIR=addin-iox-output
   - TEST_DIR=addin-proximity
   - TEST_DIR=addin-start-stop
+  - TEST_DIR=addin-trips-timeline
 script: cd $TEST_DIR && npm install -g gulp-cli bower && npm install && bower install && gulp build && gulp test

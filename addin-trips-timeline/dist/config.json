@@ -1,0 +1,13 @@
+{
+  "name": "Trips Timeline",
+  "supportEmail": "support@geotab.com",
+  "version": "1.0.0",
+  "items": [{
+    "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-trips-timeline/dist/tripsTimeline.html",
+    "path": "ActivityLink/",
+    "menuName": {
+      "en": "Trips Timeline"
+    },
+    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-trips-timeline/dist/images/icon.svg"
+  }]
+}

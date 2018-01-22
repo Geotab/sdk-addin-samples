@@ -1,0 +1,10 @@
+{
+  "name": "tripstimeline",
+  "private": true,
+  "dependencies": {
+    "vis": "^4.21.0"
+  },
+  "devDependencies": {
+    "dialog-polyfill": "^0.4.3"
+  }
+}
