@@ -8,6 +8,9 @@
 geotab.customButtons.engineDataButton = (event, api, state) => {
   'use strict';
 
+  const noVehiclesText = 'Select any vehicle first';
+  const mutipleVehiclesText = 'Graph cannot be opened for multiple devices';
+
   event.preventDefault();
 
   // The diagnostic ids to display the data of
@@ -23,6 +26,8 @@ geotab.customButtons.engineDataButton = (event, api, state) => {
     return (pageState && pageState.id && pageState.id.length) ? pageState.id : null;
   })();
 
+  let isMultipleDevices = device !== null && Array.isArray(device);
+
   // The date range which will be used on engine data profile
   let dateRange = (() => {
     let date = new Date(),
@@ -36,7 +41,6 @@ geotab.customButtons.engineDataButton = (event, api, state) => {
 
   // Displays messages to the UI
   let messenger = (() => {
-    const text = 'Select any vehicle first';
 
     let timer;
     let mainContainer;
@@ -130,8 +134,6 @@ geotab.customButtons.engineDataButton = (event, api, state) => {
         'text-align': 'center'
       }, mainContainer);
 
-      textContainer.innerHTML = text;
-
       closeIcon = createElement('span', null, {
         'float': 'right',
         'margin-top': '9px',
@@ -162,12 +164,13 @@ geotab.customButtons.engineDataButton = (event, api, state) => {
       /**
        * Shows a message to the UI
        */
-      showMessage: () => {
+      showMessage: (warningText) => {
         mainContainer = getMainContent();
         if (!mainContainer) {
           createMainContent();
           timer = setInterval(destroy, 5000);
         }
+        textContainer.textContent = warningText;
       },
       /**
        * Destorys the current message
@@ -181,7 +184,7 @@ geotab.customButtons.engineDataButton = (event, api, state) => {
     };
   })();
 
-  if (device && device !== 'all') {
+  if (device && device !== 'all' && !isMultipleDevices) {
     messenger.destroy();
 
     // redirect to the engine data profile page passing in arguments for device, date range and diagnostics to display
@@ -191,6 +194,6 @@ geotab.customButtons.engineDataButton = (event, api, state) => {
       diagnostic: diagnostics
     });
   } else {
-    messenger.showMessage();
+    messenger.showMessage(isMultipleDevices ? mutipleVehiclesText : noVehiclesText);
   }
 };
