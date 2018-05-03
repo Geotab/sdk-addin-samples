@@ -45,6 +45,14 @@ geotab.addin.tripsTimeline = () => {
     };
 
     /**
+     * Escapes string HTML for DOM
+     * @param {String} s The string to escape
+     */
+    let encodeHTML = s => {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    };
+
+    /**
      *  Loads trip data for the given date range
      *  @param {Date} fromDate Start date
      *  @param {Date} toDate End date
@@ -64,7 +72,7 @@ geotab.addin.tripsTimeline = () => {
 
                     data.push({
                         id: trip.id,
-                        content: device.name + '<br>' + formatPeriod(start, stop) + getTripLink(start, stop, device),
+                        content: encodeHTML(device.name) + '<br>' + formatPeriod(start, stop) + getTripLink(start, stop, device),
                         start: start,
                         end: stop
                     });

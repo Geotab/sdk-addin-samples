@@ -371,6 +371,10 @@ geotab.addin.proximity = () => {
         }, false);
     };
 
+    let encodeHTML = s => {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    };
+
     return {
         /**
          * initialize() is called only once when the Add-In is first loaded. Use this function to initialize the
@@ -428,7 +432,7 @@ geotab.addin.proximity = () => {
 
                 let deviceChoices = devices.map(device => {
                     deviceLookup[device.id] = device;
-                    return { 'value': device.id, 'label': device.name };
+                    return { 'value': device.id, 'label': encodeHTML(device.name) };
                 });
 
                 vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
