@@ -314,7 +314,8 @@
 
             if (style) {
                 var polyStyle = style.getElementsByTagName("PolyStyle"),
-                    color = polyStyle && polyStyle.length > 0 ? polyStyle[0].querySelector("color").textContent.replace("#", "").trim() : null;
+                    elColor = polyStyle && polyStyle.length > 0 ? polyStyle[0].querySelector("color") : null,
+                    color = elColor ? elColor.textContent.replace("#", "").trim() : null;
                 if (color) {
                     //kml colors are in abgr format
                     var hex = color.slice(-2) + color.slice(4, 6) + color.slice(2, 4),
