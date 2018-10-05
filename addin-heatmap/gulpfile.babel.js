@@ -91,7 +91,7 @@ gulp.task('html', ['styles', 'scripts'], () => {
       searchPath: ['.tmp', 'app', '.']
     }))
   
-  .pipe($.if('*.js', $.uglify()))
+    .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.cssSandbox('#' + options.root)))
     .pipe($.if('*.css', $.cssnano()))
     // convert relative urls to absolute
