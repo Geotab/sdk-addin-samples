@@ -1,12 +1,12 @@
 # sdk-addin-samples [![Build Status](https://travis-ci.org/Geotab/sdk-addin-samples.svg?branch=master)](https://travis-ci.org/Geotab/sdk-addin-samples)
 
-> A collection of samples demonstrating how build MyGeotab and Geotab Drive add-ins.
+> A collection of samples demonstrating how to build MyGeotab and Geotab Drive add-ins.
 
 ## How to run the examples
 
 In order to run these examples, you can clone this repo, go into each of the examples and follow the instructions in the README.md file.
 
-Alternativly, you can install the add-ins on your production database individually using the install configuration as described in each subfolder README.md or to install all the examples under one navigation section in your demo database use the installation settings below.
+Alternatively, you can install the add-ins on your production database individually using the install configuration as described in each subfolder README.md or to install all the examples under one navigation section in your demo database use the installation settings below.
 
 ```json
 {
@@ -91,13 +91,13 @@ Alternativly, you can install the add-ins on your production database individual
 
 ### Heatmap
 
-This add-in is visualizes the location history of a vehicle by displaying areas of "heat" on a map corresponding to the frequency in which they were at a certain location using [leaflet](http://leafletjs.com/) and [Leaflet.heat](https://github.com/Leaflet/Leaflet.heat).
+This add-in visualizes the location history of a vehicle by displaying areas of "heat" on a map corresponding to the frequency in which they were at a certain location using [leaflet](http://leafletjs.com/) and [Leaflet.heat](https://github.com/Leaflet/Leaflet.heat).
 
 [Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-heatmap)
 
 ### Proximity
 
-This add-in demonstrates a visual report for determining whether a vehicle has been to or near a particular location in a given date range using [leaflet](http://leafletjs.com/).
+This add-in demonstrates a visual report for determining whether a vehicle has been to, or near, a particular location in a given date range using [leaflet](http://leafletjs.com/).
 
 [Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-proximity)
 
@@ -129,6 +129,6 @@ This example demonstrates how to send a message to a device, turning the IOX on 
 
 ### Engine Data Button
 
-This example demonstrates an add-in button on the vehicle page which pulls the currently selected vehicle ID from state. The ID to redirect to the engine data profile page to examine the recorded engine speed, voltage and fuel used.
+This example demonstrates an add-in button on the vehicle page which pulls the currently selected vehicle Id from state. The Id is used to redirect to the engine data profile page to examine the vehicle's recorded engine speed, voltage and fuel used.
 
 [Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-engine-data-button)
