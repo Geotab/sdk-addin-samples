@@ -26,7 +26,7 @@ Add the configuration below to the to the system setting -> add-ins section of t
     "menuName": {
       "en": "Heat Map"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-heatmap/dist/images/icon.svg"
   }]
 }
 ```

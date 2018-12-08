@@ -27,7 +27,7 @@ Add the configuration below to the to the system setting -> add-ins section of t
     "menuName": {
       "en": "IOX Output"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-iox-output/dist/images/icon.svg"
   }]
 }
 ```

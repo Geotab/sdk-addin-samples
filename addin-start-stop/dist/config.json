@@ -8,6 +8,6 @@
     "menuName": {
       "en": "Start-Stop Savings"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-start-stop/dist/images/icon.svg"
   }]
 }

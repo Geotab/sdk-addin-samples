@@ -15,7 +15,7 @@
   "dev": {
     "root": "importKmlZones",
     "dist": {
-      "host": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/"
+      "host": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-import-kml-zones/dist/"
     }
   }
 }

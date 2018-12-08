@@ -26,7 +26,7 @@ Add the configuration below to the to the system setting -> add-ins section of t
     "menuName": {
       "en": "Start-Stop Savings"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-start-stop/dist/images/icon.svg"
   }]
 }
 ```
