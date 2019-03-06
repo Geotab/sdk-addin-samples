@@ -57,7 +57,8 @@
             "rison": true,
             "L": true,
             "Choices": true,
-            "Parallel": true
+            "hamsters": true,
+            "rtn": true
         }
     }
 }

@@ -201,29 +201,31 @@ geotab.addin.proximity = () => {
             });
 
             api.multiCall(calls, results => {
-                let parallel = new Parallel(flattenArrays(results), {
-                    env: {
-                        center: center
-                    }
-                });
-                let getDistance = logRecord => {
-                    // hack for ie9, global is missing
-                    let centerPoint = typeof window !== 'undefined' ? window.geotabHeatMap.center : global.env.center;
+
+                let params = {
+                    array: flattenArrays(results),
+                    center,
+                    aggregate: true
+                };
+
+                hamsters.promise(params, () => {
+                    let arr = params.array;
+                    let centerPoint = params.center;
                     let toRadians = d => {
                         return d * (Math.PI / 180.0);
                     };
-                    let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                    let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                    let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                    logRecord.distance = 6371000.0 * c;
-                    return logRecord;
-                };
-
-                parallel
-                    .map(getDistance)
-                    .then(filterLogsByDistance)
-                    .then(render);
+                    arr.forEach(logRecord => {
+                        let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                        let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                        let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        logRecord.distance = 6371000.0 * c;
+                        rtn.data.push(logRecord);
+                    });
+                })
+                .then(rtn => flattenArrays(rtn.data))
+                .then(filterLogsByDistance)
+                .then(render);
 
             }, error => {
                 logger(error);
@@ -388,6 +390,10 @@ geotab.addin.proximity = () => {
          */
         initialize(freshApi, freshState, callback) {
             api = freshApi;
+
+            hamsters.init({
+                debug: 'verbose'
+            });
 
             getUserIsMetric(isMetric => {
                 if ('geolocation' in navigator) {
