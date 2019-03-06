@@ -309,7 +309,7 @@ geotab.addin.proximity = () => {
         vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true });
 
         // events
-        vehicleMultiselect.passedElement.addEventListener('change', () => {
+        vehicleMultiselect.passedElement.element.addEventListener('change', () => {
             selected = vehicleMultiselect.getValue().map(value => {
                 return value.value;
             });
