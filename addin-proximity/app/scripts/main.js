@@ -29,6 +29,9 @@ geotab.addin.proximity = () => {
     let selectAll = false;
     let isCancelled = false;
 
+    // User can enter any date range, limit how much data we will pull in a request
+    const maxLogRecordResults = 50000;
+
     /**
      *  Logs messages to the UI
      *  @param {string} message The message to display
@@ -165,7 +168,7 @@ geotab.addin.proximity = () => {
                         fromDate: fromDate,
                         toDate: toDate
                     },
-                    resultsLimit: 50000
+                    resultsLimit: maxLogRecordResults
                 }];
             };
 
@@ -198,15 +201,22 @@ geotab.addin.proximity = () => {
             circles.addLayer(boundary5);
 
             // compile selected devices devices
-            let devicesToQuery = selectAll ? Object.keys(deviceLookup).map(device => {
-                return deviceLookup[device];
+            let devicesToQuery = selectAll ? Object.keys(deviceLookup).map(id => {
+                return deviceLookup[id];
             }) : selected.map(id => {
-                return { id: id };
+                return deviceLookup[id];
             });
+
+            let limitedDevices = [];
 
             let getDeviceLogs = device => new Promise((resolve, reject) => {
                 var request = buildGetRequest(device.id, utcFrom, utcTo);
                 api.call(request[0], request[1], results => {
+
+                    // if results have been limited, let the user know they may need to narrow search
+                    if (results.length === maxLogRecordResults) {
+                        limitedDevices.push(encodeHTML(device.name));
+                    }
 
                     let params = {
                         array: results,
@@ -216,6 +226,7 @@ geotab.addin.proximity = () => {
                         maxThreads: navigator.hardwareConcurrency || 1
                     };
 
+                    // do CPU intense calculation off the UI thread
                     hamsters.promise(params, () => {
                         const arr = params.array;
                         const centerPoint = params.center;
@@ -255,10 +266,11 @@ geotab.addin.proximity = () => {
                 }
             }
 
+            let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
             if (totalFound > 0) {
-                logger(`There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.`);
+                logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.</p>${limitedMessage}`);
             } else {
-                logger('There was no one near this area during this time frame.');
+                logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
             }
             toggleLoading(false);
 
