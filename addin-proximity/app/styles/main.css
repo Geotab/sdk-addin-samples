@@ -67,6 +67,10 @@ label {
     background: #2c7ab1;
 }
 
+#proximity-cancel {
+    margin: 2em 0;
+}
+
 #error {
     margin-top: 20px;
     color: #cc0000;

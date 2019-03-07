@@ -12,10 +12,13 @@ geotab.addin.proximity = () => {
 
     let vehicleMultiselect;
     let elAddressInput;
+    let elProximitySize;
+    let elProximitySelectAll;
     let elVehicleSelect;
     let elVehicleMultiSelectContainer;
     let elDateFromInput;
     let elDateToInput;
+    let elProximityCancel;
     let elError;
     let elLoading;
 
@@ -24,6 +27,7 @@ geotab.addin.proximity = () => {
     let selected = [];
     let isUserMetric = true;
     let selectAll = false;
+    let isCancelled = false;
 
     /**
      *  Logs messages to the UI
@@ -40,9 +44,27 @@ geotab.addin.proximity = () => {
     let toggleLoading = show => {
         if (show) {
             elLoading.style.display = 'block';
+            elProximityCancel.textContent = 'Cancel'
+            elProximityCancel.style.display = 'block';
+            elProximityCancel.disabled = false;
+            vehicleMultiselect.disable();
+            elAddressInput.disabled = true;
+            elProximitySize.disabled = true;
+            elProximitySelectAll.disabled = true;
+            elVehicleSelect.disabled = true;
+            elDateFromInput.disabled = true;
+            elDateToInput.disabled = true;
         } else {
             setTimeout(() => {
                 elLoading.style.display = 'none';
+                elProximityCancel.style.display = 'none';
+                vehicleMultiselect.enable();
+                elAddressInput.disabled = false;
+                elProximitySize.disabled = false;
+                elProximitySelectAll.disabled = false;
+                elVehicleSelect.disabled = false;
+                elDateFromInput.disabled = false;
+                elDateToInput.disabled = false;
             }, 600);
         }
     };
@@ -94,6 +116,7 @@ geotab.addin.proximity = () => {
      *  Calculates and renders proximity from inputs
      */
     let displayProximity = () => {
+        isCancelled = false;
         logger('');
 
         if (elAddressInput.value === '') {
@@ -122,6 +145,11 @@ geotab.addin.proximity = () => {
                 return;
             }
 
+            if (isCancelled) {
+                toggleLoading(false);
+                return;
+            }
+
             let render = logs => {
                 logs.forEach(addMarker);
                 return logs.length;
@@ -139,12 +167,6 @@ geotab.addin.proximity = () => {
                     },
                     resultsLimit: 50000
                 }];
-            };
-
-            let flattenArrays = arrayOfArrays => {
-                return arrayOfArrays.reduce((combinedArray, currentArray) => {
-                    return combinedArray.concat(currentArray);
-                }, []);
             };
 
             let createCircle = (longitude, latitude, radius, color, opacity) => {
@@ -227,6 +249,10 @@ geotab.addin.proximity = () => {
             for (let i = 0; devicesToQuery.length > i; i++) {
                 let found = await getDeviceLogs(devicesToQuery[i]);
                 totalFound += found || 0;
+                if (isCancelled) {
+                    toggleLoading(false);
+                    return;
+                }
             }
 
             if (totalFound > 0) {
@@ -286,12 +312,15 @@ geotab.addin.proximity = () => {
 
         // DOM elements used more than once
         elAddressInput = document.getElementById('proximity-address');
+        elProximitySize = document.getElementById('proximity-size');
+        elProximitySelectAll = document.getElementById('proximity-select-all');
         elVehicleSelect = document.getElementById('proximity-vehicles');
         elDateFromInput = document.getElementById('proximity-from');
         elDateToInput = document.getElementById('proximity-to');
         elError = document.getElementById('proximity-error');
         elLoading = document.getElementById('proximity-loading');
         elVehicleMultiSelectContainer = document.getElementById('proximity-div-vehicles');
+        elProximityCancel = document.getElementById('proximity-cancel');
 
         // date inputs
         let now = new Date();
@@ -330,12 +359,12 @@ geotab.addin.proximity = () => {
             }
         });
 
-        document.getElementById('proximity-size').addEventListener('change', event => {
+        elProximitySize.addEventListener('change', event => {
             sizeChanged(event.target.value);
             displayProximity();
         });
 
-        document.getElementById('proximity-select-all').addEventListener('change', event => {
+        elProximitySelectAll.addEventListener('change', event => {
             event.preventDefault();
 
             selectAll = !selectAll;
@@ -355,6 +384,13 @@ geotab.addin.proximity = () => {
             event.preventDefault();
 
             displayProximity();
+        });
+
+        elProximityCancel.addEventListener('click', event => {
+            event.preventDefault();
+            elProximityCancel.textContent = 'Canceling...'
+            elProximityCancel.disabled = true;
+            isCancelled = true;
         });
     };
 
