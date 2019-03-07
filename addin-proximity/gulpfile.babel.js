@@ -91,7 +91,7 @@ gulp.task('html', gulp.series('styles', 'scripts', () => {
       searchPath: ['.tmp', 'app', '.']
     }))
   
-  .pipe($.if('*.js', $.uglify()))
+  .pipe($.if('*.js', $.uglify({mangle: { reserved: ['params','rtn']}})))
     .pipe($.if('*.css', $.cssSandbox('#' + options.root)))
     .pipe($.if('*.css', $.cssnano()))
     // convert relative urls to absolute
