@@ -278,7 +278,10 @@ geotab.addin.proximity = () => {
 
         L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ2VvdGFiIiwiYSI6ImNpd2NlaW02MjAxc28yeW9idTR3dmRxdTMifQ.ZH0koA2g2YMMBOcx6EYbwQ').addTo(map);
 
-        markers = L.layerGroup().addTo(map);
+        markers = L.markerClusterGroup({
+            spiderfyOnMaxZoom: false,
+            disableClusteringAtZoom: 18
+        }).addTo(map);
         circles = L.layerGroup().addTo(map);
 
         // DOM elements used more than once
