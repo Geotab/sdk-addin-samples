@@ -115,31 +115,16 @@ geotab.addin.proximity = () => {
 
         api.call('GetCoordinates', {
             addresses: [elAddressInput.value]
-        }, result => {
+        }, async (result) => {
             if (!result || result.length < 1 || !result[0]) {
                 logger('Could not find the address');
                 toggleLoading(false);
                 return;
             }
 
-            let filterLogsByDistance = logs => {
-                const maxRadius = 5 * radiusFactor;
-
-                return logs.filter(log => {
-                    return log.distance < maxRadius;
-                });
-            };
-
             let render = logs => {
-                if (logs.length > 0) {
-                    logger(`There were ${logs.length} locations recorded nearby to ${elAddressInput.value}.`);
-                } else {
-                    logger('There was no one near this area during this time frame.');
-                }
-
                 logs.forEach(addMarker);
-
-                toggleLoading(false);
+                return logs.length;
             };
 
             let buildGetRequest = (id, fromDate, toDate) => {
@@ -151,7 +136,8 @@ geotab.addin.proximity = () => {
                         },
                         fromDate: fromDate,
                         toDate: toDate
-                    }
+                    },
+                    resultsLimit: 50000
                 }];
             };
 
@@ -196,41 +182,60 @@ geotab.addin.proximity = () => {
                 return { id: id };
             });
 
-            let calls = devicesToQuery.map(device => {
-                return buildGetRequest(device.id, utcFrom, utcTo);
-            });
+            let getDeviceLogs = device => new Promise((resolve, reject) => {
+                var request = buildGetRequest(device.id, utcFrom, utcTo);
+                api.call(request[0], request[1], results => {
 
-            api.multiCall(calls, results => {
-
-                let params = {
-                    array: flattenArrays(results),
-                    center,
-                    aggregate: true
-                };
-
-                hamsters.promise(params, () => {
-                    let arr = params.array;
-                    let centerPoint = params.center;
-                    let toRadians = d => {
-                        return d * (Math.PI / 180.0);
+                    let params = {
+                        array: results,
+                        center,
+                        radiusFactor,
+                        aggregate: true,
+                        maxThreads: navigator.hardwareConcurrency || 1
                     };
-                    arr.forEach(logRecord => {
-                        let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                        let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                        let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                        logRecord.distance = 6371000.0 * c;
-                        rtn.data.push(logRecord);
-                    });
-                })
-                .then(rtn => flattenArrays(rtn.data))
-                .then(filterLogsByDistance)
-                .then(render);
 
-            }, error => {
-                logger(error);
-                toggleLoading(false);
+                    hamsters.promise(params, () => {
+                        const arr = params.array;
+                        const centerPoint = params.center;
+                        const maxRadius = 5 * params.radiusFactor;
+                        const toRadians = d => {
+                            return d * (Math.PI / 180.0);
+                        };
+                        arr.forEach(logRecord => {
+                            let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                            let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                            let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                            logRecord.distance = 6371000.0 * c;
+                            if (logRecord.distance < maxRadius) {
+                                rtn.data.push(logRecord);
+                            }
+                        });
+                    })
+                        .then(rtn => rtn.data[0])
+                        .then(render)
+                        .then(resolve);
+
+                }, error => {
+                    logger(error);
+                    toggleLoading(false);
+                    reject(error);
+                });
             });
+
+            let totalFound = 0;
+            for (let i = 0; devicesToQuery.length > i; i++) {
+                let found = await getDeviceLogs(devicesToQuery[i]);
+                totalFound += found || 0;
+            }
+
+            if (totalFound > 0) {
+                logger(`There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.`);
+            } else {
+                logger('There was no one near this area during this time frame.');
+            }
+            toggleLoading(false);
+
         }, error => {
             logger(error);
             toggleLoading(false);
@@ -356,7 +361,7 @@ geotab.addin.proximity = () => {
      */
     let getUserIsMetric = callback => {
         if (!callback) {
-            throw new Error(`'callback' is null or undefined`);
+            throw new Error('"callback" is null or undefined');
         }
 
         api.getSession(token => {
@@ -391,9 +396,11 @@ geotab.addin.proximity = () => {
         initialize(freshApi, freshState, callback) {
             api = freshApi;
 
-            hamsters.init({
-                debug: 'verbose'
-            });
+            if (hamsters.init) {
+                hamsters.init({
+                    debug: 'verbose'
+                });
+            }
 
             getUserIsMetric(isMetric => {
                 if ('geolocation' in navigator) {
