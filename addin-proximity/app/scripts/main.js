@@ -5,6 +5,7 @@ geotab.addin.proximity = () => {
     'use strict';
 
     let api;
+    let state;
 
     let map;
     let markers;
@@ -28,6 +29,7 @@ geotab.addin.proximity = () => {
     let isUserMetric = true;
     let selectAll = false;
     let isCancelled = false;
+    let loadingTimeout;
 
     // User can enter any date range, limit how much data we will pull in a request
     const maxLogRecordResults = 50000;
@@ -45,6 +47,7 @@ geotab.addin.proximity = () => {
      *  @param {booleab} show [true] to show loading, otherwiase [false]
      */
     let toggleLoading = show => {
+        clearTimeout(loadingTimeout);
         if (show) {
             elLoading.style.display = 'block';
             elProximityCancel.textContent = 'Cancel'
@@ -58,7 +61,7 @@ geotab.addin.proximity = () => {
             elDateFromInput.disabled = true;
             elDateToInput.disabled = true;
         } else {
-            setTimeout(() => {
+            loadingTimeout = setTimeout(() => {
                 elLoading.style.display = 'none';
                 elProximityCancel.style.display = 'none';
                 vehicleMultiselect.enable();
@@ -446,6 +449,7 @@ geotab.addin.proximity = () => {
          */
         initialize(freshApi, freshState, callback) {
             api = freshApi;
+            state = freshState;
 
             if (hamsters.init) {
                 hamsters.init({
@@ -478,16 +482,21 @@ geotab.addin.proximity = () => {
          * @param {object} freshState - The page state object allows access to URL, page navigation and global group filter.
          */
         focus(freshApi, freshState) {
-            toggleLoading(true);
-
             api = freshApi;
+            state = freshState;
+
+            // focus is called anytime filter changes.
+            isCancelled = true;
+            deviceLookup = {};
+
+            toggleLoading(true);
 
             api.call('Get', {
                 typeName: 'Device',
                 resultsLimit: 1000,
                 search: {
                     fromDate: new Date().toISOString(),
-                    groups: freshState.getGroupFilter()
+                    groups: state.getGroupFilter()
                 }
             }, devices => {
                 if (!devices || devices.length < 1) {
@@ -521,6 +530,7 @@ geotab.addin.proximity = () => {
             if (deviceLookup) {
                 deviceLookup = {};
             }
+            isCancelled = true;
         }
     };
 };
