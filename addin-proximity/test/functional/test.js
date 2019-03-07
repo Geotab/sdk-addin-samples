@@ -54,12 +54,11 @@ describe('User visits addin', () => {
 
     // login (only part of local add-in debugging)
     before(done => {
-        browser
-            .fill('Email', mocks.login.userName)
-            .fill('Password', mocks.login.password)
-            .fill('Database', mocks.login.database)
-            .fill('Server', mockServer)
-            .clickLink('Login', done);
+        browser.fill('Email', mocks.login.userName);
+        browser.fill('Password', mocks.login.password);
+        browser.fill('Database', mocks.login.database);
+        browser.fill('Server', mockServer);
+        browser.clickLink('Login', done);
     });
 
     it('should be loaded', () => {
