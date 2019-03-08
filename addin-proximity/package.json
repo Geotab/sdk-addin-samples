@@ -11,6 +11,7 @@
         "@babel/register": "^7.0.0",
         "babel-plugin-transform-object-assign": "^6.5.0",
         "browser-sync": "^2.2.1",
+        "chai": "^4.2.0",
         "cssp": "^1.0.6",
         "del": "^4.0.0",
         "gulp": "^4.0.0",
@@ -33,10 +34,9 @@
         "gulp-uglify": "^3.0.2",
         "gulp-useref": "^3.0.0",
         "main-bower-files": "^2.5.0",
-        "nock": "^10.0.6",
+        "puppeteer": "^1.13.0",
         "traverse": "^0.6.6",
-        "wiredep": "^4.0.0",
-        "zombie": "^6.1.4"
+        "wiredep": "^4.0.0"
     },
     "eslintConfig": {
         "parserOptions": {
