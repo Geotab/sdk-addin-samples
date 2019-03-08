@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - v6
+  - v8
 env:
   - TEST_DIR=addin-engine-data-button
   - TEST_DIR=addin-heatmap
