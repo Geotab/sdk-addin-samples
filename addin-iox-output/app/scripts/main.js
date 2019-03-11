@@ -2,10 +2,9 @@
  * @returns {{initialize: Function, focus: Function, blur: Function}}
  */
 geotab.addin.ioxOutput = () => {
-    'use strict';
-
     let api;
 
+    let elContainer;
     let elVehicleSelect;
     let elSendButton;
     let elSendHistory;
@@ -81,6 +80,7 @@ geotab.addin.ioxOutput = () => {
         initialize(geotabApi, pageState, initializeCallback) {
             api = geotabApi;
 
+            elContainer = document.getElementById('ioxoutput');
             elVehicleSelect = document.getElementById('ioxoutput-vehicles');
             elSendButton = document.getElementById('ioxoutput-send');
             elSendHistory = document.getElementById('ioxoutput-history');
@@ -121,10 +121,12 @@ geotab.addin.ioxOutput = () => {
                 }
 
                 elSendButton.disabled = false;
+                elContainer.style.display = '';
             }, errorHandler);
         },
         blur() {
             elSendButton.disabled = true;
+            elContainer.style.display = 'none';
         }
     };
 };

@@ -83,7 +83,7 @@ gulp.task('json', () => {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('html', ['styles', 'scripts'], () => {
+gulp.task('html', gulp.series('styles', 'scripts', () => {
   var options = JSON.parse(fs.readFileSync('./app/config.json')).dev;
   
   return gulp.src(['.tmp/**/*'])
@@ -100,7 +100,7 @@ gulp.task('html', ['styles', 'scripts'], () => {
       collapseWhitespace: true
     })))
     .pipe(gulp.dest('dist'));
-});
+}));
 
 gulp.task('images', () => {
   return gulp.src('app/images/**/*')
@@ -176,7 +176,7 @@ let mockAddinHost = sourceDir => {
   };
 };
 
-gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
+gulp.task('serve', gulp.series('styles', 'scripts', 'fonts', () => {
   browserSync({
     notify: false,
     port: 9000,
@@ -197,11 +197,11 @@ gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
     'app/*.json'
   ]).on('change', reload);
 
-  gulp.watch('app/styles/**/*.css', ['styles']);
-  gulp.watch('app/scripts/**/*.js', ['scripts']);
-  gulp.watch('app/fonts/**/*', ['fonts']);
-  gulp.watch('bower.json', ['wiredep', 'fonts']);
-});
+  gulp.watch('app/styles/**/*.css', gulp.series('styles'));
+  gulp.watch('app/scripts/**/*.js', gulp.series('scripts'));
+  gulp.watch('app/fonts/**/*', gulp.series('fonts'));
+  gulp.watch('bower.json', gulp.series('wiredep', 'fonts'));
+}));
 
 gulp.task('serve:dist', () => {
   browserSync({
@@ -217,7 +217,7 @@ gulp.task('serve:dist', () => {
   });
 });
 
-gulp.task('test', ['styles', 'scripts', 'fonts'], () => {
+gulp.task('test', gulp.series('styles', 'scripts', 'fonts', done => {
   browserSync({
     open: false,
     notify: false,
@@ -242,13 +242,15 @@ gulp.task('test', ['styles', 'scripts', 'fonts'], () => {
     }))
     .on('error', function () {
       browserSync.exit(1);
+      done();
       process.exit(1);
     })
     .on('end', function () {
       browserSync.exit();
+      done();
       process.exit();
     });
-});
+}));
 
 // inject bower components
 gulp.task('wiredep', () => {
@@ -259,13 +261,11 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app'));
 });
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'json', 'extras'], () => {
+gulp.task('build', gulp.series('lint', 'html', 'images', 'fonts', 'json', 'extras', () => {
   return gulp.src('dist/**/*').pipe($.size({
     title: 'build',
     gzip: true
   }));
-});
+}));
 
-gulp.task('default', ['clean'], () => {
-  gulp.start('build');
-});
+gulp.task('default', gulp.series('serve'));

@@ -1,4 +1,4 @@
-// generated on 2018-01-22 using generator-addin 1.0.1
+// generated on 2018-01-18 using generator-addin 1.0.0
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import browserSync from 'browser-sync';
@@ -83,7 +83,7 @@ gulp.task('json', () => {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('html', ['styles', 'scripts'], () => {
+gulp.task('html', gulp.series('styles', 'scripts', () => {
   var options = JSON.parse(fs.readFileSync('./app/config.json')).dev;
   
   return gulp.src('app/*.html')
@@ -103,7 +103,7 @@ gulp.task('html', ['styles', 'scripts'], () => {
       collapseWhitespace: true
     })))
     .pipe(gulp.dest('dist'));
-});
+}));
 
 gulp.task('images', () => {
   return gulp.src('app/images/**/*')
@@ -179,7 +179,7 @@ let mockAddinHost = sourceDir => {
   };
 };
 
-gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
+gulp.task('serve', gulp.series('styles', 'scripts', 'fonts', () => {
   browserSync({
     notify: false,
     port: 9000,
@@ -187,6 +187,7 @@ gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
       baseDir: ['.tmp', 'app'],
       routes: {
         '/bower_components': 'bower_components',
+        '/node_modules': 'node_modules',
         '/.dev': '.dev'
       },
       middleware: mockAddinHost('app')
@@ -200,11 +201,11 @@ gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
     'app/*.json'
   ]).on('change', reload);
 
-  gulp.watch('app/styles/**/*.css', ['styles']);
-  gulp.watch('app/scripts/**/*.js', ['scripts']);
-  gulp.watch('app/fonts/**/*', ['fonts']);
-  gulp.watch('bower.json', ['wiredep', 'fonts']);
-});
+  gulp.watch('app/styles/**/*.css', gulp.series('styles'));
+  gulp.watch('app/scripts/**/*.js', gulp.series('scripts'));
+  gulp.watch('app/fonts/**/*', gulp.series('fonts'));
+  gulp.watch('bower.json', gulp.series('wiredep', 'fonts'));
+}));
 
 gulp.task('serve:dist', () => {
   browserSync({
@@ -220,7 +221,7 @@ gulp.task('serve:dist', () => {
   });
 });
 
-gulp.task('test', ['styles', 'scripts', 'fonts'], () => {
+gulp.task('test', gulp.series('styles', 'scripts', 'fonts', done => {
   browserSync({
     open: false,
     notify: false,
@@ -229,6 +230,7 @@ gulp.task('test', ['styles', 'scripts', 'fonts'], () => {
       baseDir: ['.tmp', 'app'],
       routes: {
         '/bower_components': 'bower_components',
+        '/node_modules': 'node_modules',
         '/.dev': '.dev'
       },
       middleware: mockAddinHost('app')
@@ -239,36 +241,34 @@ gulp.task('test', ['styles', 'scripts', 'fonts'], () => {
       read: false
     })
     .pipe($.mocha({
-      reporter: 'nyan',
       timeout: 10000
     }))
     .on('error', function () {
       browserSync.exit(1);
+      done();
       process.exit(1);
     })
     .on('end', function () {
       browserSync.exit();
+      done();
       process.exit();
     });
-});
+}));
 
 // inject bower components
 gulp.task('wiredep', () => {
   gulp.src('app/*.html')
     .pipe(wiredep({
-      src: 'app/tripsTimeline.html',
       ignorePath: /^(\.\.\/)*\.\./
     }))
     .pipe(gulp.dest('app'));
 });
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'json', 'extras'], () => {
+gulp.task('build', gulp.series('lint', 'html', 'images', 'fonts', 'json', 'extras', () => {
   return gulp.src('dist/**/*').pipe($.size({
     title: 'build',
     gzip: true
   }));
-});
+}));
 
-gulp.task('default', ['clean'], () => {
-  gulp.start('build');
-});
+gulp.task('default', gulp.series('serve'));

@@ -23,7 +23,7 @@ const rpcResponse = (response, err) => {
 // puppeteer options
 const opts = {
     headless: true,
-    slowMo: 10,
+    slowMo: 0,
     timeout: 10000
 };
 
@@ -39,6 +39,8 @@ describe('User visits addin', async () => {
         await context.overridePermissions('http://localhost:9000', ['geolocation']);
 
         page = await browser.newPage();
+        await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
+
         await page.setRequestInterception(true);
 
         // setup mocks
@@ -49,15 +51,15 @@ describe('User visits addin', async () => {
                 let payload = '';
 
                 switch (rpcBody.method) {
-                    case "Authenticate":
+                    case 'Authenticate':
                         payload = mocks.credentials;
                         break;
                     case 'Get':
                         switch (rpcBody.params.typeName) {
-                            case "Device":
+                            case 'Device':
                                 payload = [mocks.device];
                                 break;
-                            case "User":
+                            case 'User':
                                 payload = [mocks.user];
                                 break;
                         }
@@ -65,7 +67,7 @@ describe('User visits addin', async () => {
 
                 request.respond({
                     content: 'application/json',
-                    headers: { "Access-Control-Allow-Origin": "*" },
+                    headers: { 'Access-Control-Allow-Origin': '*' },
                     body: JSON.stringify(rpcResponse(payload))
                 });
             } else {
@@ -74,7 +76,6 @@ describe('User visits addin', async () => {
         });
 
         await page.goto('http://localhost:9000/');
-        await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
         await page.waitFor('#loginDialog');
         await page.type('#email', mocks.login.userName);

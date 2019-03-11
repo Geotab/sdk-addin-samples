@@ -1,58 +1,112 @@
-const Browser = require('zombie');
-const nock = require('nock');
-const assert = require('chai').assert;
 const rison = require('rison');
+const puppeteer = require('puppeteer');
+const mocks = require('./mocks/mocks.js');
+const assert = require('chai').assert;
 
-describe('User visits addin', function () {
+// JSON-RPC helpers
+const rpcRequest = body => {
+    const jsonRpc = 'JSON-RPC=';
+    let payload = decodeURIComponent(body);
+    if (payload.startsWith(jsonRpc)) {
+        payload = payload.substring(jsonRpc.length, payload.length);
+    }
+    return JSON.parse(payload);
+};
 
-  const browser = new Browser();
+const rpcResponse = (response, err) => {
+    return {
+        id: -1,
+        result: response,
+        error: err
+    };
+};
 
-  // to enable zombie debugging, uncomment this line
-  // browser.debug();
+// puppeteer options
+const opts = {
+    headless: true,
+    slowMo: 10,
+    timeout: 10000
+};
 
-  const host = 'http://localhost:9000/';
-  const vehicleId = '(id:b1)';
+// test
+describe('User visits addin', async () => {
+    const vehicleId = '(id:b1)';
+    let browser;
+    let page;
 
-  // open page
-  before(done => {
-    return browser.visit(host, done);
-  });
+    // open page
+    before(async () => {
+        browser = await puppeteer.launch(opts);
+        page = await browser.newPage();
 
-  it('should be loaded', function () {
-    browser.assert.success();
-  });
+        await page.setRequestInterception(true);
 
-  describe('Show addin content after initialized and focus is called', function () {
-    it('should display root div', () => {
-      browser.assert.style('#engineDataButton', 'display', '');
+        // setup mocks
+        page.on('request', request => {
+            if (request.url() === `http://${mocks.server}/apiv1`) {
+
+                let rpcBody = rpcRequest(request.postData());
+                let payload = '';
+
+                switch (rpcBody.method) {
+                    case 'Authenticate':
+                        payload = mocks.credentials;
+                        break;
+                    case 'Get':
+                        switch (rpcBody.params.typeName) {
+                            case 'Device':
+                                payload = [mocks.device];
+                                break;
+                            case 'User':
+                                payload = [mocks.user];
+                                break;
+                        }
+                }
+
+                request.respond({
+                    content: 'application/json',
+                    headers: { 'Access-Control-Allow-Origin': '*' },
+                    body: JSON.stringify(rpcResponse(payload))
+                });
+            } else {
+                request.continue();
+            }
+        });
+
+        await page.goto('http://localhost:9000/');
     });
 
-    it('should display message when no vehicle selected ', () => {
-      browser.pressButton('.customButton');
-      browser.assert.element('#engineDataButton-addin', '');
+    after(async () => {
+        await browser.close();
     });
 
-    it('should redirect to engine data profile page ', (done) => {
-      browser.visit(`${host}#${vehicleId}`, () => {
-        browser.pressButton('.customButton', () => {
-          browser.assert.url(url => {
+    describe('Show addin content after initialized and focus is called', async() => {
+        it('should display button', async () => {
+            await page.waitFor('.customButton ', {
+                visible: true
+            });
+        });
 
-            assert.isTrue(url.indexOf('geotab/checkmate/ui/engineDataProfile.html') > -1);
-            
-            let hash = decodeURI(url.split('#')[1]);
-            let hashValues = rison.decode(hash);
-            
+        it('should display message when no vehicle selected ', async () => {
+            await page.click('.customButton');
+
+            let elButton = await page.$('#engineDataButton-addin');
+            assert.isNotNull(elButton);
+        });
+
+        it('should redirect to engine data profile page ', async () => {
+            await page.goto(`http://localhost:9000/#${vehicleId}`);
+
+            await page.click('.customButton');
+
+            let hash = await page.evaluate('location.hash');;
+            let hashValues = rison.decode(hash.substring(1, hash.length));
+
             assert.isNotNull(hashValues.dateRange);
             assert.isNotNull(hashValues.dateRange.startDate);
             assert.isNotNull(hashValues.dateRange.endDate);
             assert.equal('b1', hashValues.device);
-            assert.deepEqual(['DiagnosticEngineSpeedId','DiagnosticGoDeviceVoltageId','DiagnosticDeviceTotalFuelId'], hashValues.diagnostic);
-
-            done();
-          });
+            assert.deepEqual(['DiagnosticEngineSpeedId', 'DiagnosticGoDeviceVoltageId', 'DiagnosticDeviceTotalFuelId'], hashValues.diagnostic);
         });
-      });
     });
-  });
-
 });

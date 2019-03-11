@@ -105,7 +105,7 @@ geotab.addin.startStop = function () {
         }
     }
 
-    function populateVehicles() {
+    function populateVehicles(callback) {
 
         let vehicleSelect = document.getElementById('stopStart-vehicleSelect');
         vehicleSelect.innerHTML = '';
@@ -128,11 +128,11 @@ geotab.addin.startStop = function () {
                 vehicleSelect.appendChild(opt);
             });
             vehicleSelect.addEventListener('change', vehicleSelectionChange);
+            callback();
         });
     }
 
     function getUserConfiguration(callback) {
-
         // The api object exposes a method we can call to get the current user identity. This is useful for
         // determining user context, such as regional settings, language preference and name. Use the api
         // to retrieve the currently logged on user object.
@@ -500,10 +500,14 @@ geotab.addin.startStop = function () {
             state = freshState;
 
             updateDashboard(-1);
-            populateVehicles(getUserConfiguration(updateDashboardRegionalUnits));
-
-            // show main content
-            elAddin.className = '';
+            populateVehicles(() => {
+                getUserConfiguration(() => {
+                    updateDashboardRegionalUnits();
+                    console.log('updateDashboardRegionalUnits');
+                    // show main content
+                    elAddin.style.display = 'block';
+                });
+            });
         },
 
         /**
@@ -516,7 +520,7 @@ geotab.addin.startStop = function () {
          */
         blur: function () {
             // hide main content
-            elAddin.className = 'hidden';
+            elAddin.style.display = 'none';
         }
     };
 };
