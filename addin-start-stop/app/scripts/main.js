@@ -36,7 +36,8 @@ geotab.addin.startStop = function () {
                 search: {
                     groups: state.getGroupFilter(),
                     fromDate: new Date().toISOString()
-                }
+                },
+                resultsLimit: 1000
             }, function (results) {
                 let vehicles = results
                     .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
@@ -66,7 +67,8 @@ geotab.addin.startStop = function () {
                     },
                     'fromDate': fromDate,
                     'toDate': toDate
-                }
+                },
+                resultsLimit: 10000
             }, resolve, reject);
         });
     }
@@ -207,7 +209,8 @@ geotab.addin.startStop = function () {
                     },
                     'fromDate': fromDate.toISOString(),
                     'toDate': toDate.toISOString()
-                }
+                },
+                'resultsLimit': 50000
             }], ['Get', {
                 'typeName': 'LogRecord',
                 'search': {
@@ -216,7 +219,8 @@ geotab.addin.startStop = function () {
                     },
                     'fromDate': fromDate,
                     'toDate': toDate
-                }
+                },
+                'resultsLimit': 50000
             }]], function (result) {
                 let statusDataResults = result[0],
                     gpsDataResults = result[1],

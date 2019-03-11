@@ -36,7 +36,8 @@ geotab.addin.tripsTimeline = () => {
                 search: {
                     fromDate: fromDate.toISOString(),
                     toDate: toDate.toISOString()
-                }
+                },
+                resultsLimit: 10000
             }, resolve);
         }).catch(error => {
             alert(error);
