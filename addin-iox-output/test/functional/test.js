@@ -1,61 +1,99 @@
-const Browser = require('zombie');
-const nock = require('nock');
+const puppeteer = require('puppeteer');
 const mocks = require('./mocks/mocks.js');
+const assert = require('chai').assert;
 
 // JSON-RPC helpers
-var rpcRequest = function (body) {
-  return JSON.parse(body['JSON-RPC']);
+const rpcRequest = body => {
+    const jsonRpc = 'JSON-RPC=';
+    let payload = decodeURIComponent(body);
+    if (payload.startsWith(jsonRpc)) {
+        payload = payload.substring(jsonRpc.length, payload.length);
+    }
+    return JSON.parse(payload);
 };
 
-var rpcResponse = function (response, err) {
-  return {
-    id: -1,
-    result: response,
-    error: err
-  };
+const rpcResponse = (response, err) => {
+    return {
+        id: -1,
+        result: response,
+        error: err
+    };
 };
 
-// Mocks
-var mockServer = mocks.server;
+// puppeteer options
+const opts = {
+    headless: true,
+    slowMo: 0,
+    timeout: 10000
+};
 
-var nockApi = nock('https://' + mockServer);
+// test
+describe('User visits addin', async () => {
+    let browser;
+    let page;
 
-nockApi
-  .post('/apiv1', function (body) {
-    var request = rpcRequest(body);
-    console.log(request);
-  });
+    // open page
+    before(async () => {
+        browser = await puppeteer.launch(opts);
 
-describe('User visits addin', function () {
+        page = await browser.newPage();
+        await page.setRequestInterception(true);
 
-  const browser = new Browser();
+        // setup mocks
+        page.on('request', request => {
+            if (request.url() === `https://${mocks.server}/apiv1`) {
 
-  // to enable zombie debugging, uncomment this line
-  // browser.debug();
+                let rpcBody = rpcRequest(request.postData());
+                let payload = '';
 
-  // open page
-  before(function (done) {
-    return browser.visit('http://localhost:9000/', done);
-  });
+                switch (rpcBody.method) {
+                    case 'Authenticate':
+                        payload = mocks.credentials;
+                        break;
+                    case 'Get':
+                        switch (rpcBody.params.typeName) {
+                            case 'Device':
+                                payload = [mocks.device];
+                                break;
+                        }
+                }
 
-  // login (only part of local add-in debugging)
-  before(function (done) {
-    browser
-      .fill('Email', mocks.login.userName)
-      .fill('Password', mocks.login.password)
-      .fill('Database', mocks.login.database)
-      .fill('Server', mockServer)
-      .clickLink('Login', done);
-  });
+                request.respond({
+                    content: 'application/json',
+                    headers: { 'Access-Control-Allow-Origin': '*' },
+                    body: JSON.stringify(rpcResponse(payload))
+                });
+            } else {
+                request.continue();
+            }
+        });
 
-  it('should be loaded', function () {
-    browser.assert.success();
-  });
+        await page.goto('http://localhost:9000/');
 
-  describe('Show addin content after initialized and focus is called', function () {
-    it('should display root div', function () {
-      browser.assert.style('#ioxOutput', 'display', '');
+        await page.waitFor('#loginDialog');
+        await page.type('#email', mocks.login.userName);
+        await page.type('#password', mocks.login.password);
+        await page.type('#database', mocks.login.database);
+        await page.type('#server', mocks.server);
+        await page.click('#loginBtn');
     });
-  });
 
+    after(async () => {
+        await browser.close();
+    });
+
+    describe('Show addin content after initialized and focus is called', () => {
+        it('should display root div', async () => {
+            await page.waitFor('#ioxoutput', {
+                visible: true
+              });
+        });
+
+        it('should display device', async () => {
+            const elDevice = await page.$('#ioxoutput-vehicles > option');
+            assert.isNotNull(elDevice);
+            const text = await page.evaluate(elDevice => elDevice.textContent, elDevice);
+            assert.equal(mocks.device.name, text.trim());
+        });
+      });
 });

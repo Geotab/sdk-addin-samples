@@ -5,6 +5,7 @@ geotab.addin.proximity = () => {
     'use strict';
 
     let api;
+    let state;
 
     let map;
     let markers;
@@ -12,10 +13,13 @@ geotab.addin.proximity = () => {
 
     let vehicleMultiselect;
     let elAddressInput;
+    let elProximitySize;
+    let elProximitySelectAll;
     let elVehicleSelect;
     let elVehicleMultiSelectContainer;
     let elDateFromInput;
     let elDateToInput;
+    let elProximityCancel;
     let elError;
     let elLoading;
 
@@ -24,6 +28,11 @@ geotab.addin.proximity = () => {
     let selected = [];
     let isUserMetric = true;
     let selectAll = false;
+    let isCancelled = false;
+    let loadingTimeout;
+
+    // User can enter any date range, limit how much data we will pull in a request
+    const maxLogRecordResults = 50000;
 
     /**
      *  Logs messages to the UI
@@ -38,11 +47,30 @@ geotab.addin.proximity = () => {
      *  @param {booleab} show [true] to show loading, otherwiase [false]
      */
     let toggleLoading = show => {
+        clearTimeout(loadingTimeout);
         if (show) {
             elLoading.style.display = 'block';
+            elProximityCancel.textContent = 'Cancel'
+            elProximityCancel.style.display = 'block';
+            elProximityCancel.disabled = false;
+            vehicleMultiselect.disable();
+            elAddressInput.disabled = true;
+            elProximitySize.disabled = true;
+            elProximitySelectAll.disabled = true;
+            elVehicleSelect.disabled = true;
+            elDateFromInput.disabled = true;
+            elDateToInput.disabled = true;
         } else {
-            setTimeout(() => {
+            loadingTimeout = setTimeout(() => {
                 elLoading.style.display = 'none';
+                elProximityCancel.style.display = 'none';
+                vehicleMultiselect.enable();
+                elAddressInput.disabled = false;
+                elProximitySize.disabled = false;
+                elProximitySelectAll.disabled = false;
+                elVehicleSelect.disabled = false;
+                elDateFromInput.disabled = false;
+                elDateToInput.disabled = false;
             }, 600);
         }
     };
@@ -94,6 +122,7 @@ geotab.addin.proximity = () => {
      *  Calculates and renders proximity from inputs
      */
     let displayProximity = () => {
+        isCancelled = false;
         logger('');
 
         if (elAddressInput.value === '') {
@@ -115,31 +144,21 @@ geotab.addin.proximity = () => {
 
         api.call('GetCoordinates', {
             addresses: [elAddressInput.value]
-        }, result => {
+        }, async (result) => {
             if (!result || result.length < 1 || !result[0]) {
                 logger('Could not find the address');
                 toggleLoading(false);
                 return;
             }
 
-            let filterLogsByDistance = logs => {
-                const maxRadius = 5 * radiusFactor;
-
-                return logs.filter(log => {
-                    return log.distance < maxRadius;
-                });
-            };
+            if (isCancelled) {
+                toggleLoading(false);
+                return;
+            }
 
             let render = logs => {
-                if (logs.length > 0) {
-                    logger(`There were ${logs.length} locations recorded nearby to ${elAddressInput.value}.`);
-                } else {
-                    logger('There was no one near this area during this time frame.');
-                }
-
                 logs.forEach(addMarker);
-
-                toggleLoading(false);
+                return logs.length;
             };
 
             let buildGetRequest = (id, fromDate, toDate) => {
@@ -151,14 +170,9 @@ geotab.addin.proximity = () => {
                         },
                         fromDate: fromDate,
                         toDate: toDate
-                    }
+                    },
+                    resultsLimit: maxLogRecordResults
                 }];
-            };
-
-            let flattenArrays = arrayOfArrays => {
-                return arrayOfArrays.reduce((combinedArray, currentArray) => {
-                    return combinedArray.concat(currentArray);
-                }, []);
             };
 
             let createCircle = (longitude, latitude, radius, color, opacity) => {
@@ -190,45 +204,79 @@ geotab.addin.proximity = () => {
             circles.addLayer(boundary5);
 
             // compile selected devices devices
-            let devicesToQuery = selectAll ? Object.keys(deviceLookup).map(device => {
-                return deviceLookup[device];
+            let devicesToQuery = selectAll ? Object.keys(deviceLookup).map(id => {
+                return deviceLookup[id];
             }) : selected.map(id => {
-                return { id: id };
+                return deviceLookup[id];
             });
 
-            let calls = devicesToQuery.map(device => {
-                return buildGetRequest(device.id, utcFrom, utcTo);
-            });
+            let limitedDevices = [];
 
-            api.multiCall(calls, results => {
-                let parallel = new Parallel(flattenArrays(results), {
-                    env: {
-                        center: center
+            let getDeviceLogs = device => new Promise((resolve, reject) => {
+                var request = buildGetRequest(device.id, utcFrom, utcTo);
+                api.call(request[0], request[1], results => {
+
+                    // if results have been limited, let the user know they may need to narrow search
+                    if (results.length === maxLogRecordResults) {
+                        limitedDevices.push(encodeHTML(device.name));
                     }
-                });
-                let getDistance = logRecord => {
-                    // hack for ie9, global is missing
-                    let centerPoint = typeof window !== 'undefined' ? window.geotabHeatMap.center : global.env.center;
-                    let toRadians = d => {
-                        return d * (Math.PI / 180.0);
+
+                    let params = {
+                        array: results,
+                        center,
+                        radiusFactor,
+                        aggregate: true,
+                        maxThreads: navigator.hardwareConcurrency || 1
                     };
-                    let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                    let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                    let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                    logRecord.distance = 6371000.0 * c;
-                    return logRecord;
-                };
 
-                parallel
-                    .map(getDistance)
-                    .then(filterLogsByDistance)
-                    .then(render);
+                    // do CPU intense calculation off the UI thread
+                    hamsters.promise(params, () => {
+                        const arr = params.array;
+                        const centerPoint = params.center;
+                        const maxRadius = 5 * params.radiusFactor;
+                        const toRadians = d => {
+                            return d * (Math.PI / 180.0);
+                        };
+                        arr.forEach(logRecord => {
+                            let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                            let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                            let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                            logRecord.distance = 6371000.0 * c;
+                            if (logRecord.distance < maxRadius) {
+                                rtn.data.push(logRecord);
+                            }
+                        });
+                    })
+                        .then(rtn => rtn.data[0])
+                        .then(render)
+                        .then(resolve);
 
-            }, error => {
-                logger(error);
-                toggleLoading(false);
+                }, error => {
+                    logger(error);
+                    toggleLoading(false);
+                    reject(error);
+                });
             });
+
+            let totalFound = 0;
+            for (let i = 0; devicesToQuery.length > i; i++) {
+                let found = await getDeviceLogs(devicesToQuery[i]);
+                totalFound += found || 0;
+                if (isCancelled) {
+                    toggleLoading(false);
+                    return;
+                }
+            }
+
+            let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
+            if (totalFound > 0) {
+                logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.</p>${limitedMessage}`);
+            } else {
+                logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
+            }
+            toggleLoading(false);
+
         }, error => {
             logger(error);
             toggleLoading(false);
@@ -271,17 +319,23 @@ geotab.addin.proximity = () => {
 
         L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ2VvdGFiIiwiYSI6ImNpd2NlaW02MjAxc28yeW9idTR3dmRxdTMifQ.ZH0koA2g2YMMBOcx6EYbwQ').addTo(map);
 
-        markers = L.layerGroup().addTo(map);
+        markers = L.markerClusterGroup({
+            spiderfyOnMaxZoom: false,
+            disableClusteringAtZoom: 18
+        }).addTo(map);
         circles = L.layerGroup().addTo(map);
 
         // DOM elements used more than once
         elAddressInput = document.getElementById('proximity-address');
+        elProximitySize = document.getElementById('proximity-size');
+        elProximitySelectAll = document.getElementById('proximity-select-all');
         elVehicleSelect = document.getElementById('proximity-vehicles');
         elDateFromInput = document.getElementById('proximity-from');
         elDateToInput = document.getElementById('proximity-to');
         elError = document.getElementById('proximity-error');
         elLoading = document.getElementById('proximity-loading');
         elVehicleMultiSelectContainer = document.getElementById('proximity-div-vehicles');
+        elProximityCancel = document.getElementById('proximity-cancel');
 
         // date inputs
         let now = new Date();
@@ -307,7 +361,7 @@ geotab.addin.proximity = () => {
         vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true });
 
         // events
-        vehicleMultiselect.passedElement.addEventListener('change', () => {
+        vehicleMultiselect.passedElement.element.addEventListener('change', () => {
             selected = vehicleMultiselect.getValue().map(value => {
                 return value.value;
             });
@@ -320,12 +374,12 @@ geotab.addin.proximity = () => {
             }
         });
 
-        document.getElementById('proximity-size').addEventListener('change', event => {
+        elProximitySize.addEventListener('change', event => {
             sizeChanged(event.target.value);
             displayProximity();
         });
 
-        document.getElementById('proximity-select-all').addEventListener('change', event => {
+        elProximitySelectAll.addEventListener('change', event => {
             event.preventDefault();
 
             selectAll = !selectAll;
@@ -346,6 +400,13 @@ geotab.addin.proximity = () => {
 
             displayProximity();
         });
+
+        elProximityCancel.addEventListener('click', event => {
+            event.preventDefault();
+            elProximityCancel.textContent = 'Canceling...'
+            elProximityCancel.disabled = true;
+            isCancelled = true;
+        });
     };
 
     /**
@@ -354,7 +415,7 @@ geotab.addin.proximity = () => {
      */
     let getUserIsMetric = callback => {
         if (!callback) {
-            throw new Error(`'callback' is null or undefined`);
+            throw new Error('"callback" is null or undefined');
         }
 
         api.getSession(token => {
@@ -388,6 +449,13 @@ geotab.addin.proximity = () => {
          */
         initialize(freshApi, freshState, callback) {
             api = freshApi;
+            state = freshState;
+
+            if (hamsters.init) {
+                hamsters.init({
+                    debug: 'verbose'
+                });
+            }
 
             getUserIsMetric(isMetric => {
                 if ('geolocation' in navigator) {
@@ -414,16 +482,21 @@ geotab.addin.proximity = () => {
          * @param {object} freshState - The page state object allows access to URL, page navigation and global group filter.
          */
         focus(freshApi, freshState) {
-            toggleLoading(true);
-
             api = freshApi;
+            state = freshState;
+
+            // focus is called anytime filter changes.
+            isCancelled = true;
+            deviceLookup = {};
+
+            toggleLoading(true);
 
             api.call('Get', {
                 typeName: 'Device',
                 resultsLimit: 1000,
                 search: {
                     fromDate: new Date().toISOString(),
-                    groups: freshState.getGroupFilter()
+                    groups: state.getGroupFilter()
                 }
             }, devices => {
                 if (!devices || devices.length < 1) {
@@ -457,6 +530,7 @@ geotab.addin.proximity = () => {
             if (deviceLookup) {
                 deviceLookup = {};
             }
+            isCancelled = true;
         }
     };
 };

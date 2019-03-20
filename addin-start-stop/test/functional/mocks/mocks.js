@@ -6,7 +6,8 @@ var user = {
   firstName: 'Zom',
   lastName: 'Bie',
   name: 'zombie@underworld.dead',
-  password: 'eat-the-living'
+  password: 'eat-the-living',
+  fuelEconomyUnit: 'LitersPer100Km'
 };
 var login = {
   userName: user.name,
