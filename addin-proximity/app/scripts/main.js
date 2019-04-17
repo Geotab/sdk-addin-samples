@@ -458,13 +458,20 @@ geotab.addin.proximity = () => {
             }
 
             getUserIsMetric(isMetric => {
+                const defaultMapView = { longitude: -79.709441, latitude: 43.434497 };
+
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(position => {
                         initializeInterface(isMetric, position.coords);
                         callback();
+                    }, _ => {
+                        initializeInterface(isMetric, defaultMapView);
+                        callback();
+                    }, {
+                        timeout: 5000
                     });
                 } else {
-                    initializeInterface(isMetric, { longitude: -79.709441, latitude: 43.434497 });
+                    initializeInterface(isMetric, defaultMapView);
                     callback();
                 }
             });
