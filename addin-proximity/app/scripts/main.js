@@ -238,6 +238,9 @@ geotab.addin.proximity = () => {
                             return d * (Math.PI / 180.0);
                         };
                         arr.forEach(logRecord => {
+                            if (!logRecord.id) {
+                                return;
+                            }
                             let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
                             let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
                             let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
@@ -458,13 +461,20 @@ geotab.addin.proximity = () => {
             }
 
             getUserIsMetric(isMetric => {
+                const defaultMapView = { longitude: -79.709441, latitude: 43.434497 };
+
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(position => {
                         initializeInterface(isMetric, position.coords);
                         callback();
+                    }, _ => {
+                        initializeInterface(isMetric, defaultMapView);
+                        callback();
+                    }, {
+                        timeout: 5000
                     });
                 } else {
-                    initializeInterface(isMetric, { longitude: -79.709441, latitude: 43.434497 });
+                    initializeInterface(isMetric, defaultMapView);
                     callback();
                 }
             });
