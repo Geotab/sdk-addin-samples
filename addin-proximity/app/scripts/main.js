@@ -238,6 +238,9 @@ geotab.addin.proximity = () => {
                             return d * (Math.PI / 180.0);
                         };
                         arr.forEach(logRecord => {
+                            if (!logRecord.id) {
+                                return;
+                            }
                             let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
                             let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
                             let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
