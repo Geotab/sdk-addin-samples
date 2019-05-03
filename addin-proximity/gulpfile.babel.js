@@ -99,6 +99,7 @@ gulp.task('html', gulp.series('styles', 'scripts', () => {
       defaultCDNBase: options.dist.host,
       files: ['**/*.{gif,png,jpg,jpeg,svg,js,css}']
     })))
+    .pipe($.uncache())
     .pipe($.if('*.html', $.htmlmin({
       collapseWhitespace: true
     })))
