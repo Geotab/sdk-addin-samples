@@ -21,12 +21,12 @@ Add the configuration below to the to the system setting -> add-ins section of t
   "supportEmail": "support@geotab.com",
   "version": "0.0.1",
   "items": [{
-    "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/startStop.html",
+    "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-start-stop/dist/startStop.html",
     "path": "EngineMaintenanceLink/",
     "menuName": {
       "en": "Start-Stop Savings"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-start-stop/dist/images/icon.svg"
   }]
 }
 ```
