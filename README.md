@@ -20,66 +20,66 @@ Alternatively, you can install the add-ins on your production database individua
             "menuName": {
                 "en": "Add-In Samples"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/icon.svg"
         },
         {
-            "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/heatmap.html",
+            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-heatmap/dist/heatmap.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Heat Map"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-heatmap/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-heatmap/dist/images/icon.svg"
         },
         {
-            "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-proximity/dist/proximity.html",
+            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/proximity.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Proximity"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-proximity/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/images/icon.svg"
         },
         {
-            "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-trips-timeline/dist/tripsTimeline.html",
+            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-trips-timeline/dist/tripsTimeline.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Trips Timeline"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-trips-timeline/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-trips-timeline/dist/images/icon.svg"
         },
         {
-            "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/importKmlZones.html",
+            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-import-kml-zones/dist/importKmlZones.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Import KML Zones"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-import-kml-zones/dist/images/icon.svg"
         },
         {
-            "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/startStop.html",
+            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-start-stop/dist/startStop.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "Start-Stop Savings"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-start-stop/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-start-stop/dist/images/icon.svg"
         },
         {
-            "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/ioxOutput.html",
+            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-iox-output/dist/ioxOutput.html",
             "path": "sdkAddinsLink/",
             "menuName": {
                 "en": "IOX Output"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-iox-output/dist/images/icon.svg"
         },
         {
             "page": "device",
-            "click": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-engine-data-button/dist/scripts/engineDataButton.js",
+            "click": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-engine-data-button/dist/scripts/engineDataButton.js",
             "buttonName": {
                 "en": "Engine Data Profile",
                 "fr": "Profil des données-moteur",
                 "es": "Perfil de datos de motor",
                 "ja": "エンジンデータプロフィール"
             },
-            "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-engine-data-button/dist/images/icon.svg"
+            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-engine-data-button/dist/images/icon.svg"
         }
     ],
     "isSigned": false

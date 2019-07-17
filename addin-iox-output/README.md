@@ -22,12 +22,12 @@ Add the configuration below to the to the system setting -> add-ins section of t
   "supportEmail": "support@geotab.com",
   "version": "1.0.0",
   "items": [{
-    "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/ioxOutput.html",
+    "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-iox-output/dist/ioxOutput.html",
     "path": "AdministrationLink/",
     "menuName": {
       "en": "IOX Output"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-iox-output/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-iox-output/dist/images/icon.svg"
   }]
 }
 ```

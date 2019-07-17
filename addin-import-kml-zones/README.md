@@ -21,12 +21,12 @@ Add the configuration below to the to the system setting -> add-ins section of t
   "supportEmail": "support@geotab.com",
   "version": "1.0.0",
   "items": [{
-    "url": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/importKmlZones.html",
+    "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-import-kml-zones/dist/importKmlZones.html",
     "path": "ZoneAndMessagesLink/",
     "menuName": {
       "en": "Import KML Zones"
     },
-    "icon": "https://cdn.rawgit.com/Geotab/sdk-addin-samples/master/addin-import-kml-zones/dist/images/icon.svg"
+    "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-import-kml-zones/dist/images/icon.svg"
   }]
 }
 ```
