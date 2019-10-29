@@ -7,34 +7,17 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Heat Map</title>
-
-  <!-- build:css styles/vendor.css -->
-  <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
-  <!-- endbower -->
-  <!-- endbuild -->
-
-  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/leaflet.css">
   <link rel="stylesheet" href="styles/spinner.css">
   <link rel="stylesheet" href="styles/main.css">
-  <!-- endbuild -->
-
-  <!-- build:js scripts/vendor.js -->
-  <!-- bower:js -->
-  <script src="bower_components/leaflet/dist/leaflet.js"></script>
-  <script src="bower_components/leaflet.heat/dist/leaflet-heat.js"></script>
-  <!-- endbower -->
-  <!-- endbuild -->
-
-  <!-- build:js scripts/main.js -->
+  <script src="scripts/leaflet.js"></script>
+  <script src="scripts/leaflet-heat.js"></script>
   <script src="scripts/main.js"></script>
-  <!-- endbuild -->
-
 </head>
 
 <body>
 
-  <div id="heatmap" style="height: calc(100% - 40px)">
+  <div id="heatmap" style="height: calc(100%)">
 
     <div class="cssGrid sm-part-12">
       <div class="lg-part-2 md-part-3 sm-part-12">
@@ -42,32 +25,56 @@
 
           <h2>Heatmap</h2>
           <p>
-            This example demonstrates how to create an add-in to visualize location history using a heat map.
+            This example demonstrates how to create an add-in to visualize location or exception
+            (rule violation) history using a heat map.
           </p>
 
-          <h3>Instructions</h3>
-          <p>
-            Select a vehicle and then select a date range to display where the vehicle has been. Areas of the map colored which appear
-            <i>hot</i> indicates that the vehicle has spent time at that location.
-          </p>
+          <label for="visualizeBy">Visualize by:</label>
+          <input type="radio" id="visualizeByLocationHistory" name="visualizeBy" value="locationHistory" checked> Location History
+          <input type="radio" id="visualizeByExceptionHistory" name="visualizeBy" value="exceptionHistory"> Exception History
 
-          <label for="vehicles">Vehicle</label>
-          <select id="vehicles" class="checkmateFormEditField">
-            <option disabled="disabled">Select a vehicle</option>
+          <label for="exceptionTypes">Rule:</label>
+          <select id="exceptionTypes" class="checkmateFormEditField" ng-mousedown="selectType($event)" disabled>
+              <option disabled="disabled">Select a rule</option>
           </select>
 
-          <label for="from">From</label>
+          <label for="vehicles">Vehicle(s):</label>
+          <select id="vehicles" class="checkmateFormEditField" multiple="true"
+            ng-mousedown="selectType($event)">
+          </select>
+
+          <label for="from">From:</label>
           <input id="from" type="datetime-local" class="checkmateFormEditField" />
 
-          <label for="to">To</label>
+          <label for="to">To:</label>
           <input id="to" type="datetime-local" class="checkmateFormEditField" />
-
+          <div style="margin:1em"></div>
+          <input type="submit" value="Show Heat Map" id="showHeatMap">
           <div id="error"></div>
+          <div id="message"></div>
 
           <div id="loading" class="spinner" style="display:none">
               <div></div>
               <div></div>
               <div></div>
+          </div>
+
+          <div>
+            <h3>Instructions</h3>
+            <ol>
+              <li>Choose to visualize by <i>location history</i> or <i>exception history</i>.</li>
+              <li>If visualizing by exception history, select a rule for which to search for exceptions.</li>
+              <li>Select the vehicle(s) to search on.</li>
+              <li>Specify a date/time range.</li>
+              <li>Click the <i>Show Heat Map</i> button to update the map.</li>
+              <li>After applying any changes to the MyGeotab Groups Filter, refresh the page to apply the filter to the list of vehicles and repeat the above steps.</li>
+            </ol>
+            <p>
+              When selecting veicles, use CTRL+Click to select/deselect individual vehicles 
+              or SHIFT+Click to select a range of vehicles.  To select all vehicles in the
+              list, first select one and then use CTRL+A.
+            </p>
+  
           </div>
         </div>
       </div>
