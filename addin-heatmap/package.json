@@ -38,6 +38,10 @@
         "traverse": "^0.6.6",
         "wiredep": "^4.0.0"
     },
+    "browserslist": [
+        "last 2 version",
+        "> 1%"
+    ],
     "eslintConfig": {
         "env": {
             "es6": true,

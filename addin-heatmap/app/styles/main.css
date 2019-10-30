@@ -39,6 +39,15 @@ label {
 }
 
 #error {
-    margin-top: 20px;
+    margin-top: 10px;
     color: #cc0000;
 }
+
+#message {
+    margin-top: 10px;
+    color: #0a49f5;
+}
+
+ol {
+    padding-left: 0;
+  }
