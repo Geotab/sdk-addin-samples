@@ -22,6 +22,7 @@ geotab.addin.proximity = () => {
     let elProximityCancel;
     let elError;
     let elLoading;
+    let elExport;
 
     let radiusFactor = 250;
     let deviceLookup = {};
@@ -29,7 +30,9 @@ geotab.addin.proximity = () => {
     let isUserMetric = true;
     let selectAll = false;
     let isCancelled = false;
+    let runReport = false;
     let loadingTimeout;
+    let blobData = ['DeviceID, Date, Time, Latitude, Longitude\n'];
 
     // User can enter any date range, limit how much data we will pull in a request
     const maxLogRecordResults = 50000;
@@ -49,6 +52,7 @@ geotab.addin.proximity = () => {
     let toggleLoading = show => {
         clearTimeout(loadingTimeout);
         if (show) {
+            elExport.disabled = true;
             elLoading.style.display = 'block';
             elProximityCancel.textContent = 'Cancel'
             elProximityCancel.style.display = 'block';
@@ -62,6 +66,7 @@ geotab.addin.proximity = () => {
             elDateToInput.disabled = true;
         } else {
             loadingTimeout = setTimeout(() => {
+                elExport.disabled = false;
                 elLoading.style.display = 'none';
                 elProximityCancel.style.display = 'none';
                 vehicleMultiselect.enable();
@@ -118,11 +123,45 @@ geotab.addin.proximity = () => {
         circles.clearLayers();
     };
 
+    let parseTime = (dateTime) => {
+        let split = dateTime.split('T');
+        let date = split[0];
+        let time = split[1].split('.')[0];
+
+        return [date, time];
+    }
+
+    /**
+     * Downloads a provided file with a provided filename
+     * 
+     * @param {Blob} file Contents of the file we send for download
+     * @param {String} filename name of the downloaded file - must include extension
+     */
+    let downloadFile = (file, filename) => {
+        // IE 10 compatibility
+        if (window.navigator.msSaveOrOpenBlob){
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        } else { // Others
+            let downloadLink = document.createElement("a");
+            let url = URL.createObjectURL(file);
+
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            setTimeout(function () {
+                document.body.removeChild(downloadLink);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+    }
+    
     /**
      *  Calculates and renders proximity from inputs
      */
     let displayProximity = () => {
         isCancelled = false;
+        runReport = elExport.checked;
         logger('');
 
         if (elAddressInput.value === '') {
@@ -157,7 +196,13 @@ geotab.addin.proximity = () => {
             }
 
             let render = logs => {
-                logs.forEach(addMarker);
+                logs.forEach( log => {
+                    addMarker(log);
+                    if(runReport){
+                        let [date, time] = parseTime(log.dateTime);
+                        blobData.push(`${deviceLookup[log.device.id].name}, ${date}, ${time}, ${log.latitude}, ${log.longitude}\n`);
+                    }
+                });
                 return logs.length;
             };
 
@@ -215,7 +260,6 @@ geotab.addin.proximity = () => {
             let getDeviceLogs = device => new Promise((resolve, reject) => {
                 var request = buildGetRequest(device.id, utcFrom, utcTo);
                 api.call(request[0], request[1], results => {
-
                     // if results have been limited, let the user know they may need to narrow search
                     if (results.length === maxLogRecordResults) {
                         limitedDevices.push(encodeHTML(device.name));
@@ -279,7 +323,10 @@ geotab.addin.proximity = () => {
                 logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
             }
             toggleLoading(false);
-
+            if(runReport){
+                blobData = new Blob(blobData);
+                downloadFile(blobData, `ProximityReport${new Date()}.csv`);
+            }
         }, error => {
             logger(error);
             toggleLoading(false);
@@ -339,6 +386,7 @@ geotab.addin.proximity = () => {
         elLoading = document.getElementById('proximity-loading');
         elVehicleMultiSelectContainer = document.getElementById('proximity-div-vehicles');
         elProximityCancel = document.getElementById('proximity-cancel');
+        elExport = document.getElementById('proximity-run-report');
 
         // date inputs
         let now = new Date();
