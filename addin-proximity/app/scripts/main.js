@@ -123,11 +123,16 @@ geotab.addin.proximity = () => {
         circles.clearLayers();
     };
 
+    /**
+     *  Splits date/time from the log. Expects ISO formatted string
+     *  eg.      2020-03-12T13:15:32.063Z
+     * 
+     * @param {String} dateTime 
+     */
     let parseTime = (dateTime) => {
         let split = dateTime.split('T');
         let date = split[0];
         let time = split[1].split('.')[0];
-
         return [date, time];
     }
 
@@ -324,8 +329,9 @@ geotab.addin.proximity = () => {
             }
             toggleLoading(false);
             if(runReport){
+                let [date, time] = parseTime(new Date().toISOString());
                 blobData = new Blob(blobData);
-                downloadFile(blobData, `ProximityReport${new Date()}.csv`);
+                downloadFile(blobData, `ProximityReport-${date}-${time.replace(/\:/g, '.')}.csv`);
             }
         }, error => {
             logger(error);
