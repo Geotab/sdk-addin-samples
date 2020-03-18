@@ -147,7 +147,7 @@ geotab.addin.proximity = () => {
         if (window.navigator.msSaveOrOpenBlob){
             window.navigator.msSaveOrOpenBlob(file, filename);
         } else { // Others
-            let downloadLink = document.createElement("a");
+            let downloadLink = document.createElement('a');
             let url = URL.createObjectURL(file);
 
             downloadLink.href = url;
