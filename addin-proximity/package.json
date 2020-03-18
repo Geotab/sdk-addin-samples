@@ -1,6 +1,6 @@
 {
     "name": "proximity",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "private": true,
     "engines": {
         "node": ">=0.12.0"
