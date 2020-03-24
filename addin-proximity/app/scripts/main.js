@@ -30,7 +30,6 @@ geotab.addin.proximity = () => {
     let isUserMetric = true;
     let selectAll = false;
     let isCancelled = false;
-    let runReport = false;
     let loadingTimeout;
     let blobData = ['DeviceID, Date, Time, Latitude, Longitude\n'];
 
@@ -166,8 +165,9 @@ geotab.addin.proximity = () => {
      */
     let displayProximity = () => {
         isCancelled = false;
-        runReport = elExport.checked;
         logger('');
+        // Resetting blobData
+        blobData = ['DeviceID, Date, Time, Latitude, Longitude\n'];
 
         if (elAddressInput.value === '') {
             return;
@@ -203,10 +203,9 @@ geotab.addin.proximity = () => {
             let render = logs => {
                 logs.forEach( log => {
                     addMarker(log);
-                    if(runReport){
-                        let [date, time] = parseTime(log.dateTime);
-                        blobData.push(`${deviceLookup[log.device.id].name}, ${date}, ${time}, ${log.latitude}, ${log.longitude}\n`);
-                    }
+                    // Adding Data for export
+                    let [date, time] = parseTime(log.dateTime);
+                    blobData.push(`${deviceLookup[log.device.id].name}, ${date}, ${time}, ${log.latitude}, ${log.longitude}\n`);
                 });
                 return logs.length;
             };
@@ -328,11 +327,6 @@ geotab.addin.proximity = () => {
                 logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
             }
             toggleLoading(false);
-            if(runReport){
-                let [date, time] = parseTime(new Date().toISOString());
-                blobData = new Blob(blobData);
-                downloadFile(blobData, `ProximityReport-${date}-${time.replace(/\:/g, '.')}.csv`);
-            }
         }, error => {
             logger(error);
             toggleLoading(false);
@@ -424,6 +418,14 @@ geotab.addin.proximity = () => {
             });
             displayProximity();
         });
+
+        elExport.addEventListener('click', () => {
+            let [date, time] = parseTime(new Date().toISOString());
+            // Checking if blobData is already a blob - blobs have size attribute
+            blobData = blobData.size ? blobData : new Blob(blobData);
+            downloadFile(blobData, `ProximityReport-${date}-${time.replace(/\:/g, '.')}.csv`);
+        });
+        
 
         elAddressInput.addEventListener('keydown', event => {
             if (event.keyCode === 13) {
