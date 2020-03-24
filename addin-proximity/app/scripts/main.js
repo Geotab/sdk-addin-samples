@@ -65,7 +65,7 @@ geotab.addin.proximity = () => {
             elDateToInput.disabled = true;
         } else {
             loadingTimeout = setTimeout(() => {
-                elExport.disabled = false;
+                // elExport.disabled = false;
                 elLoading.style.display = 'none';
                 elProximityCancel.style.display = 'none';
                 vehicleMultiselect.enable();
@@ -326,6 +326,7 @@ geotab.addin.proximity = () => {
             } else {
                 logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
             }
+            elExport.disabled = false;
             toggleLoading(false);
         }, error => {
             logger(error);
@@ -425,7 +426,6 @@ geotab.addin.proximity = () => {
             blobData = blobData.size ? blobData : new Blob(blobData);
             downloadFile(blobData, `ProximityReport-${date}-${time.replace(/\:/g, '.')}.csv`);
         });
-        
 
         elAddressInput.addEventListener('keydown', event => {
             if (event.keyCode === 13) {
