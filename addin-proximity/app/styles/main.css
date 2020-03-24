@@ -67,7 +67,12 @@ label {
     background: #2c7ab1;
 }
 
-#proximity-cancel {
+#proximity-run-report {
+    width: 100%;
+    text-align: left;
+}
+
+#proximity-cancel, #proximity-run-report {
     margin: 2em 0;
 }
 
