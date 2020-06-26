@@ -24,6 +24,7 @@ geotab.addin.proximity = () => {
     let elLoading;
     let elExport;
 
+
     let radiusFactor = 250;
     let deviceLookup = {};
     let selected = [];
@@ -413,6 +414,40 @@ geotab.addin.proximity = () => {
         vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true });
 
         // events
+
+        //Creating function with wildcard search for vehicles 
+        elVehicleMultiSelectContainer.addEventListener('keyup', e => {
+            let searchoption_characters;
+            searchoption_characters = "%" + e.target.value + "%"
+
+            api.call('Get', {
+                typeName: 'Device',
+                search: {
+                    fromDate: new Date().toISOString(),
+                    groups: state.getGroupFilter(),
+                    name: searchoption_characters,
+                }
+            }, newDevices => {
+                if (!newDevices || newDevices.length < 1) {
+                    return;
+                }
+
+                let deviceChoices = newDevices.map(device => {
+                    deviceLookup[device.id] = device;
+                    return { 'value': device.id, 'label': encodeHTML(device.name) };
+                });
+
+                vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
+
+            }, error => {
+                logger(error);
+                toggleLoading(false);
+            });
+
+            displayProximity();
+        });
+
+
         vehicleMultiselect.passedElement.element.addEventListener('change', () => {
             selected = vehicleMultiselect.getValue().map(value => {
                 return value.value;
@@ -554,33 +589,6 @@ geotab.addin.proximity = () => {
             // focus is called anytime filter changes.
             isCancelled = true;
             deviceLookup = {};
-
-            toggleLoading(true);
-
-            api.call('Get', {
-                typeName: 'Device',
-                resultsLimit: 1000,
-                search: {
-                    fromDate: new Date().toISOString(),
-                    groups: state.getGroupFilter()
-                }
-            }, devices => {
-                if (!devices || devices.length < 1) {
-                    return;
-                }
-
-                let deviceChoices = devices.map(device => {
-                    deviceLookup[device.id] = device;
-                    return { 'value': device.id, 'label': encodeHTML(device.name) };
-                });
-
-                vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
-
-                toggleLoading(false);
-            }, error => {
-                logger(error);
-                toggleLoading(false);
-            });
 
             setTimeout(() => {
                 map.invalidateSize();
