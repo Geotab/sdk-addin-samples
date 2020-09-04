@@ -24,7 +24,6 @@ geotab.addin.proximity = () => {
     let elLoading;
     let elExport;
 
-
     let radiusFactor = 250;
     let deviceLookup = {};
     let selected = [];
@@ -143,27 +142,26 @@ geotab.addin.proximity = () => {
      * @param {String} filename name of the downloaded file - must include extension
      */
     let downloadFile = (file, filename) => {
-        // IE 10 compatibility
-        if (window.navigator.msSaveOrOpenBlob) {
-            window.navigator.msSaveOrOpenBlob(file, filename);
-        } else { // Others
-            let downloadLink = document.createElement('a');
-            let url = URL.createObjectURL(file);
+            // IE 10 compatibility
+            if (window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(file, filename);
+            } else { // Others
+                let downloadLink = document.createElement('a');
+                let url = URL.createObjectURL(file);
 
-            downloadLink.href = url;
-            downloadLink.download = filename;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            setTimeout(function() {
-                document.body.removeChild(downloadLink);
-                window.URL.revokeObjectURL(url);
-            }, 0);
+                downloadLink.href = url;
+                downloadLink.download = filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                setTimeout(function() {
+                    document.body.removeChild(downloadLink);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+            }
         }
-    }
-
-    /**
-     *  Calculates and renders proximity from inputs
-     */
+        /**
+         *  Calculates and renders proximity from inputs
+         */
     let displayProximity = () => {
         isCancelled = false;
         logger('');
