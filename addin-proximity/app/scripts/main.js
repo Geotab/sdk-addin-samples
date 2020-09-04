@@ -144,7 +144,7 @@ geotab.addin.proximity = () => {
      */
     let downloadFile = (file, filename) => {
         // IE 10 compatibility
-        if (window.navigator.msSaveOrOpenBlob){
+        if (window.navigator.msSaveOrOpenBlob) {
             window.navigator.msSaveOrOpenBlob(file, filename);
         } else { // Others
             let downloadLink = document.createElement('a');
@@ -154,13 +154,13 @@ geotab.addin.proximity = () => {
             downloadLink.download = filename;
             document.body.appendChild(downloadLink);
             downloadLink.click();
-            setTimeout(function () {
+            setTimeout(function() {
                 document.body.removeChild(downloadLink);
                 window.URL.revokeObjectURL(url);
             }, 0);
         }
     }
-    
+
     /**
      *  Calculates and renders proximity from inputs
      */
@@ -189,7 +189,7 @@ geotab.addin.proximity = () => {
 
         api.call('GetCoordinates', {
             addresses: [elAddressInput.value]
-        }, async (result) => {
+        }, async(result) => {
             if (!result || result.length < 1 || !result[0]) {
                 logger('Could not find the address');
                 toggleLoading(false);
@@ -202,7 +202,7 @@ geotab.addin.proximity = () => {
             }
 
             let render = logs => {
-                logs.forEach( log => {
+                logs.forEach(log => {
                     addMarker(log);
                     // Adding Data for export
                     let [date, time] = parseTime(log.dateTime);
@@ -280,26 +280,26 @@ geotab.addin.proximity = () => {
 
                     // do CPU intense calculation off the UI thread
                     hamsters.promise(params, () => {
-                        const arr = params.array;
-                        const centerPoint = params.center;
-                        const maxRadius = 5 * params.radiusFactor;
-                        const toRadians = d => {
-                            return d * (Math.PI / 180.0);
-                        };
-                        arr.forEach(logRecord => {
-                            if (!logRecord.id) {
-                                return;
-                            }
-                            let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                            let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                            let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                            logRecord.distance = 6371000.0 * c;
-                            if (logRecord.distance < maxRadius) {
-                                rtn.data.push(logRecord);
-                            }
-                        });
-                    })
+                            const arr = params.array;
+                            const centerPoint = params.center;
+                            const maxRadius = 5 * params.radiusFactor;
+                            const toRadians = d => {
+                                return d * (Math.PI / 180.0);
+                            };
+                            arr.forEach(logRecord => {
+                                if (!logRecord.id) {
+                                    return;
+                                }
+                                let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                                let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                                let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                                let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                                logRecord.distance = 6371000.0 * c;
+                                if (logRecord.distance < maxRadius) {
+                                    rtn.data.push(logRecord);
+                                }
+                            });
+                        })
                         .then(rtn => rtn.data[0])
                         .then(render)
                         .then(resolve);
@@ -411,7 +411,7 @@ geotab.addin.proximity = () => {
         sizeChanged(300);
 
         // initialize multiselect/autocomplte
-        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true });
+        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, placeholder: true, placeholderValue: "Enter a vehicle name!   " });
 
         // events
 
@@ -430,7 +430,7 @@ geotab.addin.proximity = () => {
             }, newDevices => {
                 if (!newDevices || newDevices.length < 1) {
                     return;
-                }
+                };
 
                 let deviceChoices = newDevices.map(device => {
                     deviceLookup[device.id] = device;
