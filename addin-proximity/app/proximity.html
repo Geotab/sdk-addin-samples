@@ -7,36 +7,10 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Proximity</title>
-
-    <!-- uncache(rename: false, append:time) -->
-    <!-- build:css styles/vendor.css -->
-    <!-- bower:css -->
-    <link rel="stylesheet" href="/bower_components/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="/bower_components/choices.js/public/assets/styles/choices.css" />
-    <link rel="stylesheet" href="/bower_components/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="/bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/spinner.css">
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
-
-    <!-- build:js scripts/vendor.js -->
-    <!-- bower:js -->
-    <script src="/node_modules/@babel/polyfill/dist/polyfill.js"></script>
-    <script src="/bower_components/leaflet/dist/leaflet-src.js"></script>
-    <script src="/bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="/bower_components/Hamsters.js/build/hamsters.web.min.js"></script>
-    <script src="/bower_components/choices.js/public/assets/scripts/choices.js"></script>
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:js scripts/main.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/styles/vendor.css?1585060162">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/styles/main.css?1585060162">
+    <script src="https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/scripts/vendor.js?1585060162"></script>
     <script src="scripts/main.js"></script>
-    <!-- endbuild -->
-    <!-- enduncache -->
 
 </head>
 
@@ -55,12 +29,11 @@
 
                     <h3>Instructions</h3>
                     <p>
-                        Find out when team members visited an address by typing it in below. Filter your results by selecting specific vehicles or
-                        narrowing the time frame shown.
+                        Find out when team members visited an address by typing it in below. Filter your results by selecting specific vehicles or narrowing the time frame shown.
                     </p>
 
                     <label for="proximity-address">Address</label>
-                    <input id="proximity-address" type="text" placeholder="Example: 512 Main Street, Toronto, ON"  class="checkmateFormEditField"/>
+                    <input id="proximity-address" type="text" placeholder="Example: 512 Main Street, Toronto, ON" class="checkmateFormEditField" />
 
                     <label for="proximity-size">Size <span id="proximity-size-label">(1.5 km)</span></label>
                     <input id="proximity-size" type="range" min="5" max="1000" value="300" step="1" class="checkmateFormEditField" />
