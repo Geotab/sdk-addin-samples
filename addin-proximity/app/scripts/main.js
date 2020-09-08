@@ -588,7 +588,6 @@ geotab.addin.proximity = () => {
             isCancelled = true;
             deviceLookup = {};
 
-            toggleLoading(true);
 
             setTimeout(() => {
                 map.invalidateSize();
