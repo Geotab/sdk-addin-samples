@@ -142,26 +142,27 @@ geotab.addin.proximity = () => {
      * @param {String} filename name of the downloaded file - must include extension
      */
     let downloadFile = (file, filename) => {
-            // IE 10 compatibility
-            if (window.navigator.msSaveOrOpenBlob) {
-                window.navigator.msSaveOrOpenBlob(file, filename);
-            } else { // Others
-                let downloadLink = document.createElement('a');
-                let url = URL.createObjectURL(file);
+        // IE 10 compatibility
+        if (window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        } else { // Others
+            let downloadLink = document.createElement('a');
+            let url = URL.createObjectURL(file);
 
-                downloadLink.href = url;
-                downloadLink.download = filename;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                setTimeout(function() {
-                    document.body.removeChild(downloadLink);
-                    window.URL.revokeObjectURL(url);
-                }, 0);
-            }
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            setTimeout(function() {
+                document.body.removeChild(downloadLink);
+                window.URL.revokeObjectURL(url);
+            }, 0);
         }
-        /**
-         *  Calculates and renders proximity from inputs
-         */
+    }
+
+    /**
+     *  Calculates and renders proximity from inputs
+     */
     let displayProximity = () => {
         isCancelled = false;
         logger('');
@@ -412,7 +413,6 @@ geotab.addin.proximity = () => {
         vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, placeholder: true, placeholderValue: "Enter a vehicle name!   " });
 
         // events
-
         //Creating function with wildcard search for vehicles 
         elVehicleMultiSelectContainer.addEventListener('keyup', e => {
             let searchoption_characters;
@@ -587,6 +587,8 @@ geotab.addin.proximity = () => {
             // focus is called anytime filter changes.
             isCancelled = true;
             deviceLookup = {};
+
+            toggleLoading(true);
 
             setTimeout(() => {
                 map.invalidateSize();
