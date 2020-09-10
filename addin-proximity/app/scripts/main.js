@@ -161,15 +161,15 @@ geotab.addin.proximity = () => {
     }
 
     /**
-     *  Check if input are coordinates
+     *  Read input coordinates
+     *  @param {String} addressInput 
      */
-    let areCoordinates = () => {
-        var addressInput = elAddressInput.value;
+    let parseCoordinates = addressInput => {
         var addressInputArr = addressInput.split(',');
-        if(addressInputArr.length === 2 && parseFloat(addressInputArr[0]) && parseFloat(addressInputArr[1])){
+        if (addressInputArr.length === 2 && parseFloat(addressInputArr[0]) && parseFloat(addressInputArr[1])) {
             return [{x:parseFloat(addressInputArr[1]),y:parseFloat(addressInputArr[0])}];
-        }else{
-            return false;
+        } else {
+            return [];
         }
     }
     
@@ -341,10 +341,10 @@ geotab.addin.proximity = () => {
             toggleLoading(false);
         }
 
-        let inputCoordinates = areCoordinates();
-        if(inputCoordinates){
+        let inputCoordinates = parseCoordinates(elAddressInput.value);
+        if (inputCoordinates.length) {
             calculateAndRender(inputCoordinates);
-        }else{
+        } else {
             api.call('GetCoordinates', {
                 addresses: [elAddressInput.value]
             }, async (result) => {
