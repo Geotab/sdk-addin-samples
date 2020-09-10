@@ -159,6 +159,19 @@ geotab.addin.proximity = () => {
             }, 0);
         }
     }
+
+    /**
+     *  Read input coordinates
+     *  @param {String} addressInput 
+     */
+    let parseCoordinates = addressInput => {
+        var addressInputArr = addressInput.split(',');
+        if (addressInputArr.length === 2 && parseFloat(addressInputArr[0]) && parseFloat(addressInputArr[1])) {
+            return [{x:parseFloat(addressInputArr[1]),y:parseFloat(addressInputArr[0])}];
+        } else {
+            return [];
+        }
+    }
     
     /**
      *  Calculates and renders proximity from inputs
@@ -186,9 +199,7 @@ geotab.addin.proximity = () => {
         clearMap();
         toggleLoading(true);
 
-        api.call('GetCoordinates', {
-            addresses: [elAddressInput.value]
-        }, async (result) => {
+        let calculateAndRender = async (result) => {
             if (!result || result.length < 1 || !result[0]) {
                 logger('Could not find the address');
                 toggleLoading(false);
@@ -328,10 +339,21 @@ geotab.addin.proximity = () => {
             }
             elExport.disabled = false;
             toggleLoading(false);
-        }, error => {
-            logger(error);
-            toggleLoading(false);
-        });
+        }
+
+        let inputCoordinates = parseCoordinates(elAddressInput.value);
+        if (inputCoordinates.length) {
+            calculateAndRender(inputCoordinates);
+        } else {
+            api.call('GetCoordinates', {
+                addresses: [elAddressInput.value]
+            }, async (result) => {
+                calculateAndRender(result);
+            }, error => {
+                logger(error);
+                toggleLoading(false);
+            });
+        }
     };
 
     /**
