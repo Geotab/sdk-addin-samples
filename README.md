@@ -84,7 +84,7 @@ Alternatively, you can install the add-ins on your production database individua
         {
 			"page": "map",
 			"mapScript": {
-				"url": "index.html"
+				"url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/hos-data-on-live-map/index.html"
 			}
 		}
     ],
