@@ -80,7 +80,13 @@ Alternatively, you can install the add-ins on your production database individua
                 "ja": "エンジンデータプロフィール"
             },
             "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-engine-data-button/dist/images/icon.svg"
-        }
+        },
+        {
+			"page": "map",
+			"mapScript": {
+				"url": "index.html"
+			}
+		}
     ],
     "isSigned": false
 }
@@ -132,3 +138,11 @@ This example demonstrates how to send a message to a device, turning the IOX on 
 This example demonstrates an add-in button on the vehicle page which pulls the currently selected vehicle Id from state. The Id is used to redirect to the engine data profile page to examine the vehicle's recorded engine speed, voltage and fuel used.
 
 [Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-engine-data-button)
+
+## MyGeotab Map Examples
+
+### Compliance Data Summary
+
+This example demonstrates an live map add-in which takes a vehicle id that an user clicks on and gives you a summary of data related to HOS and DVIR.
+
+[Source](https://github.com/Geotab/sdk-addin-samples/tree/master/hos-data-on-live-map)

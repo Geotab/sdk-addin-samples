@@ -1,0 +1,14 @@
+{
+	"name": "Compliance Data Summary",
+	"supportEmail": "support@geotab.com",
+	"version": "1.0",
+	"items": [
+		{
+			"page": "map",
+			"mapScript": {
+				"url": "index.html"
+			}
+		}
+	],
+	"isSigned": false
+}
