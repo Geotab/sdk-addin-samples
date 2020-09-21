@@ -80,13 +80,7 @@ Alternatively, you can install the add-ins on your production database individua
                 "ja": "エンジンデータプロフィール"
             },
             "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-engine-data-button/dist/images/icon.svg"
-        },
-        {
-			"page": "map",
-			"mapScript": {
-				"url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/hos-data-on-live-map/index.html"
-			}
-		}
+        }
     ],
     "isSigned": false
 }
