@@ -642,15 +642,15 @@
                 controllerElement = this.args.container.querySelector("#optionsControllerElement"),
                 allZoneTypesData = angular.element(controllerElement).scope().zoneTypeOptions;
 
-            selectedTypes.forEach(selectedType => {
+            for (var i = 0;i < selectedTypes.length; i++) {
                 allZoneTypesData.every(data => {
-                    if (data.id === selectedType.value) {
+                    if (data.id === selectedTypes[i].value) {
                         types.push(data.isSystem === true ? data.id : data);
                         return false;
                     }
                     return true;
                 });
-            });
+            }
 
             this.options.zoneTypes = types;
             this.options.zoneColor = this.colorPickerObj.value();
