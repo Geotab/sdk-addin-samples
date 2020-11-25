@@ -66,8 +66,13 @@
                     <input id="proximity-size" type="range" min="5" max="1000" value="300" step="1" class="checkmateFormEditField" />
 
                     <label for="proximity-div-vehicles">Vehicles</label>
-                    <label for="proximity-select-all">Select All <input type="checkbox" name="proximity-select-all" id="proximity-select-all" /></label>
-                    <div id="proximity-div-vehicles" style="margin-bottom:20px;">
+
+                    <div id = "proximity-div-select">
+                        <button id="proximity-select-all" name="proximity-select-all">Select All</button>
+                        <button id="proximity-deselect-all" name="proximity-deselect-all">Deselect All</button>
+                    </div>
+
+                    <div id="proximity-div-vehicles">
                         <select id="proximity-vehicles" multiple data-placeholder="Select vehicles" class="checkmateFormEditField"></select>
                     </div>
 
@@ -76,7 +81,10 @@
 
                     <label for="proximity-to">To</label>
                     <input id="proximity-to" type="datetime-local" class="checkmateFormEditField" />
-                    <button class="geotabButton" name="proximity-run-report" id="proximity-run-report" disabled>Export Results</button>
+
+                    <button id="proximity-run" class="geotabButton" name="proximity-run">Run</button>
+                    
+                    <button id="proximity-run-report" class="geotabButton" name="proximity-run-report" disabled>Export Results</button>                   
 
                     <div id="proximity-cancel" class="geotabButton">Cancel</div>
 

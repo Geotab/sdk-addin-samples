@@ -20,6 +20,8 @@ input[type='radio'] label {
     border: 1px solid #c5dbec;
     background-color: #fefefe;
     border-radius: 0.4em;
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .choices__list--multiple .choices__item {
@@ -67,13 +69,13 @@ label {
     background: #2c7ab1;
 }
 
-#proximity-run-report {
+#proximity-run-report, #proximity-run {
     width: 100%;
     text-align: left;
 }
 
-#proximity-cancel, #proximity-run-report {
-    margin: 2em 0;
+#proximity-cancel, #proximity-run-report, #proximity-run {
+    margin-top: 2em;
 }
 
 #error {
@@ -89,8 +91,8 @@ input[type="range"] {
     margin-top: 5px;
 }
 
-#proximity-div-select-all {
-    margin-top: 10px;
+#proximity-div-select{
+    margin-bottom: 15px;
 }
 
 #proximity-error {
