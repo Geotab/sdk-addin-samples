@@ -20,11 +20,11 @@ geotab.addin.proximity = () => {
     let elVehicleMultiSelectContainer;
     let elDateFromInput;
     let elDateToInput;
-    let elProximityCancel;
     let elError;
     let elLoading;
     let elExport;
     let elRun;
+    let elUserInput;
 
     let radiusFactor = 250;
     let deviceLookup = {};
@@ -53,11 +53,8 @@ geotab.addin.proximity = () => {
         clearTimeout(loadingTimeout);
         if (show) {
             elExport.disabled = true;
-            elRun.disabled = true;
             elLoading.style.display = 'block';
-            elProximityCancel.textContent = 'Cancel'
-            elProximityCancel.style.display = 'block';
-            elProximityCancel.disabled = false;
+            elRun.textContent = 'Cancel'
             vehicleMultiselect.disable();
             elAddressInput.disabled = true;
             elProximitySize.disabled = true;
@@ -66,11 +63,11 @@ geotab.addin.proximity = () => {
             elVehicleSelect.disabled = true;
             elDateFromInput.disabled = true;
             elDateToInput.disabled = true;
+            elUserInput.hidden = true;
         } else {
             loadingTimeout = setTimeout(() => {
-                elRun.disabled = false;
                 elLoading.style.display = 'none';
-                elProximityCancel.style.display = 'none';
+                elRun.textContent = 'Run'
                 vehicleMultiselect.enable();
                 elAddressInput.disabled = false;
                 elProximitySize.disabled = false;
@@ -79,6 +76,7 @@ geotab.addin.proximity = () => {
                 elVehicleSelect.disabled = false;
                 elDateFromInput.disabled = false;
                 elDateToInput.disabled = false;
+                elUserInput.hidden = false;
             }, 600);
         }
     };
@@ -194,13 +192,8 @@ geotab.addin.proximity = () => {
 
         let calculateAndRender = async (result) => {
             if (!result || result.length < 1 || !result[0]) {
-                logger('Could not find the address');
                 toggleLoading(false);
-                return;
-            }
-
-            if (isCancelled) {
-                toggleLoading(false);
+                logger('Could not find the address');               
                 return;
             }
 
@@ -262,70 +255,104 @@ geotab.addin.proximity = () => {
 
             let limitedDevices = [];
 
-            let getDeviceLogs = device => new Promise((resolve, reject) => {
-                var request = buildGetRequest(device.id, utcFrom, utcTo);
-                api.call(request[0], request[1], results => {
-                    // if results have been limited, let the user know they may need to narrow search
-                    if (results.length === maxLogRecordResults) {
-                        limitedDevices.push(encodeHTML(device.name));
-                    }
+            let getLogRecord = results => new Promise((resolve) => {         
+                // if results have been limited, let the user know they may need to narrow search
+                if (results.length === maxLogRecordResults) {
+                    limitedDevices.push(encodeHTML(device.name));
+                }
 
-                    let params = {
-                        array: results,
-                        center,
-                        radiusFactor,
-                        aggregate: true,
-                        maxThreads: navigator.hardwareConcurrency || 1
+                let params = {
+                    array: results,
+                    center,
+                    radiusFactor,
+                    aggregate: true,
+                    maxThreads: navigator.hardwareConcurrency || 1
+                };
+
+                // do CPU intense calculation off the UI thread
+                hamsters.promise(params, () => {
+                    const arr = params.array;
+                    const centerPoint = params.center;
+                    const maxRadius = 5 * params.radiusFactor;
+                    const toRadians = d => {
+                        return d * (Math.PI / 180.0);
                     };
-
-                    // do CPU intense calculation off the UI thread
-                    hamsters.promise(params, () => {
-                        const arr = params.array;
-                        const centerPoint = params.center;
-                        const maxRadius = 5 * params.radiusFactor;
-                        const toRadians = d => {
-                            return d * (Math.PI / 180.0);
-                        };
-                        arr.forEach(logRecord => {
-                            if (!logRecord.id) {
-                                return;
-                            }
-                            let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                            let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                            let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                            logRecord.distance = 6371000.0 * c;
-                            if (logRecord.distance < maxRadius) {
-                                rtn.data.push(logRecord);
-                            }
-                        });
+                    arr.forEach(logRecord => {
+                        if (!logRecord.id) {
+                            return;
+                        }
+                        let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                        let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                        let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        logRecord.distance = 6371000.0 * c;
+                        if (logRecord.distance < maxRadius) {
+                            rtn.data.push(logRecord);
+                        }
+                    });                  
+                })
+                    .then(rtn => rtn.data[0])
+                    .then(render)
+                    .then(resolve);
+            });
+            
+            let LogRecordMultiCall = calls => new Promise((resolve, reject) => {
+                if(isCancelled){
+                    resolve();
+                }
+                else{
+                    api.multiCall(calls, async function(results){
+                        var foundPoints = 0;
+                        for(var k=0;k<results.length;k++){             
+                            foundPoints += await getLogRecord(results[k]);
+                        }
+                        resolve(foundPoints);
+                    },  error => {
+                        toggleLoading(false);
+                        logger(error);               
+                        reject(error);
                     })
-                        .then(rtn => rtn.data[0])
-                        .then(render)
-                        .then(resolve);
+                }
+            })
 
-                }, error => {
-                    logger(error);
-                    toggleLoading(false);
-                    reject(error);
-                });
+            let getDeviceLogs = device => new Promise(async (resolve) => {
+                var request = [];  
+                var temp = [];
+                var totalPoints = 0;
+
+                for(var j=0;j<device.length;j++){
+                    temp.push(buildGetRequest(device[j].id, utcFrom, utcTo));
+                    if(temp.length == 400){
+                        request.push(temp);
+                        temp = [];
+                    }
+                }
+                request.push(temp);
+                for(var i=0;i<request.length;i++){
+                    totalPoints += await LogRecordMultiCall(request[i]);
+                }             
+                resolve(totalPoints); 
             });
 
-            let totalFound = 0;
-            for (let i = 0; devicesToQuery.length > i; i++) {
-                let found = await getDeviceLogs(devicesToQuery[i]);
-                totalFound += found || 0;
-                if (isCancelled) {
-                    toggleLoading(false);
-                    return;
-                }
+            var totalFound = 0;
+            let found = await getDeviceLogs(devicesToQuery);
+
+            totalFound = found;
+
+            if(isNaN(found)){
+                clearMap();
+                totalFound = -1;
             }
 
             let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
             if (totalFound > 0) {
                 logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.</p>${limitedMessage}`);
-            } else {
+            } 
+            else if (totalFound == 0){
                 logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
+            } 
+            else {
+                logger(`<p>The operation was cancelled.</p>${limitedMessage}`);
             }
             elExport.disabled = false;
             toggleLoading(false);
@@ -399,9 +426,9 @@ geotab.addin.proximity = () => {
         elError = document.getElementById('proximity-error');
         elLoading = document.getElementById('proximity-loading');
         elVehicleMultiSelectContainer = document.getElementById('proximity-div-vehicles');
-        elProximityCancel = document.getElementById('proximity-cancel');
         elExport = document.getElementById('proximity-run-report');
-        elRun = document.getElementById('proximity-run');
+        elRun = document.getElementById('proximity-run-cancel');
+        elUserInput = document.getElementById('proximity-userInput');
 
         // date inputs
         let now = new Date();
@@ -424,13 +451,12 @@ geotab.addin.proximity = () => {
         sizeChanged(300);
 
         // initialize multiselect/autocomplte
-        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 50});
+        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 50, noChoicesText: 'Start typing to search for a vehicle'});
 
         // events
         elVehicleMultiSelectContainer.addEventListener('keyup', debounce(e => {
             let manualSearch = '%%';
             let deviceList = [];
-            deviceLookup = {};
             manualSearch = '%' + e.target.value + '%';
 
             api.call('Get', {
@@ -461,9 +487,6 @@ geotab.addin.proximity = () => {
 
                 vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
 
-                if (manualSearch === '%%') {
-                    deviceLookup = {};
-                }
                 toggleLoading(false);
 
             }, error => {
@@ -483,25 +506,71 @@ geotab.addin.proximity = () => {
             }
         }
 
-        elProximitySelectAll.addEventListener('click', () => {
-            
-            var temp = [];
+        elProximitySelectAll.addEventListener('click', () => {           
+            let alldeviceList = [];
+            logger('');
 
-            for (let vehicle in deviceLookup) {   
+            api.call('GetCountOf', {
+                typeName: 'Device',
+            }, numberofDevices => {
 
-                if (selected.includes(vehicle)) {
-                    continue;
+                if(numberofDevices < 1000 && Object.keys(deviceLookup).length===0){
+                    toggleLoading(true);
+                    api.call('Get', {
+                        typeName: 'Device',
+                        search: {
+                            fromDate: new Date().toISOString(),
+                            groups: state.getGroupFilter(),
+                        }
+                    }, allDevices => {
+                        for(var i=0;i<allDevices.length;i++){
+                            alldeviceList.push(allDevices[i])
+                            selected.push(allDevices[i].id); 
+                        }  
+        
+                        let allChoices = alldeviceList.map(device => {
+                            deviceLookup[device.id] = device;
+                            return { 'value': device.id, 'label': encodeHTML(device.name) };
+                        });
+        
+                        vehicleMultiselect.setValue(allChoices);
+                        
+                        toggleLoading(false);
+     
+                    }, error => {
+                        logger(error);
+                        toggleLoading(false);
+                    });
                 }
-                else {
-                    selected.push(vehicle);       
-                    temp.push({ 'value': vehicle, 'label': deviceLookup[vehicle].name })
-                }       
-            }
 
-            vehicleMultiselect.setValue(temp); 
-            vehicleMultiselect.clearInput(); 
-            vehicleMultiselect.clearChoices();        
-            
+                else if(numberofDevices >= 1000 && Object.keys(deviceLookup).length===0){
+                    logger('User has scope to more than 1000 devices. Please use the search bar to filter the search.');
+                }
+
+                else{                    
+                    toggleLoading(true);
+                    var temp = [];
+
+                    for (let vehicle in deviceLookup) {   
+
+                        if (selected.includes(vehicle)) {
+                            continue;
+                        }
+                        else {
+                            selected.push(vehicle);       
+                            temp.push({ 'value': vehicle, 'label': deviceLookup[vehicle].name })
+                        }       
+                    }
+
+                    vehicleMultiselect.setValue(temp); 
+                    vehicleMultiselect.clearInput(); 
+                    vehicleMultiselect.clearChoices(); 
+                    toggleLoading(false);
+                }
+
+            }, error => {
+                console.log(error);
+            });          
         });
 
         elProximityDeselectAll.addEventListener('click', () => {
@@ -517,9 +586,15 @@ geotab.addin.proximity = () => {
         });
 
         elRun.addEventListener('click', () => {
-            if (checkInputs()) {
-                displayProximity();
+            if(elRun.innerText == 'Run'){            
+                if (checkInputs()) {
+                    displayProximity();
+                }
             }
+            else{
+                elRun.textContent = 'Canceling...'
+                isCancelled = true;
+            }           
         });
 
         function checkInputs() {
@@ -567,13 +642,7 @@ geotab.addin.proximity = () => {
         elDateToInput.addEventListener('change', event => {
             event.preventDefault();
         });
-
-        elProximityCancel.addEventListener('click', event => {
-            event.preventDefault();
-            elProximityCancel.textContent = 'Canceling...'
-            elProximityCancel.disabled = true;
-            isCancelled = true;
-        });
+       
     };
 
     /**

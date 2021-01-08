@@ -20,7 +20,7 @@ input[type='radio'] label {
     border: 1px solid #c5dbec;
     background-color: #fefefe;
     border-radius: 0.4em;
-    max-height: 300px;
+    height: 150px;
     overflow-y: scroll;
 }
 
@@ -59,23 +59,27 @@ label {
     padding: 20px;
     background-color: #e5f2fa;
     border-right: 1px solid #ddd;
+    overflow-y: scroll;
 }
 
 #proximity-loading {
     transform: scale(0.5);
+    display: none;
+    padding-top: 38em;
+
 }
 
 #proximity-loading>div {
     background: #2c7ab1;
 }
 
-#proximity-run-report, #proximity-run {
+#proximity-run-report, #proximity-run-cancel {
     width: 100%;
     text-align: left;
 }
 
-#proximity-cancel, #proximity-run-report, #proximity-run {
-    margin-top: 2em;
+#proximity-run-report, #proximity-run-cancel {
+    margin-top: 1em;
 }
 
 #error {
