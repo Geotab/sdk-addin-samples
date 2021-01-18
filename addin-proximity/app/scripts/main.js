@@ -15,20 +15,21 @@ geotab.addin.proximity = () => {
     let elAddressInput;
     let elProximitySize;
     let elProximitySelectAll;
+    let elProximityDeselectAll;
     let elVehicleSelect;
     let elVehicleMultiSelectContainer;
     let elDateFromInput;
     let elDateToInput;
-    let elProximityCancel;
     let elError;
     let elLoading;
     let elExport;
+    let elRun;
+    let elUserInput;
 
     let radiusFactor = 250;
     let deviceLookup = {};
     let selected = [];
     let isUserMetric = true;
-    let selectAll = false;
     let isCancelled = false;
     let loadingTimeout;
     let blobData = ['DeviceID, Date, Time, Latitude, Longitude\n'];
@@ -46,35 +47,36 @@ geotab.addin.proximity = () => {
 
     /**
      *  Toggles loading "spinner"
-     *  @param {booleab} show [true] to show loading, otherwiase [false]
+     *  @param {boolean} show [true] to show loading, otherwise [false]
      */
     let toggleLoading = show => {
         clearTimeout(loadingTimeout);
         if (show) {
             elExport.disabled = true;
             elLoading.style.display = 'block';
-            elProximityCancel.textContent = 'Cancel'
-            elProximityCancel.style.display = 'block';
-            elProximityCancel.disabled = false;
+            elRun.textContent = 'Cancel'
             vehicleMultiselect.disable();
             elAddressInput.disabled = true;
             elProximitySize.disabled = true;
             elProximitySelectAll.disabled = true;
+            elProximityDeselectAll.disabled = true;
             elVehicleSelect.disabled = true;
             elDateFromInput.disabled = true;
             elDateToInput.disabled = true;
+            elUserInput.hidden = true;
         } else {
             loadingTimeout = setTimeout(() => {
-                // elExport.disabled = false;
                 elLoading.style.display = 'none';
-                elProximityCancel.style.display = 'none';
+                elRun.textContent = 'Run'
                 vehicleMultiselect.enable();
                 elAddressInput.disabled = false;
                 elProximitySize.disabled = false;
                 elProximitySelectAll.disabled = false;
+                elProximityDeselectAll.disabled = false;
                 elVehicleSelect.disabled = false;
                 elDateFromInput.disabled = false;
                 elDateToInput.disabled = false;
+                elUserInput.hidden = false;
             }, 600);
         }
     };
@@ -143,7 +145,7 @@ geotab.addin.proximity = () => {
      */
     let downloadFile = (file, filename) => {
         // IE 10 compatibility
-        if (window.navigator.msSaveOrOpenBlob){
+        if (window.navigator.msSaveOrOpenBlob) {
             window.navigator.msSaveOrOpenBlob(file, filename);
         } else { // Others
             let downloadLink = document.createElement('a');
@@ -167,52 +169,36 @@ geotab.addin.proximity = () => {
     let parseCoordinates = addressInput => {
         var addressInputArr = addressInput.split(',');
         if (addressInputArr.length === 2 && parseFloat(addressInputArr[0]) && parseFloat(addressInputArr[1])) {
-            return [{x:parseFloat(addressInputArr[1]),y:parseFloat(addressInputArr[0])}];
+            return [{ x: parseFloat(addressInputArr[1]), y: parseFloat(addressInputArr[0]) }];
         } else {
             return [];
         }
     }
-    
+
     /**
      *  Calculates and renders proximity from inputs
      */
     let displayProximity = () => {
         isCancelled = false;
-        logger('');
-        // Resetting blobData
         blobData = ['DeviceID, Date, Time, Latitude, Longitude\n'];
-
-        if (elAddressInput.value === '') {
-            return;
-        }
-
-        if (!selectAll && selected.length === 0) {
-            logger('Select at least one vehicle to display');
-            return;
-        }
+        clearMap();
 
         let dateFrom = new Date(elDateFromInput.value + ':00Z');
         let utcFrom = new Date(dateFrom.setMinutes(dateFrom.getMinutes() + new Date().getTimezoneOffset())).toISOString();
         let dateTo = new Date(elDateToInput.value + ':00Z');
         let utcTo = new Date(dateTo.setMinutes(dateTo.getMinutes() + new Date().getTimezoneOffset())).toISOString();
 
-        clearMap();
         toggleLoading(true);
 
         let calculateAndRender = async (result) => {
             if (!result || result.length < 1 || !result[0]) {
-                logger('Could not find the address');
                 toggleLoading(false);
-                return;
-            }
-
-            if (isCancelled) {
-                toggleLoading(false);
+                logger('Could not find the address');               
                 return;
             }
 
             let render = logs => {
-                logs.forEach( log => {
+                logs.forEach(log => {
                     addMarker(log);
                     // Adding Data for export
                     let [date, time] = parseTime(log.dateTime);
@@ -263,79 +249,110 @@ geotab.addin.proximity = () => {
             circles.addLayer(boundary4);
             circles.addLayer(boundary5);
 
-            // compile selected devices devices
-            let devicesToQuery = selectAll ? Object.keys(deviceLookup).map(id => {
-                return deviceLookup[id];
-            }) : selected.map(id => {
+            let devicesToQuery = selected.map(id => {
                 return deviceLookup[id];
             });
 
             let limitedDevices = [];
 
-            let getDeviceLogs = device => new Promise((resolve, reject) => {
-                var request = buildGetRequest(device.id, utcFrom, utcTo);
-                api.call(request[0], request[1], results => {
-                    // if results have been limited, let the user know they may need to narrow search
-                    if (results.length === maxLogRecordResults) {
-                        limitedDevices.push(encodeHTML(device.name));
-                    }
+            let getLogRecord = results => new Promise((resolve) => {         
+                // if results have been limited, let the user know they may need to narrow search
+                if (results.length === maxLogRecordResults) {
+                    limitedDevices.push(encodeHTML(device.name));
+                }
 
-                    let params = {
-                        array: results,
-                        center,
-                        radiusFactor,
-                        aggregate: true,
-                        maxThreads: navigator.hardwareConcurrency || 1
+                let params = {
+                    array: results,
+                    center,
+                    radiusFactor,
+                    aggregate: true,
+                    maxThreads: navigator.hardwareConcurrency || 1
+                };
+
+                // do CPU intense calculation off the UI thread
+                hamsters.promise(params, () => {
+                    const arr = params.array;
+                    const centerPoint = params.center;
+                    const maxRadius = 5 * params.radiusFactor;
+                    const toRadians = d => {
+                        return d * (Math.PI / 180.0);
                     };
-
-                    // do CPU intense calculation off the UI thread
-                    hamsters.promise(params, () => {
-                        const arr = params.array;
-                        const centerPoint = params.center;
-                        const maxRadius = 5 * params.radiusFactor;
-                        const toRadians = d => {
-                            return d * (Math.PI / 180.0);
-                        };
-                        arr.forEach(logRecord => {
-                            if (!logRecord.id) {
-                                return;
-                            }
-                            let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                            let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                            let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                            logRecord.distance = 6371000.0 * c;
-                            if (logRecord.distance < maxRadius) {
-                                rtn.data.push(logRecord);
-                            }
-                        });
+                    arr.forEach(logRecord => {
+                        if (!logRecord.id) {
+                            return;
+                        }
+                        let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                        let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                        let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        logRecord.distance = 6371000.0 * c;
+                        if (logRecord.distance < maxRadius) {
+                            rtn.data.push(logRecord);
+                        }
+                    });                  
+                })
+                    .then(rtn => rtn.data[0])
+                    .then(render)
+                    .then(resolve);
+            });
+            
+            let LogRecordMultiCall = calls => new Promise((resolve, reject) => {
+                if(isCancelled){
+                    resolve();
+                }
+                else{
+                    api.multiCall(calls, async function(results){
+                        var foundPoints = 0;
+                        for(var k=0;k<results.length;k++){             
+                            foundPoints += await getLogRecord(results[k]);
+                        }
+                        resolve(foundPoints);
+                    },  error => {
+                        toggleLoading(false);
+                        logger(error);               
+                        reject(error);
                     })
-                        .then(rtn => rtn.data[0])
-                        .then(render)
-                        .then(resolve);
+                }
+            })
 
-                }, error => {
-                    logger(error);
-                    toggleLoading(false);
-                    reject(error);
-                });
+            let getDeviceLogs = device => new Promise(async (resolve) => {
+                var request = [];  
+                var temp = [];
+                var totalPoints = 0;
+
+                for(var j=0;j<device.length;j++){
+                    temp.push(buildGetRequest(device[j].id, utcFrom, utcTo));
+                    if(temp.length == 400){
+                        request.push(temp);
+                        temp = [];
+                    }
+                }
+                request.push(temp);
+                for(var i=0;i<request.length;i++){
+                    totalPoints += await LogRecordMultiCall(request[i]);
+                }             
+                resolve(totalPoints); 
             });
 
-            let totalFound = 0;
-            for (let i = 0; devicesToQuery.length > i; i++) {
-                let found = await getDeviceLogs(devicesToQuery[i]);
-                totalFound += found || 0;
-                if (isCancelled) {
-                    toggleLoading(false);
-                    return;
-                }
+            var totalFound = 0;
+            let found = await getDeviceLogs(devicesToQuery);
+
+            totalFound = found;
+
+            if(isNaN(found)){
+                clearMap();
+                totalFound = -1;
             }
 
             let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
             if (totalFound > 0) {
                 logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.</p>${limitedMessage}`);
-            } else {
+            } 
+            else if (totalFound == 0){
                 logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
+            } 
+            else {
+                logger(`<p>The operation was cancelled.</p>${limitedMessage}`);
             }
             elExport.disabled = false;
             toggleLoading(false);
@@ -402,14 +419,16 @@ geotab.addin.proximity = () => {
         elAddressInput = document.getElementById('proximity-address');
         elProximitySize = document.getElementById('proximity-size');
         elProximitySelectAll = document.getElementById('proximity-select-all');
+        elProximityDeselectAll = document.getElementById('proximity-deselect-all');
         elVehicleSelect = document.getElementById('proximity-vehicles');
         elDateFromInput = document.getElementById('proximity-from');
         elDateToInput = document.getElementById('proximity-to');
         elError = document.getElementById('proximity-error');
         elLoading = document.getElementById('proximity-loading');
         elVehicleMultiSelectContainer = document.getElementById('proximity-div-vehicles');
-        elProximityCancel = document.getElementById('proximity-cancel');
         elExport = document.getElementById('proximity-run-report');
+        elRun = document.getElementById('proximity-run-cancel');
+        elUserInput = document.getElementById('proximity-userInput');
 
         // date inputs
         let now = new Date();
@@ -432,15 +451,178 @@ geotab.addin.proximity = () => {
         sizeChanged(300);
 
         // initialize multiselect/autocomplte
-        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true });
+        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 50, noChoicesText: 'Start typing to search for a vehicle'});
 
         // events
+        elVehicleMultiSelectContainer.addEventListener('keyup', debounce(e => {
+            let manualSearch = '%%';
+            let deviceList = [];
+            manualSearch = '%' + e.target.value + '%';
+
+            api.call('Get', {
+                typeName: 'Device',
+                search: {
+                    fromDate: new Date().toISOString(),
+                    groups: state.getGroupFilter(),
+                    name: manualSearch,
+                }
+            }, newDevices => {
+                if (!newDevices || newDevices.length < 1) {
+                    return;
+                };
+
+                for(var i=0;i<newDevices.length;i++){
+                    if(selected.includes(newDevices[i].id)){
+                        continue;
+                    }
+                    else{
+                        deviceList.push(newDevices[i])
+                    }
+                }  
+
+                let deviceChoices = deviceList.map(device => {
+                    deviceLookup[device.id] = device;
+                    return { 'value': device.id, 'label': encodeHTML(device.name) };
+                });
+
+                vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
+
+                toggleLoading(false);
+
+            }, error => {
+                logger(error);
+                toggleLoading(false);
+            });
+        },1000))
+
+        function debounce(fn, d) {
+            let timer;
+            return function() {
+                let context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn.apply(context, args);
+                },d);
+            }
+        }
+
+        elProximitySelectAll.addEventListener('click', () => {           
+            let alldeviceList = [];
+            logger('');
+
+            api.call('GetCountOf', {
+                typeName: 'Device',
+            }, numberofDevices => {
+
+                if(numberofDevices < 1000 && Object.keys(deviceLookup).length===0){
+                    toggleLoading(true);
+                    api.call('Get', {
+                        typeName: 'Device',
+                        search: {
+                            fromDate: new Date().toISOString(),
+                            groups: state.getGroupFilter(),
+                        }
+                    }, allDevices => {
+                        for(var i=0;i<allDevices.length;i++){
+                            alldeviceList.push(allDevices[i])
+                            selected.push(allDevices[i].id); 
+                        }  
+        
+                        let allChoices = alldeviceList.map(device => {
+                            deviceLookup[device.id] = device;
+                            return { 'value': device.id, 'label': encodeHTML(device.name) };
+                        });
+        
+                        vehicleMultiselect.setValue(allChoices);
+                        
+                        toggleLoading(false);
+     
+                    }, error => {
+                        logger(error);
+                        toggleLoading(false);
+                    });
+                }
+
+                else if(numberofDevices >= 1000 && Object.keys(deviceLookup).length===0){
+                    logger('User has scope to more than 1000 devices. Please use the search bar to filter the search.');
+                }
+
+                else{                    
+                    toggleLoading(true);
+                    var temp = [];
+
+                    for (let vehicle in deviceLookup) {   
+
+                        if (selected.includes(vehicle)) {
+                            continue;
+                        }
+                        else {
+                            selected.push(vehicle);       
+                            temp.push({ 'value': vehicle, 'label': deviceLookup[vehicle].name })
+                        }       
+                    }
+
+                    vehicleMultiselect.setValue(temp); 
+                    vehicleMultiselect.clearInput(); 
+                    vehicleMultiselect.clearChoices(); 
+                    toggleLoading(false);
+                }
+
+            }, error => {
+                console.log(error);
+            });          
+        });
+
+        elProximityDeselectAll.addEventListener('click', () => {
+            vehicleMultiselect.clearStore();
+            selected = [];
+            deviceLookup = {};
+        });
+
         vehicleMultiselect.passedElement.element.addEventListener('change', () => {
             selected = vehicleMultiselect.getValue().map(value => {
                 return value.value;
             });
-            displayProximity();
         });
+
+        elRun.addEventListener('click', () => {
+            if(elRun.innerText == 'Run'){            
+                if (checkInputs()) {
+                    displayProximity();
+                }
+            }
+            else{
+                elRun.textContent = 'Canceling...'
+                isCancelled = true;
+            }           
+        });
+
+        function checkInputs() {
+            var warning = '';
+            var flag = 1;
+            logger('');
+
+            if (elAddressInput.value === '') {
+                warning += 'Please input an address <br>';
+                flag = 0;
+            }
+
+            if (selected.length === 0) {
+                warning += 'Select at least one vehicle to display <br>';
+                flag = 0;
+            }
+
+            let dateFrom = new Date(elDateFromInput.value + ':00Z');
+            let dateTo = new Date(elDateToInput.value + ':00Z');
+
+            if (dateFrom > dateTo) {
+                warning += 'From date cannot be more than To date <br>';
+                flag = 0;
+            }
+
+            logger(warning);
+            return (flag)
+        }
 
         elExport.addEventListener('click', () => {
             let [date, time] = parseTime(new Date().toISOString());
@@ -449,45 +631,18 @@ geotab.addin.proximity = () => {
             downloadFile(blobData, `ProximityReport-${date}-${time.replace(/\:/g, '.')}.csv`);
         });
 
-        elAddressInput.addEventListener('keydown', event => {
-            if (event.keyCode === 13) {
-                displayProximity();
-            }
-        });
-
         elProximitySize.addEventListener('change', event => {
             sizeChanged(event.target.value);
-            displayProximity();
-        });
-
-        elProximitySelectAll.addEventListener('change', event => {
-            event.preventDefault();
-
-            selectAll = !selectAll;
-
-            elVehicleMultiSelectContainer.style.display = selectAll ? 'none' : 'block';
-
-            displayProximity();
         });
 
         elDateFromInput.addEventListener('change', event => {
             event.preventDefault();
-
-            displayProximity();
         });
 
         elDateToInput.addEventListener('change', event => {
             event.preventDefault();
-
-            displayProximity();
         });
-
-        elProximityCancel.addEventListener('click', event => {
-            event.preventDefault();
-            elProximityCancel.textContent = 'Canceling...'
-            elProximityCancel.disabled = true;
-            isCancelled = true;
-        });
+       
     };
 
     /**
@@ -576,37 +731,7 @@ geotab.addin.proximity = () => {
             // focus is called anytime filter changes.
             isCancelled = true;
             deviceLookup = {};
-
-            toggleLoading(true);
-
-            api.call('Get', {
-                typeName: 'Device',
-                resultsLimit: 1000,
-                search: {
-                    fromDate: new Date().toISOString(),
-                    groups: state.getGroupFilter()
-                }
-            }, devices => {
-                if (!devices || devices.length < 1) {
-                    return;
-                }
-
-                let deviceChoices = devices.map(device => {
-                    deviceLookup[device.id] = device;
-                    return { 'value': device.id, 'label': encodeHTML(device.name) };
-                });
-
-                vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
-
-                toggleLoading(false);
-            }, error => {
-                logger(error);
-                toggleLoading(false);
-            });
-
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 800);
+            toggleLoading(false);
         },
 
         /**

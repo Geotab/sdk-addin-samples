@@ -42,7 +42,7 @@
 
 <body>
 
-    <div id="proximity" style="height: calc(100% - 40px)">
+    <div id="proximity" style="height: 100%">
 
         <div class="cssGrid sm-part-12">
             <div class="lg-part-2 md-part-3 sm-part-12">
@@ -52,46 +52,54 @@
                     <p>
                         This Add-In allows looking up an address to visualize when your fleet was nearby that location in the past.
                     </p>
-
-                    <h3>Instructions</h3>
                     <p>
                         Find out when team members visited an address by typing it in below. Filter your results by selecting specific vehicles or
                         narrowing the time frame shown.
                     </p>
 
-                    <label for="proximity-address">Address</label>
-                    <input id="proximity-address" type="text" placeholder="Example: 512 Main Street, Toronto, ON"  class="checkmateFormEditField"/>
+                    <div>
+                        <div id = "proximity-userInput">
+                            <label for="proximity-address">Address</label>
+                            <input id="proximity-address" type="text" placeholder="Example: 512 Main Street, Toronto, ON"  class="checkmateFormEditField"/>
 
-                    <label for="proximity-size">Size <span id="proximity-size-label">(1.5 km)</span></label>
-                    <input id="proximity-size" type="range" min="5" max="1000" value="300" step="1" class="checkmateFormEditField" />
+                            <label for="proximity-size">Size <span id="proximity-size-label">(1.5 km)</span></label>
+                            <input id="proximity-size" type="range" min="5" max="1000" value="300" step="1" class="checkmateFormEditField" />
 
-                    <label for="proximity-div-vehicles">Vehicles</label>
-                    <label for="proximity-select-all">Select All <input type="checkbox" name="proximity-select-all" id="proximity-select-all" /></label>
-                    <div id="proximity-div-vehicles" style="margin-bottom:20px;">
-                        <select id="proximity-vehicles" multiple data-placeholder="Select vehicles" class="checkmateFormEditField"></select>
+                            <label for="proximity-div-vehicles">Vehicles</label>
+
+                            <div id = "proximity-div-select">
+                                <button id="proximity-select-all" name="proximity-select-all">Select All</button>
+                                <button id="proximity-deselect-all" name="proximity-deselect-all">Deselect All</button>
+                            </div>
+
+                            <div id="proximity-div-vehicles">
+                                <select id="proximity-vehicles" multiple data-placeholder="Select vehicles" class="checkmateFormEditField"></select>
+                            </div>
+
+                            <label for="proximity-from">From</label>
+                            <input id="proximity-from" type="datetime-local" class="checkmateFormEditField" />
+
+                            <label for="proximity-to">To</label>
+                            <input id="proximity-to" type="datetime-local" class="checkmateFormEditField" />                      
+                        </div>
+
+                        <div id="proximity-loading" class="spinner">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
                     </div>
 
-                    <label for="proximity-from">From</label>
-                    <input id="proximity-from" type="datetime-local" class="checkmateFormEditField" />
+                    <button id="proximity-run-cancel" class="geotabButton" name="proximity-run-cancel">Run</button>
 
-                    <label for="proximity-to">To</label>
-                    <input id="proximity-to" type="datetime-local" class="checkmateFormEditField" />
-                    <button class="geotabButton" name="proximity-run-report" id="proximity-run-report" disabled>Export Results</button>
+                    <button id="proximity-run-report" class="geotabButton" name="proximity-run-report" disabled>Export Results</button>                   
 
-                    <div id="proximity-cancel" class="geotabButton">Cancel</div>
-
-                    <div id="proximity-error"></div>
-
-                    <div id="proximity-loading" class="spinner" style="display:none">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
+                    <div id="proximity-error"></div>  
                 </div>
 
             </div>
             <div class="lg-part-10 md-part-9 sm-part-12">
-                <div id="proximity-map" style="width:100%"></div>
+                <div id="proximity-map" style="height:100%"></div>
             </div>
         </div>
 
