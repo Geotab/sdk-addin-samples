@@ -55,7 +55,6 @@ geotab.addin.proximity = () => {
             elExport.disabled = true;
             elLoading.style.display = 'block';
             elRun.textContent = 'Cancel'
-            vehicleMultiselect.disable();
             elAddressInput.disabled = true;
             elProximitySize.disabled = true;
             elProximitySelectAll.disabled = true;
@@ -68,7 +67,6 @@ geotab.addin.proximity = () => {
             loadingTimeout = setTimeout(() => {
                 elLoading.style.display = 'none';
                 elRun.textContent = 'Run'
-                vehicleMultiselect.enable();
                 elAddressInput.disabled = false;
                 elProximitySize.disabled = false;
                 elProximitySelectAll.disabled = false;
@@ -346,13 +344,13 @@ geotab.addin.proximity = () => {
 
             let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
             if (totalFound > 0) {
-                logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.</p>${limitedMessage}`);
+                logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             } 
             else if (totalFound == 0){
-                logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
+                logger(`<p>There was no one near this area during this time frame. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             } 
             else {
-                logger(`<p>The operation was cancelled.</p>${limitedMessage}`);
+                logger(`<p>The operation was cancelled. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             }
             elExport.disabled = false;
             toggleLoading(false);
@@ -518,7 +516,7 @@ geotab.addin.proximity = () => {
                     fromDate: new Date().toISOString(),
                     groups: state.getGroupFilter()
                 },
-                resultsLimit: 1001
+                resultsLimit: 1000
             }, result => {
                 resolve(result);
             });
@@ -527,15 +525,11 @@ geotab.addin.proximity = () => {
         elProximitySelectAll.addEventListener('click', async () => {    
             toggleLoading(true);        
             logger('');
-            
+             
             if(Object.keys(deviceLookup).length === 0 && selected.length === 0){  
                 let currentScope = await currentDevicesInUserScope();
                 let alldeviceList = [];
 
-                if(currentScope.length>1000){
-                    logger('1000 vehicle limit reached. The proximity add-in will show 1000 vehicles only.');
-                    currentScope = currentScope.slice(0,1000);
-                }
                 for (var i = 0; i < currentScope.length; i++) {
                     alldeviceList.push(currentScope[i])
                     selected.push(currentScope[i].id);
@@ -545,7 +539,15 @@ geotab.addin.proximity = () => {
                     deviceLookup[device.id] = device;
                     return { 'value': device.id, 'label': encodeHTML(device.name) };
                 });
-                vehicleMultiselect.setValue(allChoices);   
+
+                if(currentScope.length === 1000){
+                    logger('1000 vehicle limit reached. The proximity add-in will show 1000 vehicles only.');
+                    vehicleMultiselect.disable();
+                }
+                else{
+                    vehicleMultiselect.setValue(allChoices);
+                }
+                console.log('Devices included: ', allChoices);             
             }                
             else{
                 var temp = [];
@@ -559,12 +561,12 @@ geotab.addin.proximity = () => {
                             temp.push({ 'value': vehicle, 'label': deviceLookup[vehicle].name })
                         }
                         else{
-                            logger('1000 vehicle limit reached')
+                            logger('1000 vehicle limit reached.')
                             vehicleMultiselect.clearChoices();
+                            break;
                         }
-                        
                     }       
-                }
+                }               
                 vehicleMultiselect.setValue(temp); 
             }       
             vehicleMultiselect.clearInput(); 
@@ -574,6 +576,8 @@ geotab.addin.proximity = () => {
 
         elProximityDeselectAll.addEventListener('click', () => {
             vehicleMultiselect.clearStore();
+            vehicleMultiselect.enable();
+            logger('');
             selected = [];
             deviceLookup = {};
         });
