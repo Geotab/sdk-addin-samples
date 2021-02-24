@@ -459,7 +459,7 @@ geotab.addin.proximity = () => {
             let deviceList = [];
             console.log('manualSearch: ', manualSearch);
             
-            if(manualSearch!='%%'){
+            if(manualSearch!=='%%'){
                 api.call('Get', {
                     typeName: 'Device',
                     search: {
@@ -577,6 +577,7 @@ geotab.addin.proximity = () => {
         elProximityDeselectAll.addEventListener('click', () => {
             vehicleMultiselect.clearStore();
             vehicleMultiselect.enable();
+            clearMap();
             logger('');
             selected = [];
             deviceLookup = {};
