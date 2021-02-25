@@ -55,7 +55,6 @@ geotab.addin.proximity = () => {
             elExport.disabled = true;
             elLoading.style.display = 'block';
             elRun.textContent = 'Cancel'
-            vehicleMultiselect.disable();
             elAddressInput.disabled = true;
             elProximitySize.disabled = true;
             elProximitySelectAll.disabled = true;
@@ -68,7 +67,6 @@ geotab.addin.proximity = () => {
             loadingTimeout = setTimeout(() => {
                 elLoading.style.display = 'none';
                 elRun.textContent = 'Run'
-                vehicleMultiselect.enable();
                 elAddressInput.disabled = false;
                 elProximitySize.disabled = false;
                 elProximitySelectAll.disabled = false;
@@ -346,13 +344,13 @@ geotab.addin.proximity = () => {
 
             let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
             if (totalFound > 0) {
-                logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}.</p>${limitedMessage}`);
+                logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             } 
             else if (totalFound == 0){
-                logger(`<p>There was no one near this area during this time frame.</p>${limitedMessage}`);
+                logger(`<p>There was no one near this area during this time frame. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             } 
             else {
-                logger(`<p>The operation was cancelled.</p>${limitedMessage}`);
+                logger(`<p>The operation was cancelled. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             }
             elExport.disabled = false;
             toggleLoading(false);
@@ -451,48 +449,53 @@ geotab.addin.proximity = () => {
         sizeChanged(300);
 
         // initialize multiselect/autocomplte
-        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 50, noChoicesText: 'Start typing to search for a vehicle'});
+        vehicleMultiselect = new Choices(elVehicleSelect, {removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 1000, maxItemCount: 1000, noChoicesText: 'Start typing to search for vehicles'});
 
         // events
         elVehicleMultiSelectContainer.addEventListener('keyup', debounce(e => {
-            let manualSearch = '%%';
+
+            vehicleMultiselect.clearChoices();
+            let manualSearch = '%' + e.target.value + '%';
             let deviceList = [];
-            manualSearch = '%' + e.target.value + '%';
+            console.log('manualSearch: ', manualSearch);
+            
+            if(manualSearch!=='%%'){
+                api.call('Get', {
+                    typeName: 'Device',
+                    search: {
+                        fromDate: new Date().toISOString(),
+                        groups: state.getGroupFilter(),
+                        name: manualSearch,
+                    },
+                    resultsLimit: 1000
+                }, newDevices => {
+                    if (!newDevices || newDevices.length < 1) {
+                        return;
+                    };
 
-            api.call('Get', {
-                typeName: 'Device',
-                search: {
-                    fromDate: new Date().toISOString(),
-                    groups: state.getGroupFilter(),
-                    name: manualSearch,
-                }
-            }, newDevices => {
-                if (!newDevices || newDevices.length < 1) {
-                    return;
-                };
-
-                for(var i=0;i<newDevices.length;i++){
-                    if(selected.includes(newDevices[i].id)){
-                        continue;
-                    }
-                    else{
-                        deviceList.push(newDevices[i])
-                    }
-                }  
-
-                let deviceChoices = deviceList.map(device => {
-                    deviceLookup[device.id] = device;
-                    return { 'value': device.id, 'label': encodeHTML(device.name) };
+                    for(var i=0;i<newDevices.length;i++){
+                        if(selected.includes(newDevices[i].id)){
+                            continue;
+                        }
+                        else{
+                            deviceList.push(newDevices[i])
+                        }
+                    }  
+    
+                    let deviceChoices = deviceList.map(device => {
+                        deviceLookup[device.id] = device;
+                        return { 'value': device.id, 'label': encodeHTML(device.name) };
+                    });
+    
+                    vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
+    
+                    toggleLoading(false);
+    
+                }, error => {
+                    logger(error);
+                    toggleLoading(false);
                 });
-
-                vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
-
-                toggleLoading(false);
-
-            }, error => {
-                logger(error);
-                toggleLoading(false);
-            });
+            }         
         },1000))
 
         function debounce(fn, d) {
@@ -506,75 +509,76 @@ geotab.addin.proximity = () => {
             }
         }
 
-        elProximitySelectAll.addEventListener('click', () => {           
-            let alldeviceList = [];
-            logger('');
-
-            api.call('GetCountOf', {
+        let currentDevicesInUserScope = calls => new Promise((resolve) => {
+            api.call('Get', {
                 typeName: 'Device',
-            }, numberofDevices => {
+                search: {
+                    fromDate: new Date().toISOString(),
+                    groups: state.getGroupFilter()
+                },
+                resultsLimit: 1000
+            }, result => {
+                resolve(result);
+            });
+        })
 
-                if(numberofDevices < 1000 && Object.keys(deviceLookup).length===0){
-                    toggleLoading(true);
-                    api.call('Get', {
-                        typeName: 'Device',
-                        search: {
-                            fromDate: new Date().toISOString(),
-                            groups: state.getGroupFilter(),
-                        }
-                    }, allDevices => {
-                        for(var i=0;i<allDevices.length;i++){
-                            alldeviceList.push(allDevices[i])
-                            selected.push(allDevices[i].id); 
-                        }  
-        
-                        let allChoices = alldeviceList.map(device => {
-                            deviceLookup[device.id] = device;
-                            return { 'value': device.id, 'label': encodeHTML(device.name) };
-                        });
-        
-                        vehicleMultiselect.setValue(allChoices);
-                        
-                        toggleLoading(false);
-     
-                    }, error => {
-                        logger(error);
-                        toggleLoading(false);
-                    });
+        elProximitySelectAll.addEventListener('click', async () => {    
+            toggleLoading(true);        
+            logger('');
+             
+            if(Object.keys(deviceLookup).length === 0 && selected.length === 0){  
+                let currentScope = await currentDevicesInUserScope();
+                let alldeviceList = [];
+
+                for (var i = 0; i < currentScope.length; i++) {
+                    alldeviceList.push(currentScope[i])
+                    selected.push(currentScope[i].id);
                 }
 
-                else if(numberofDevices >= 1000 && Object.keys(deviceLookup).length===0){
-                    logger('User has scope to more than 1000 devices. Please use the search bar to filter the search.');
+                let allChoices = alldeviceList.map(device => {
+                    deviceLookup[device.id] = device;
+                    return { 'value': device.id, 'label': encodeHTML(device.name) };
+                });
+
+                if(currentScope.length === 1000){
+                    logger('1000 vehicle limit reached. The proximity add-in will show 1000 vehicles only.');
+                    vehicleMultiselect.disable();
                 }
-
-                else{                    
-                    toggleLoading(true);
-                    var temp = [];
-
-                    for (let vehicle in deviceLookup) {   
-
-                        if (selected.includes(vehicle)) {
-                            continue;
-                        }
-                        else {
+                else{
+                    vehicleMultiselect.setValue(allChoices);
+                }
+                console.log('Devices included: ', allChoices);             
+            }                
+            else{
+                var temp = [];
+                for (let vehicle in deviceLookup) {   
+                    if (selected.includes(vehicle)) {
+                        continue;
+                    }
+                    else {
+                        if(selected.length < 1000){
                             selected.push(vehicle);       
                             temp.push({ 'value': vehicle, 'label': deviceLookup[vehicle].name })
-                        }       
-                    }
-
-                    vehicleMultiselect.setValue(temp); 
-                    vehicleMultiselect.clearInput(); 
-                    vehicleMultiselect.clearChoices(); 
-                    toggleLoading(false);
-                }
-
-            }, error => {
-                console.log(error);
-            });          
+                        }
+                        else{
+                            logger('1000 vehicle limit reached.')
+                            vehicleMultiselect.clearChoices();
+                            break;
+                        }
+                    }       
+                }               
+                vehicleMultiselect.setValue(temp); 
+            }       
+            vehicleMultiselect.clearInput(); 
+            vehicleMultiselect.clearChoices();    
+            toggleLoading(false);
         });
 
         elProximityDeselectAll.addEventListener('click', () => {
             vehicleMultiselect.clearStore();
+            vehicleMultiselect.enable();
+            clearMap();
+            logger('');
             selected = [];
             deviceLookup = {};
         });
