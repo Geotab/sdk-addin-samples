@@ -182,9 +182,9 @@ geotab.addin.proximity = () => {
         clearMap();
 
         let dateFrom = new Date(elDateFromInput.value + ':00Z');
-        let utcFrom = new Date(dateFrom.setMinutes(dateFrom.getMinutes() + new Date().getTimezoneOffset())).toISOString();
+        let utcFrom = new Date(dateFrom.setMinutes(dateFrom.getMinutes() + dateFrom.getTimezoneOffset())).toISOString();
         let dateTo = new Date(elDateToInput.value + ':00Z');
-        let utcTo = new Date(dateTo.setMinutes(dateTo.getMinutes() + new Date().getTimezoneOffset())).toISOString();
+        let utcTo = new Date(dateTo.setMinutes(dateTo.getMinutes() + dateTo.getTimezoneOffset())).toISOString();
 
         toggleLoading(true);
 
