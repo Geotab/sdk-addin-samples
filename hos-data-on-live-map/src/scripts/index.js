@@ -1,3 +1,5 @@
+import "../styles/index.css";
+
 // eslint-disable-next-line no-undef
 geotab.addin.request = (elt, service) => {
     var DiagMalflogStatuses = [
