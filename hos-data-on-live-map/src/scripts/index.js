@@ -8,6 +8,19 @@ geotab.addin.request = (elt, service) => {
         "DataRecordingCompliance", "MissingElementCompliance", "UnidentifiedDrivingCompliance"
     ];
 
+    var driverInfo = {
+        driverName: "No Driver",
+        deviceName: "",
+        trailerName: ""
+    };
+
+    function setDriverInfo({driverName, deviceName, trailerName}) {
+        driverInfo.driverName = driverName ? driverName : driverInfo.driverName;  
+        driverInfo.deviceName = deviceName ? deviceName : driverInfo.deviceName;  
+        driverInfo.trailerName = trailerName ? trailerName : driverInfo.trailerName;  
+        elt.querySelector("#information").textContent = `${driverInfo.deviceName}(${driverInfo.trailerName}-${driverInfo.driverName})`;
+    }
+
     function formatDuration(duration) {
         var durationSplit = duration.split(":");
         var daysHours = durationSplit[0];
@@ -68,6 +81,7 @@ geotab.addin.request = (elt, service) => {
             if (trailerAttachmentResult.length == 0) {
                 console.log("No Active Trailer Attachments");
                 elt.querySelector("#trailer_attached").textContent = "No Trailer Attachments";
+                setDriverInfo({trailerName: ""});
             } else {
                 service.api.multiCall(trailerAttachmentResult.map(att => {
                     return ["Get", {
@@ -80,7 +94,7 @@ geotab.addin.request = (elt, service) => {
                     .then(result => {
                         let trailers = result.map(t => t[0].name);
                         elt.querySelector("#trailer_attached").textContent = trailers.join("\n");
-
+                        setDriverInfo({trailerName: trailers.join(", ")});
                         trailers.forEach(name => {
                             console.log("Currently Attached Trailer Name:", name);
                         });
@@ -218,7 +232,7 @@ geotab.addin.request = (elt, service) => {
             var deviceName = deviceRelatedData[1][0].name;
             console.log("This is the devicename:", deviceName);
             elt.querySelector("#device_name").textContent = deviceName;
-
+            setDriverInfo({deviceName: deviceName});
             var DVIRInfo = deviceRelatedData[2][0];
             if (DVIRInfo) {
                 console.log("This is for DVIR Debugging", DVIRInfo);
@@ -426,7 +440,7 @@ geotab.addin.request = (elt, service) => {
                         var driverDetails = multicallresults[1][0].name + " | " + multicallresults[1][0].hosRuleSet;
                         console.log("This is the driver name:", driverDetails);
                         elt.querySelector("#driver_details").textContent = driverDetails;
-
+                        setDriverInfo({driverName: driverName});
                         // Get available exemptions (16 hour, adverse driving)
                         var availableExemptionsArray = [];
                         if (driverRegulationResult.length > 0) {
