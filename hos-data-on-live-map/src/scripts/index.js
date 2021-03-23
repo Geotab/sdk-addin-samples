@@ -80,7 +80,6 @@ geotab.addin.request = (elt, service) => {
         }).then(trailerAttachmentResult => {
             if (trailerAttachmentResult.length == 0) {
                 console.log("No Active Trailer Attachments");
-                elt.querySelector("#trailer_attached").textContent = "No Trailer Attachments";
                 setDriverInfo({trailerName: ""});
             } else {
                 service.api.multiCall(trailerAttachmentResult.map(att => {
@@ -93,7 +92,6 @@ geotab.addin.request = (elt, service) => {
                 }))
                     .then(result => {
                         let trailers = result.map(t => t[0].name);
-                        elt.querySelector("#trailer_attached").textContent = trailers.join("\n");
                         setDriverInfo({trailerName: trailers.join(", ")});
                         trailers.forEach(name => {
                             console.log("Currently Attached Trailer Name:", name);
@@ -231,7 +229,6 @@ geotab.addin.request = (elt, service) => {
         ]).then(deviceRelatedData => {
             var deviceName = deviceRelatedData[1][0].name;
             console.log("This is the devicename:", deviceName);
-            elt.querySelector("#device_name").textContent = deviceName;
             setDriverInfo({deviceName: deviceName});
             var DVIRInfo = deviceRelatedData[2][0];
             if (DVIRInfo) {
@@ -436,11 +433,11 @@ geotab.addin.request = (elt, service) => {
                     .then(function (result) {
                         var multicallresults = result[0];
                         var driverRegulationResult = result[1];
-
-                        var driverDetails = multicallresults[1][0].name + " | " + multicallresults[1][0].hosRuleSet;
+                        console.log("Driver Name",multicallresults);
+                        var driverDetails = multicallresults[1][0].hosRuleSet;
                         console.log("This is the driver name:", driverDetails);
                         elt.querySelector("#driver_details").textContent = driverDetails;
-                        setDriverInfo({driverName: driverName});
+                        setDriverInfo({driverName: multicallresults[1][0].name});
                         // Get available exemptions (16 hour, adverse driving)
                         var availableExemptionsArray = [];
                         if (driverRegulationResult.length > 0) {
