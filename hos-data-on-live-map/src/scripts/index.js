@@ -401,6 +401,8 @@ geotab.addin.request = (elt, service) => {
                     var currentTotalTime;
                     var previousTotalTime;
                     var index;
+                    
+                    console.log("Availability",driverRegulationResult[0]);
 
                     elt.querySelector("#driver_availability").textContent = "";
                     var element = elt.querySelector("#driver_availability_heading");
@@ -418,7 +420,12 @@ geotab.addin.request = (elt, service) => {
                     if (driverRegulationResult[0].availability.availabilities.length == 0) {
                         console.log("User is on no ruleset");
                         elt.querySelector("#driver_availability").textContent = "User is on no ruleset";
-                    } else {
+                    } else {                        
+                        var cycleAvailableTomorrow = driverRegulationResult[0].availability.cycleAvailabilities[0].available;
+                        driverRegulationResult[0].availability.availabilities.push({
+                            duration: cycleAvailableTomorrow,
+                            type: "Cycle Tommorrow"
+                        });
                         for (var j = 0; j < driverRegulationResult[0].availability.availabilities.length; j++) {
                             var availabilityType = driverRegulationResult[0].availability.availabilities[j].type;
                             var availabilityDuration = driverRegulationResult[0].availability.availabilities[j].duration;
