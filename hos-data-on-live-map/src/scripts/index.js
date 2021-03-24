@@ -1,7 +1,111 @@
 import "../styles/index.css";
-
+import "../styles/dropdown.scss";
 // eslint-disable-next-line no-undef
 geotab.addin.request = (elt, service) => {
+
+    var el = document.querySelector('.more');
+    var btn = el.querySelector('.more-btn');
+    var menu = el.querySelector('.more-menu');
+    var menuItems = el.querySelector('.more-menu-items');
+    var visible = false;
+
+    createTransferLog();
+
+    function createDriverButtons(driverId) {
+        var now = new Date();
+        var nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var end = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
+        createSeperator();
+        createMenuItem("sendMessage", "Send Message", (e) => {
+            gotoMessagePage(driverId);
+        });
+        createMenuItem("viewOneDayLog", "View Logs(1 Day)", (e) => {    
+            var start = nowDate;
+            gotoHOSPage(driverId, start.toISOString(), end.toISOString());
+        });
+        createMenuItem("viewSevenDayLog", "View Logs(7 Days)", (e) => {    
+            var start = new Date(nowDate.getTime() - (24 * 60 * 60 * 1000 * 7));
+            gotoHOSPage(driverId, start.toISOString(), end.toISOString());
+        });        
+    }
+
+    function createTransferLog() {
+        createMenuItem("transferLogs", "Transfer Logs", (e) => {
+            gotoTransferPage();
+        });
+    }
+
+    function deleteMenuItems() {
+        menuItems.innerHTML = "";
+        createTransferLog();
+    }
+
+    function createSeperator() {
+        var menuItem = document.createElement('li');
+        menuItem.setAttribute('class','more-menu-item');
+        menuItem.setAttribute('role','presentation');
+        menuItem.innerHTML = "<hr />";
+        menuItems.appendChild(menuItem);
+    }
+
+    function createMenuItem(id, text, callback) {
+
+        var menuItem = document.createElement('li');
+        menuItem.setAttribute('class','more-menu-item');
+
+        var button = document.createElement('button');
+        button.setAttribute('class','more-menu-btn');
+        button.setAttribute('role','menuitem');
+        button.setAttribute('type','button');
+        button.setAttribute('id', id);
+        button.innerHTML = text;
+
+        menuItem.appendChild(button);
+        menuItems.appendChild(menuItem);
+
+        return button.addEventListener('click', (e) => {
+            hideMenu();
+            callback(e);
+        }, false);
+    }
+    
+    function showMenu(e) {
+        e.preventDefault();
+        if (!visible) {
+            visible = true;
+            el.classList.add('show-more-menu');
+            menu.setAttribute('aria-hidden', false);
+            document.addEventListener('mousedown', hideMenu, false);
+        } else hideMenu(e);
+    }
+    
+    function hideMenu(e) {
+        if (e && e.target.className == 'more-menu-btn' || e && btn.contains(e.target)) {
+            return;
+        }
+        if (visible) {
+            visible = false;
+            el.classList.remove('show-more-menu');
+            menu.setAttribute('aria-hidden', true);
+            document.removeEventListener('mousedown', hideMenu);
+        }
+    }
+    
+    btn.addEventListener('click', showMenu, false);
+
+    function gotoTransferPage() {
+        service.page.go("transferEld", {});
+    }
+
+    function gotoMessagePage(driverId) {
+        service.page.go("messages", {
+            chatWith: {
+              devices: [],
+              users: [driverId]
+            },
+            isNewThread: false
+          });
+    }
     
     var DiagMalflogStatuses = [
         "PowerCompliance", "EngineSyncCompliance", "DataTransferCompliance", "PositioningCompliance", "TimingCompliance",
@@ -175,6 +279,16 @@ geotab.addin.request = (elt, service) => {
         return malfunctionList;
     }
 
+    function gotoHOSPage (driverId, start, end) {
+        service.page.go("hosLogs", {
+            driver: driverId,
+            dateRange: {
+                endDate: end,
+                startDate: start
+            }
+        });
+    }
+
     var goToHOSPageHandler;
     function goToHOSPage (driverId) {
         return function () {
@@ -263,6 +377,7 @@ geotab.addin.request = (elt, service) => {
                 console.log("Driver Change Information", deviceRelatedData[0][0]);
                 console.log("Device Related Data", deviceRelatedData);
                 var CurrentDriver = deviceRelatedData[0][0].driver.id;
+                createDriverButtons(CurrentDriver);
                 console.log("Current Driver", CurrentDriver);
 
                 var hosDataButton = elt.querySelector("#hos_data_view_logs_button");
@@ -564,6 +679,7 @@ geotab.addin.request = (elt, service) => {
         preMessage();
 
         if (data.menuName == "vehicleMenu") {
+            deleteMenuItems();
             GetHOSData(data.device.id);
         }
     });

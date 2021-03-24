@@ -9,7 +9,27 @@
 
 <body>
     <div class="addin">
-        <h1 id="hos-data-heading">Compliance Data Summary</h1>
+        <div class="menu-heading">
+            <div id="hos-data-heading">Compliance Data Summary</div>
+            <div class="menu-container">
+                <div class="more">
+                    <button id="more-btn" class="more-btn">
+                        <span class="more-dot"></span>
+                        <span class="more-dot"></span>
+                        <span class="more-dot"></span>&nbsp;
+                    </button>
+                    <div class="more-menu right">
+                        <div class="more-menu-caret">
+                            <div class="more-menu-caret-outer"></div>
+                            <div class="more-menu-caret-inner"></div>
+                        </div>
+                        <ul class="more-menu-items" tabindex="-1" role="menu" aria-labelledby="more-btn" aria-hidden="true">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="hos_data_addin_row_initial_Message">
             <label for="pre-click-message"></label>
             <p id="pre-click-message">Click on a vehicle on the map and select <strong>Display HOS data</strong> from the menu. This will give you a summary of data related to HOS and DVIR.</p>
