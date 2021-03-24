@@ -651,7 +651,7 @@ geotab.addin.request = (elt, service) => {
         // actionList attaches to some map popup menus: zone, route, device, map etc.
         // callback will be called if MyGeotab is about to show particular menu
         service.actionList.attachMenu("vehicleMenu", (...output) => {
-            console.log(output);
+            console.log("This is the output",output);
 
             // if you want to add new buttons to this menu, just return array of them
             // if you don't want to show something, just return an empty array
@@ -674,6 +674,15 @@ geotab.addin.request = (elt, service) => {
     }
 
     attachMenuFunction();
+
+    service.events.attach('click', (e) => { 
+        preMessage();
+
+        if (e.type == "device") {
+            deleteMenuItems();
+            GetHOSData(e.entity.id);
+        }
+    });
 
     service.actionList.attach("Clicked", data => {
         preMessage();
