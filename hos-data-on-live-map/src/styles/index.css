@@ -1,3 +1,7 @@
+.body {
+    margin:0;
+}
+
 .addin .hos_data_addin_row {
     /* display: flex; */
     /* margin-bottom: 10px; */
