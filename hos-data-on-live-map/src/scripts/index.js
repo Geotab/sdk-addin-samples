@@ -113,7 +113,7 @@ geotab.addin.request = (elt, service) => {
     ];
 
     var driverInfo = {
-        driverName: "No Driver",
+        driverName: "",
         deviceName: "",
         trailerName: ""
     };
@@ -122,7 +122,9 @@ geotab.addin.request = (elt, service) => {
         driverInfo.driverName = driverName ? driverName : driverInfo.driverName;  
         driverInfo.deviceName = deviceName ? deviceName : driverInfo.deviceName;  
         driverInfo.trailerName = trailerName ? trailerName : driverInfo.trailerName;  
-        elt.querySelector("#information").textContent = `${driverInfo.deviceName}(${driverInfo.trailerName}-${driverInfo.driverName})`;
+        elt.querySelector("#device_name").textContent = driverInfo.deviceName;
+        elt.querySelector("#trailer_attached").textContent = driverInfo.trailerName;
+        elt.querySelector("#driver_details").textContent = driverInfo.driverName;
     }
 
     function formatDuration(duration) {
@@ -196,7 +198,7 @@ geotab.addin.request = (elt, service) => {
                 }))
                     .then(result => {
                         let trailers = result.map(t => t[0].name);
-                        setDriverInfo({trailerName: trailers.join(", ")});
+                        setDriverInfo({trailerName: trailers.join(", ")+"-"});
                         trailers.forEach(name => {
                             console.log("Currently Attached Trailer Name:", name);
                         });
@@ -555,12 +557,11 @@ geotab.addin.request = (elt, service) => {
                     .then(function (result) {
                         var multicallresults = result[0];
                         var driverRegulationResult = result[1];
-                        console.log("Driver Name",multicallresults);
-                        var driverDetails = multicallresults[1][0].hosRuleSet;
-                        console.log("This is the driver name:", driverDetails);
-                        elt.querySelector("#driver_details").textContent = driverDetails;
+                        var currentRuleset = multicallresults[1][0].hosRuleSet;
+                        console.log("This is the driver's current ruleset:", currentRuleset);
+                        elt.querySelector("#current_ruleset").textContent =  currentRuleset;
                         setDriverInfo({driverName: multicallresults[1][0].name});
-                        // Get available exemptions (16 hour, adverse driving)
+                        // Get available exemptions (16 hour, adverse driving
                         var availableExemptionsArray = [];
                         if (driverRegulationResult.length > 0) {
                             if (driverRegulationResult[0].availability.is16HourExemptionAvailable === true) {
@@ -620,14 +621,13 @@ geotab.addin.request = (elt, service) => {
                 displayActiveTrailers(goDeviceid, currentDate);
             } else if (!deviceRelatedData[0][0]) {
                 console.log("No Driver Change object returned to get the HOS Data");
-                elt.querySelector("#driver_details").textContent = "No Driver Change object returned to get the HOS Data";
+                elt.querySelector("#driver_details").textContent = "No Driver Change object returned";
                 elt.querySelector("#malfunctions").textContent = "No malfunction information available";
                 elt.querySelector("#driver_availability").textContent = "No Availability information available";
                 elt.querySelector("#active_violation").textContent = "No violation information available";
                 elt.querySelector("#current_status").classList.remove("available_status");
                 elt.querySelector("#current_status").style.background = "initial";
                 elt.querySelector("#current_status").textContent = "No Current Status Information Available";
-                elt.querySelector("#trailer_attached").textContent = "No Trailer Information Available";
                 elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
                 elt.querySelector("#driver_availability_heading").textContent = "";
                 elt.querySelector("#driver_availability_body").textContent = "";
@@ -636,14 +636,13 @@ geotab.addin.request = (elt, service) => {
                 elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
             } else if (deviceRelatedData[0][0].driver == "UnknownDriverId") {
                 console.log("This Vehicle does not have an assigned Driver to get the HOS Data");
-                elt.querySelector("#driver_details").textContent = "This Vehicle does not have an assigned Driver to get the HOS Data";
+                elt.querySelector("#driver_details").textContent = "No Driver assigned to the vehicle";
                 elt.querySelector("#malfunctions").textContent = "No malfunction information available";
                 elt.querySelector("#driver_availability").textContent = "No Availability information available";
                 elt.querySelector("#active_violation").textContent = "No violation information available";
                 elt.querySelector("#current_status").classList.remove("available_status");
                 elt.querySelector("#current_status").style.background = "initial";
                 elt.querySelector("#current_status").textContent = "No Current Status Information Available";
-                elt.querySelector("#trailer_attached").textContent = "No Trailer Information Available";
                 elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
                 elt.querySelector("#driver_availability_heading").textContent = "";
                 elt.querySelector("#driver_availability_body").textContent = "";
@@ -672,6 +671,12 @@ geotab.addin.request = (elt, service) => {
     }
 
     function preMessage() {
+        driverInfo = {
+            driverName: "",
+            deviceName: "",
+            trailerName: ""
+        };
+    
         var rows = elt.querySelectorAll(".hos_data_addin_row");
 
         for (var i = 0; i < rows.length; i++) {
