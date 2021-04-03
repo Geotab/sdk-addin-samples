@@ -14,7 +14,8 @@
  */
 
 // Global object is used to simulate the api, state, and geotab objects
-
+import "./styles/form.scss";
+import "./styles/mapAddinStyles.scss";
 
 global.events = require('./events');
 global.api
@@ -36,37 +37,11 @@ import './rison';
 import './login/loginTemplate.js';
 import GeotabLogin from './login/loginLogic';
 import GeotabApi from './api';
-import "./styles/mapAddinStyles.css";
-
-/* Translations */
-import Translator from './lang/Translator';
-let language = localStorage.language ? localStorage.language : 'en';
-global.translator = new Translator('#app', language);
-
-// Global Translate function
-global.state.translate = function(target, language) {
-    
-    // First translation from initialize doesn't pass a language in. Will cause problems is language is undefined
-    if (typeof language !== 'undefined'){
-        localStorage.language = language;
-        location.reload();
-    }
-
-    // Primary behaviour passes HTMLElement, but function needs to support string translation as well
-    if (typeof target === 'string'){
-        // Do translation
-        let translation = global.translator.translateSentence(target);
-        // return translated string
-        return translation;
-    }
-}
 
 /* Logic */
 const loginLogic = new GeotabLogin(global.geotab.isDriveAddin, GeotabApi);
 
 
-// Building translation hierarchy
-require('./lang/languages');
 
 // Handling the blur toggle
 require('./ToggleHandler');

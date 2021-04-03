@@ -1,0 +1,32 @@
+
+.addin {
+    min-width: 450px !important;
+    width: 450px!important;
+    z-index: 1500!important;
+    float: right!important;
+    border-left: 1px solid #2c7ab1!important;
+    margin-top:0!important;
+  }
+  
+  #hos-data-heading {
+    margin-top:0;
+  }
+  
+  .container {
+    display: flex;
+    height: calc(100% - 41px)!important;
+    flex-wrap: nowrap;
+    margin:0;
+    padding:0;
+  }
+  
+  .container .map-functions  {
+    margin-top: 10px;
+    width: 100%;
+    padding-left: 50px;
+  }
+  
+  
+  body {
+    height: 100%!important;
+  }

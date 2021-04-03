@@ -1,7 +1,18 @@
-import "../styles/index.css";
-import "../styles/dropdown.scss";
+import "../styles/index.scss";
+//import "../styles/dropdown.scss";
 // eslint-disable-next-line no-undef
 geotab.addin.request = (elt, service) => {
+
+    var DiagMalflogStatuses = [
+        "PowerCompliance", "EngineSyncCompliance", "DataTransferCompliance", "PositioningCompliance", "TimingCompliance",
+        "DataRecordingCompliance", "MissingElementCompliance", "UnidentifiedDrivingCompliance"
+    ];
+
+    var driverInfo = {
+        driverName: "",
+        deviceName: "",
+        trailerName: ""
+    };
 
     var el = document.querySelector('.more');
     var btn = el.querySelector('.more-btn');
@@ -107,16 +118,6 @@ geotab.addin.request = (elt, service) => {
           });
     }
     
-    var DiagMalflogStatuses = [
-        "PowerCompliance", "EngineSyncCompliance", "DataTransferCompliance", "PositioningCompliance", "TimingCompliance",
-        "DataRecordingCompliance", "MissingElementCompliance", "UnidentifiedDrivingCompliance"
-    ];
-
-    var driverInfo = {
-        driverName: "",
-        deviceName: "",
-        trailerName: ""
-    };
 
     function setDriverInfo({driverName, deviceName, trailerName}) {
         driverInfo.driverName = driverName ? driverName : driverInfo.driverName;  

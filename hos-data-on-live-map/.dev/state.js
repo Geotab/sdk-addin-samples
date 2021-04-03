@@ -47,6 +47,9 @@ const mapaddin_state = {
             window.location = getUrl(page, args);
         }
     },
+    events: {
+        attach: () => {}
+    },
     actionList: {
         attach: (type, callback) => {
             global.events.on(type, callback);
