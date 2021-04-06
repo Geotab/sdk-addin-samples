@@ -39,6 +39,7 @@
     "css-loader": "^5.0.1",
     "eslint": "^7.15.0",
     "eslint-loader": "^4.0.2",
+    "expose-loader": "^2.0.0",
     "file-loader": "^6.2.0",
     "html-loader": "^1.3.2",
     "html-webpack-plugin": "^4.5.0",
@@ -59,6 +60,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "bootstrap": "^4.6.0",
-    "core-js": "^3.8.1"
+    "core-js": "^3.8.1",
+    "popper.js": "^1.16.1"
   }
 }

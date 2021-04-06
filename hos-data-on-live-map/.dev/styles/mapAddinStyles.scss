@@ -6,13 +6,14 @@
     float: right!important;
     border-left: 1px solid #2c7ab1!important;
     margin-top:0!important;
+    background-color: white;
   }
   
   #hos-data-heading {
     margin-top:0;
   }
   
-  .container {
+  .addin_container {
     display: flex;
     height: calc(100% - 41px)!important;
     flex-wrap: nowrap;
@@ -20,7 +21,7 @@
     padding:0;
   }
   
-  .container .map-functions  {
+  .addin_container .map-functions  {
     margin-top: 10px;
     width: 100%;
     padding-left: 50px;

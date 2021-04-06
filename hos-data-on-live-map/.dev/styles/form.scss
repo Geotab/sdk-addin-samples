@@ -2,11 +2,13 @@
 
 .map-functions {
   .form-container {
-    width:600px;
+    width: 230px;
     background: #ddd;
     margin: 0 auto;
     padding: 16px;
+    left:60px;
     box-sizing: border-box;
+    position:absolute;
     overflow: hidden;
   }
   
@@ -48,11 +50,13 @@
   
   .textfield>[type='submit']{
     line-height: 17px!important;
+    padding-top: 12px!important;
     padding-bottom: 12px!important;
+    margin-top: 12px!important;
     background: #00afec;
     color:#fff;
     width:100px;
-    margin-left: 14px;
+    margin-left: 0px;
     cursor: pointer;
   }
   .textfield>[type='submit']:hover{
