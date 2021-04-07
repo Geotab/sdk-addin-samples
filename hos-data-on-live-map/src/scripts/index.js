@@ -18,8 +18,6 @@ geotab.addin.request = (elt, service) => {
         trailerName: ""
     };
 
-    //var el = document.querySelector('.dropdown');
-
 
     createTransferLog();
 
@@ -55,37 +53,20 @@ geotab.addin.request = (elt, service) => {
     function createSeperator() {
         
         var menuItem = $(`<li><hr class="dropdown-divider"></li`);
-        
-        // var menuItem = document.createElement('li');
-        // var hr = document.createElement('hr');
-        // hr.setAttribute('class','dropdown-divider');        
-        // menuItem.appendChild(hr);
+
         $('.dropdown-menu').append(menuItem);
     };
 
     function createMenuItem(id, text, callback) {
 
         var menuItem=$(`<li><button class="dropdown-item" type="button" id="${id}">${text}</button></li>`);
-        // var menuItem = document.createElement('li');
 
-        // var button = document.createElement('button');
-        // button.setAttribute('class','dropdown-item');
-        // button.setAttribute('type','button');
-        // button.setAttribute('id', id);
-        // button.innerHTML = text;
-
-        // menuItem.appendChild(button);
         $('.dropdown-menu').append(menuItem);
 
         return menuItem.find("button").click((e) => {
             callback(e);
         },);
         
-        
-        
-        // button.addEventListener('click', (e) => {
-        //     callback(e);
-        // }, false);
     };
     
 
@@ -203,43 +184,36 @@ geotab.addin.request = (elt, service) => {
     }
 
     function displayCurrentStatus(currentStatus) {
-        //var currStatusElt = elt.querySelector("#current_status");
         var currStatusElt = $("#current_status");
 
         if (!currentStatus) {
-            //currStatusElt.textContent = "No Current Status Information Available";
+            
             currStatusElt.text("No Current Status Information Available");
-            //currStatusElt.classList.remove("available_status");
+        
             currStatusElt.removeClass("available_status");
-            //currStatusElt.style.background = "initial";
+            
             currStatusElt.css("background","initial");
             return;
         }
 
         console.log("This is the current duty status:", currentStatus);
 
-        //currStatusElt.classList.add("available_status");
+        
         currStatusElt.addClass("available_status");
-        //currStatusElt.textContent = currentStatus;
+        
         currStatusElt.text(currentStatus);
 
-        if (currentStatus === "OFF") {
-            //currStatusElt.style.background = "#888888";
+        if (currentStatus === "OFF") {         
             currStatusElt.css("background","#888888");
         } else if (currentStatus === "SB") {
-            //currStatusElt.style.background = "#E95353";
             currStatusElt.css("background","#E95353");
         } else if (currentStatus === "D") {
-            //currStatusElt.style.background = "#48BB48";
             currStatusElt.css("background","#48BB48");
         } else if (currentStatus === "ON") {
-            //currStatusElt.style.background = "#FFA500";
             currStatusElt.css("background","#FFA500");
         } else if (currentStatus === "YM") {
-            //currStatusElt.style.background = "#FFA500";
             currStatusElt.css("background","#FFA500");
         } else {
-            //currStatusElt.style.background = "#888888";
             currStatusElt.css("background","#888888");
         }
     }
@@ -438,7 +412,7 @@ geotab.addin.request = (elt, service) => {
                 }
             } else {
                 console.log("This vehicle never had a DVIR log done");
-                //elt.querySelector("dvir").textContent = "This vehicle never had a DVIR log done"
+                
                 $("#dvir").text("No DVIR Logs");
             }
 
@@ -451,16 +425,11 @@ geotab.addin.request = (elt, service) => {
                 createDriverButtons(CurrentDriver);
                 console.log("Current Driver", CurrentDriver);
 
-                //var hosDataButton = elt.querySelector("#hos_data_view_logs_button");
-
-                //hosDataButton.removeAttribute("hidden");
                 $("#hos_data_view_logs_button").removeAttr("hidden");
                 //Go to Duty Status Log page
-                //hosDataButton.removeEventListener("click", goToHOSPageHandler, false);
                 $("#hos_data_view_logs_button").off("click",goToHOSPageHandler);
 
                 goToHOSPageHandler = goToHOSPage(CurrentDriver);
-                //hosDataButton.addEventListener("click", goToHOSPageHandler, false);
                 $("#hos_data_view_logs_button").on("click",goToHOSPageHandler);
 
                 let driverRegulations = service.api.call("Get", {
@@ -696,10 +665,10 @@ geotab.addin.request = (elt, service) => {
                     console.log("This is the list of active malfunction/diagnostic:", activeMalfunctionList);
 
                     if (activeMalfunctionList.length === 0) {
-                        //elt.querySelector("#malfunctions").textContent = "No Active Malfunctions";
+                        
                         $('#malfunctions').text("No Active Malfunctions");
                     } else {
-                        //elt.querySelector("#malfunctions").textContent = activeMalfunctionList.join("\n");
+                        
                         $('#malfunctions').text(activeMalfunctionList.join("\n"));
                     }
                 });
@@ -707,56 +676,55 @@ geotab.addin.request = (elt, service) => {
                 displayActiveTrailers(goDeviceid, currentDate);
             } else if (!deviceRelatedData[0][0]) {
                 console.log("No Driver Change object returned to get the HOS Data");
-                //elt.querySelector("#driver_details").textContent = "No Driver Change object returned";
+                
                 $('#driver_details').text("No Driver Change object returned");
-                //elt.querySelector("#malfunctions").textContent = "No malfunction information available";
+                
                 $('#malfunctions').text("No malfunction information available");
-                //elt.querySelector("#driver_availability").textContent = "No Availability information available";
+                
                 $('#driver_availability').text("No Availability information available");
-                //elt.querySelector("#active_violation").textContent = "No violation information available";
+               
                 $('#active_violation').text("No violation information available");
-                //elt.querySelector("#current_status").classList.remove("available_status");
+                
                 $("#current_status").removeClass("available_status");
-                //$("#current_status").remove(".available_status");
-                //elt.querySelector("#current_status").style.background = "initial";
+                
                 $("#current_status").css("background","initial");
-                //elt.querySelector("#current_status").textContent = "No Current Status Information Available";
+                
                 $('#current_status').text("No Current Status Information Available");
-                //elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+                
                 $('#daily_Summaries').text("No Daily Summary Information Available");
                 // elt.querySelector("#driver_availability_heading").textContent = "";
                 //elt.querySelector("#driver_availability_body").textContent = "";
-                //elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
+                
                 $("#shipment_attached").text("No Active Shipments");
-                //elt.querySelector("#available_exemptions").textContent = "No Exemption Information Available";
+                
                 $("#available_exemptions").text("No Exemption Information Available");
-                //elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
+                
                 $("#hos_data_view_logs_button").attr("hidden", "");
             } else if (deviceRelatedData[0][0].driver == "UnknownDriverId") {
                 console.log("This Vehicle does not have an assigned Driver to get the HOS Data");
-                //elt.querySelector("#driver_details").textContent = "No Driver assigned to the vehicle";
+                
                 $('#driver_details').text("No Driver assigned to the vehicle");
-                //elt.querySelector("#malfunctions").textContent = "No malfunction information available";
+                
                 $('#malfunctions').text("No malfunction information available");
-                //elt.querySelector("#driver_availability").textContent = "No Availability information available";
+                
                 $('#driver_availability').text("No Availability information available");
-                //elt.querySelector("#active_violation").textContent = "No violation information available";
+                
                 $('#active_violation').text("No violation information available");
-                //elt.querySelector("#current_status").classList.remove("available_status");
+                
                 $("#current_status").removeClass("available_status");
-                //elt.querySelector("#current_status").style.background = "initial";
+                
                 $("#current_status").css("background","initial");
-                //elt.querySelector("#current_status").textContent = "No Current Status Information Available";
+                
                 $('#current_status').text("No Current Status Information Available");
-                //elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+               
                 $('#daily_Summaries').text("No Daily Summary Information Available");
                 //elt.querySelector("#driver_availability_heading").textContent = "";
                 //elt.querySelector("#driver_availability_body").textContent = "";
-                //elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
+                
                 $("#shipment_attached").text("No Active Shipments");
-                //elt.querySelector("#available_exemptions").textContent = "No Exemption Information Available";
+               
                 $("#available_exemptions").text("No Exemption Information Available");
-                //elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
+                
                 $("#hos_data_view_logs_button").attr("hidden", "");
             }
         });
