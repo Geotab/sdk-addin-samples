@@ -18,10 +18,8 @@ geotab.addin.request = (elt, service) => {
         trailerName: ""
     };
 
-    var el = document.querySelector('.dropdown');
-    var btn = el.querySelector('.dropdown-toggle');
-    var menuItems = el.querySelector('.dropdown-menu');
-    var visible = false;
+    //var el = document.querySelector('.dropdown');
+
 
     createTransferLog();
 
@@ -50,35 +48,45 @@ geotab.addin.request = (elt, service) => {
     }
 
     function deleteMenuItems() {
-        menuItems.innerHTML = "";
+        $('.dropdown-menu').html("");
         createTransferLog();
     }
 
     function createSeperator() {
-        var menuItem = document.createElement('li');
-        var hr = document.createElement('hr');
-        hr.setAttribute('class','dropdown-divider');        
-        menuItem.appendChild(hr);
-        menuItems.appendChild(menuItem);
-    }
+        
+        var menuItem = $(`<li><hr class="dropdown-divider"></li`);
+        
+        // var menuItem = document.createElement('li');
+        // var hr = document.createElement('hr');
+        // hr.setAttribute('class','dropdown-divider');        
+        // menuItem.appendChild(hr);
+        $('.dropdown-menu').append(menuItem);
+    };
 
     function createMenuItem(id, text, callback) {
 
-        var menuItem = document.createElement('li');
+        var menuItem=$(`<li><button class="dropdown-item" type="button" id="${id}">${text}</button></li>`);
+        // var menuItem = document.createElement('li');
 
-        var button = document.createElement('button');
-        button.setAttribute('class','dropdown-item');
-        button.setAttribute('type','button');
-        button.setAttribute('id', id);
-        button.innerHTML = text;
+        // var button = document.createElement('button');
+        // button.setAttribute('class','dropdown-item');
+        // button.setAttribute('type','button');
+        // button.setAttribute('id', id);
+        // button.innerHTML = text;
 
-        menuItem.appendChild(button);
-        menuItems.appendChild(menuItem);
+        // menuItem.appendChild(button);
+        $('.dropdown-menu').append(menuItem);
 
-        return button.addEventListener('click', (e) => {
+        return menuItem.find("button").click((e) => {
             callback(e);
-        }, false);
-    }
+        },);
+        
+        
+        
+        // button.addEventListener('click', (e) => {
+        //     callback(e);
+        // }, false);
+    };
     
 
     function gotoTransferPage() {
@@ -93,32 +101,26 @@ geotab.addin.request = (elt, service) => {
             },
             isNewThread: false
           });
-    }
+    };
 
     function availabilityCard(availabilityType,availabilityDuration){
         console.log("Availabilties:",availabilityType,availabilityDuration);
-        var driverAvailability = document.querySelector('#driver_availability_table');
 
-        var card = document.createElement("div");
-        card.setAttribute('class','card text-center avalability-card');
+        let card = $(`
+            <div class="card text-center avalability-card">
+                <div class="card-body">
+                    <h5 class="card-title" id="driver_availability_heading">
+                    </h5>
+                    <p class="card-text" id="driver_availability_body">
+                    </p>
+                </div>
+            </div>
+        `);
 
-        var cardBody = document.createElement("div");
-        cardBody.setAttribute('class','card-body');
+        card.find("#driver_availability_heading").append(availabilityIcons(availabilityType));
+        card.find("#driver_availability_body").append(formatDuration(availabilityDuration));
 
-        var availabilityHeading= document.createElement("h5");
-        availabilityHeading.setAttribute('class','card-title');
-        availabilityHeading.setAttribute('id','driver_availability_heading');
-        availabilityHeading.innerHTML = availabilityIcons(availabilityType)[0].outerHTML;
-
-        var availabilityBody = document.createElement("p");
-        availabilityBody.setAttribute('class','card-text');
-        availabilityBody.setAttribute('id','driver_availability_body');
-        availabilityBody.innerHTML = formatDuration(availabilityDuration);
-
-        driverAvailability.appendChild(card);
-        card.appendChild(cardBody);
-        cardBody.appendChild(availabilityHeading);
-        cardBody.appendChild(availabilityBody);
+        $('#driver_availability_table').append(card);
 
     };
 
@@ -177,9 +179,9 @@ geotab.addin.request = (elt, service) => {
         driverInfo.driverName = driverName ? driverName : driverInfo.driverName;  
         driverInfo.deviceName = deviceName ? deviceName : driverInfo.deviceName;  
         driverInfo.trailerName = trailerName ? trailerName : driverInfo.trailerName;  
-        elt.querySelector("#device_name").textContent = driverInfo.deviceName;
-        elt.querySelector("#trailer_attached").textContent = driverInfo.trailerName;
-        elt.querySelector("#driver_details").textContent = driverInfo.driverName;
+        $("#device_name").text(driverInfo.deviceName);
+        $("#trailer_attached").text(driverInfo.trailerName);
+        $("#driver_details").text(driverInfo.driverName);
     }
 
     function formatDuration(duration) {
@@ -201,32 +203,44 @@ geotab.addin.request = (elt, service) => {
     }
 
     function displayCurrentStatus(currentStatus) {
-        var currStatusElt = elt.querySelector("#current_status");
+        //var currStatusElt = elt.querySelector("#current_status");
+        var currStatusElt = $("#current_status");
 
         if (!currentStatus) {
-            currStatusElt.textContent = "No Current Status Information Available";
-            currStatusElt.classList.remove("available_status");
-            currStatusElt.style.background = "initial";
+            //currStatusElt.textContent = "No Current Status Information Available";
+            currStatusElt.text("No Current Status Information Available");
+            //currStatusElt.classList.remove("available_status");
+            currStatusElt.removeClass("available_status");
+            //currStatusElt.style.background = "initial";
+            currStatusElt.css("background","initial");
             return;
         }
 
         console.log("This is the current duty status:", currentStatus);
 
-        currStatusElt.classList.add("available_status");
-        currStatusElt.textContent = currentStatus;
+        //currStatusElt.classList.add("available_status");
+        currStatusElt.addClass("available_status");
+        //currStatusElt.textContent = currentStatus;
+        currStatusElt.text(currentStatus);
 
         if (currentStatus === "OFF") {
-            currStatusElt.style.background = "#888888";
+            //currStatusElt.style.background = "#888888";
+            currStatusElt.css("background","#888888");
         } else if (currentStatus === "SB") {
-            currStatusElt.style.background = "#E95353";
+            //currStatusElt.style.background = "#E95353";
+            currStatusElt.css("background","#E95353");
         } else if (currentStatus === "D") {
-            currStatusElt.style.background = "#48BB48";
+            //currStatusElt.style.background = "#48BB48";
+            currStatusElt.css("background","#48BB48");
         } else if (currentStatus === "ON") {
-            currStatusElt.style.background = "#FFA500";
+            //currStatusElt.style.background = "#FFA500";
+            currStatusElt.css("background","#FFA500");
         } else if (currentStatus === "YM") {
-            currStatusElt.style.background = "#FFA500";
+            //currStatusElt.style.background = "#FFA500";
+            currStatusElt.css("background","#FFA500");
         } else {
-            currStatusElt.style.background = "#888888";
+            //currStatusElt.style.background = "#888888";
+            currStatusElt.css("background","#888888");
         }
     }
 
@@ -283,17 +297,17 @@ geotab.addin.request = (elt, service) => {
         if (shippingListFinal.length > 0) {
             var shipments = shippingListFinal.map((s, i) => (i + 1) + ") " + s).join("\n");
 
-            elt.querySelector("#shipment_attached").textContent = shipments;
+            $("#shipment_attached").text(shipments);
             console.log("This is final shippinglist", shipments);
         } else {
-            elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
+            $("#shipment_attached").text("No Active Shipments");
         }
     }
 
     function showAvailabilityWarningIcon(warningIndex, warningIconClass, warningMessage) {
-        elt.querySelectorAll("#driver_availability_body svg")[warningIndex].classList.remove("hos_availability_icon");
-        elt.querySelectorAll("#driver_availability_body td")[warningIndex].classList.add(warningIconClass);
-        elt.querySelectorAll("#driver_availability_body td")[warningIndex].setAttribute("title", warningMessage);
+        $("#driver_availability_body svg")[warningIndex].removeClass("hos_availability_icon");
+        $("#driver_availability_body td")[warningIndex].addClass(warningIconClass);
+        $("#driver_availability_body td")[warningIndex].attr("title", warningMessage);
     }
 
     function getLatestMalfunctionDiagnosticLog(logList) {
@@ -408,24 +422,24 @@ geotab.addin.request = (elt, service) => {
                 //This section will identify what is the state of the DVIR Log
                 if (DVIRInfo.hasOwnProperty("certifyDate") && DVIRInfo.hasOwnProperty("repairDate")) {
                     console.log("Most recent DVIR log for this vehicle was repaired and certified");
-                    elt.querySelector("#dvir").textContent = "Most recent DVIR log for this vehicle was repaired and certified";
+                    $("#dvir").text("Most recent DVIR log for this vehicle was repaired and certified");
                 } else if (!DVIRInfo.hasOwnProperty("defects") && !DVIRInfo.hasOwnProperty("certifyDate")) {
                     console.log("Most recent DVIR log for this vehicle has no defects");
-                    elt.querySelector("#dvir").textContent = "Most recent DVIR log for this vehicle has no defects";
+                    $("#dvir").text("Most recent DVIR log for this vehicle has no defects");
                 } else if (!DVIRInfo.hasOwnProperty("defects") && DVIRInfo.hasOwnProperty("certifyDate")) {
                     console.log("Most recent DVIR log for this vehicle has no defects and was certified");
-                    elt.querySelector("#dvir").textContent = "Most recent DVIR log for this vehicle has no defects and was certified";
+                    $("#dvir").text("Most recent DVIR log for this vehicle has no defects and was certified");
                 } else if (DVIRInfo.hasOwnProperty("defects") && !DVIRInfo.hasOwnProperty("repairDate")) {
                     console.log("Most recent DVIR log for this vehicle has defects but are not repaired");
-                    elt.querySelector("#dvir").textContent = "Most recent DVIR log for this vehicle has defects but are not repaired";
+                    $("#dvir").text("Most recent DVIR log for this vehicle has defects but are not repaired");
                 } else if (DVIRInfo.hasOwnProperty("repairDate") && !DVIRInfo.hasOwnProperty("certifyDate")) {
                     console.log("Most recent DVIR log for this vehicle has defects but not certified");
-                    elt.querySelector("#dvir").textContent = "Most recent DVIR log for this vehicle has defects which are repaired but not certified";
+                    $("#dvir").text("Most recent DVIR log for this vehicle has defects which are repaired but not certified");
                 }
             } else {
                 console.log("This vehicle never had a DVIR log done");
                 //elt.querySelector("dvir").textContent = "This vehicle never had a DVIR log done"
-                elt.querySelector("#dvir").textContent = "No DVIR Logs";
+                $("#dvir").text("No DVIR Logs");
             }
 
             // need to do something here because its giving undefined error for vehicles which dont even have that object
@@ -437,14 +451,17 @@ geotab.addin.request = (elt, service) => {
                 createDriverButtons(CurrentDriver);
                 console.log("Current Driver", CurrentDriver);
 
-                var hosDataButton = elt.querySelector("#hos_data_view_logs_button");
+                //var hosDataButton = elt.querySelector("#hos_data_view_logs_button");
 
-                hosDataButton.removeAttribute("hidden");
+                //hosDataButton.removeAttribute("hidden");
+                $("#hos_data_view_logs_button").removeAttr("hidden");
                 //Go to Duty Status Log page
-                hosDataButton.removeEventListener("click", goToHOSPageHandler, false);
+                //hosDataButton.removeEventListener("click", goToHOSPageHandler, false);
+                $("#hos_data_view_logs_button").off("click",goToHOSPageHandler);
 
                 goToHOSPageHandler = goToHOSPage(CurrentDriver);
-                hosDataButton.addEventListener("click", goToHOSPageHandler, false);
+                //hosDataButton.addEventListener("click", goToHOSPageHandler, false);
+                $("#hos_data_view_logs_button").on("click",goToHOSPageHandler);
 
                 let driverRegulations = service.api.call("Get", {
                     "typeName": "DriverRegulation",
@@ -460,19 +477,18 @@ geotab.addin.request = (elt, service) => {
                     var index;
                     
                     console.log("Availability",driverRegulationResult[0]);
-
-                    elt.querySelector("#driver_availability").textContent = "";
-                    elt.querySelector("#driver_availability_table").textContent = "";
+                    $("#driver_availability").text("");
+                    $("#driver_availability_table").text("");
 
                     if (driverRegulationResult.length === 0) {
                         console.log("User is on no ruleset");
-                        elt.querySelector("#driver_availability").textContent = "User is on no ruleset";
+                        $("#driver_availability").text("User is on no ruleset");
                         return;
                     }
 
                     if (driverRegulationResult[0].availability.availabilities.length == 0) {
                         console.log("User is on no ruleset");
-                        elt.querySelector("#driver_availability").textContent = "User is on no ruleset";
+                        $("#driver_availability").text("User is on no ruleset");
                     } else {                        
                         var cycleAvailableTomorrow = driverRegulationResult[0].availability.cycleAvailabilities[0].available;
                         driverRegulationResult[0].availability.availabilities.push({
@@ -486,27 +502,6 @@ geotab.addin.request = (elt, service) => {
 
                             
                             availabilityCard(availabilityType,availabilityDuration);
-                                                        
-                            // var tempAvailabilityHeading = document.createElement("td");
-                            // tempAvailabilityHeading.textContent = availabilityType;
-                            // elt.querySelector("#driver_availability_heading").appendChild(tempAvailabilityHeading);
-
-                            // var tempAvailabilityBody = document.createElement("td");
-                            // tempAvailabilityBody.textContent = formatDuration(availabilityDuration);
-
-                            // var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                            // svgElement.setAttribute("class", "hos_availability_icon");
-                            // svgElement.setAttribute("height", "14px");
-                            // svgElement.setAttribute("width", "14px");
-                            // svgElement.setAttribute("viewBox", "0 0 45.311 45.311");
-
-                            // var pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                            // pathElement.setAttribute("d", "M22.675,0.02c-0.006,0-0.014,0.001-0.02,0.001c-0.007,0-0.013-0.001-0.02-0.001C10.135,0.02,0,10.154,0,22.656 c0,12.5,10.135,22.635,22.635,22.635c0.007,0,0.013,0,0.02,0c0.006,0,0.014,0,0.02,0c12.5,0,22.635-10.135,22.635-22.635 C45.311,10.154,35.176,0.02,22.675,0.02z M22.675,38.811c-0.006,0-0.014-0.001-0.02-0.001c-0.007,0-0.013,0.001-0.02,0.001 c-2.046,0-3.705-1.658-3.705-3.705c0-2.045,1.659-3.703,3.705-3.703c0.007,0,0.013,0,0.02,0c0.006,0,0.014,0,0.02,0 c2.045,0,3.706,1.658,3.706,3.703C26.381,37.152,24.723,38.811,22.675,38.811z M27.988,10.578 c-0.242,3.697-1.932,14.692-1.932,14.692c0,1.854-1.519,3.356-3.373,3.356c-0.01,0-0.02,0-0.029,0c-0.009,0-0.02,0-0.029,0 c-1.853,0-3.372-1.504-3.372-3.356c0,0-1.689-10.995-1.931-14.692C17.202,8.727,18.62,5.29,22.626,5.29 c0.01,0,0.02,0.001,0.029,0.001c0.009,0,0.019-0.001,0.029-0.001C26.689,5.29,28.109,8.727,27.988,10.578z");
-
-                            // svgElement.appendChild(pathElement);
-
-                            // tempAvailabilityBody.appendChild(svgElement);
-                            // elt.querySelector("#driver_availability_body").appendChild(tempAvailabilityBody);
 
                             //Find out the position (index) of the availability type with the lowest duration
                             var hours = parseInt(availabilityArrayDuration[j].split(" ")[0].split("h")[0], 10);
@@ -545,9 +540,9 @@ geotab.addin.request = (elt, service) => {
 
                     if (violations.length > 0) {
                         console.log(violations);
-                        elt.querySelector("#active_violation").textContent = violations;
+                        $("#active_violation").text(violations);
                     } else {
-                        elt.querySelector("#active_violation").textContent = "No active violations!";
+                        $("#active_violation").text("No active violations!");
                     }
 
                     if (driverRegulationResult[0].hasOwnProperty("daySummaries")) {
@@ -571,10 +566,10 @@ geotab.addin.request = (elt, service) => {
                         }
                         console.log(dailySummaryArray);
 
-                        elt.querySelector("#daily_Summaries").textContent = dailySummaryArray.join("\n");
+                        $("#daily_Summaries").text(dailySummaryArray.join("\n"));
                     } else {
                         console.log("No Day Summaries Available");
-                        elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+                        $("#daily_Summaries").text("No Daily Summary Information Available");
                     }
                 });
 
@@ -642,7 +637,7 @@ geotab.addin.request = (elt, service) => {
                         var driverRegulationResult = result[1];
                         var currentRuleset = multicallresults[1][0].hosRuleSet;
                         console.log("This is the driver's current ruleset:", currentRuleset);
-                        elt.querySelector("#current_ruleset").textContent =  currentRuleset;
+                        $("#current_ruleset").text(currentRuleset);
                         setDriverInfo({driverName: multicallresults[1][0].name});
                         // Get available exemptions (16 hour, adverse driving
                         
@@ -669,7 +664,8 @@ geotab.addin.request = (elt, service) => {
                         }
                         console.log("test 4");
 
-                        elt.querySelector("#available_exemptions").textContent = availableExemptionsArray.join("\n");
+                        //elt.querySelector("#available_exemptions").textContent = availableExemptionsArray.join("\n");
+                        $('#available_exemptions').text(availableExemptionsArray.join("\n"));
 
                         displayCurrentStatus(multicallresults[0][0] && multicallresults[0][0].status);
                         displayShipmentInfo(multicallresults[2]);
@@ -700,43 +696,68 @@ geotab.addin.request = (elt, service) => {
                     console.log("This is the list of active malfunction/diagnostic:", activeMalfunctionList);
 
                     if (activeMalfunctionList.length === 0) {
-                        elt.querySelector("#malfunctions").textContent = "No Active Malfunctions";
+                        //elt.querySelector("#malfunctions").textContent = "No Active Malfunctions";
+                        $('#malfunctions').text("No Active Malfunctions");
                     } else {
-                        elt.querySelector("#malfunctions").textContent = activeMalfunctionList.join("\n");
+                        //elt.querySelector("#malfunctions").textContent = activeMalfunctionList.join("\n");
+                        $('#malfunctions').text(activeMalfunctionList.join("\n"));
                     }
                 });
 
                 displayActiveTrailers(goDeviceid, currentDate);
             } else if (!deviceRelatedData[0][0]) {
                 console.log("No Driver Change object returned to get the HOS Data");
-                elt.querySelector("#driver_details").textContent = "No Driver Change object returned";
-                elt.querySelector("#malfunctions").textContent = "No malfunction information available";
-                elt.querySelector("#driver_availability").textContent = "No Availability information available";
-                elt.querySelector("#active_violation").textContent = "No violation information available";
-                elt.querySelector("#current_status").classList.remove("available_status");
-                elt.querySelector("#current_status").style.background = "initial";
-                elt.querySelector("#current_status").textContent = "No Current Status Information Available";
-                elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+                //elt.querySelector("#driver_details").textContent = "No Driver Change object returned";
+                $('#driver_details').text("No Driver Change object returned");
+                //elt.querySelector("#malfunctions").textContent = "No malfunction information available";
+                $('#malfunctions').text("No malfunction information available");
+                //elt.querySelector("#driver_availability").textContent = "No Availability information available";
+                $('#driver_availability').text("No Availability information available");
+                //elt.querySelector("#active_violation").textContent = "No violation information available";
+                $('#active_violation').text("No violation information available");
+                //elt.querySelector("#current_status").classList.remove("available_status");
+                $("#current_status").removeClass("available_status");
+                //$("#current_status").remove(".available_status");
+                //elt.querySelector("#current_status").style.background = "initial";
+                $("#current_status").css("background","initial");
+                //elt.querySelector("#current_status").textContent = "No Current Status Information Available";
+                $('#current_status').text("No Current Status Information Available");
+                //elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+                $('#daily_Summaries').text("No Daily Summary Information Available");
                 // elt.querySelector("#driver_availability_heading").textContent = "";
                 //elt.querySelector("#driver_availability_body").textContent = "";
-                elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
-                elt.querySelector("#available_exemptions").textContent = "No Exemption Information Available";
-                elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
+                //elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
+                $("#shipment_attached").text("No Active Shipments");
+                //elt.querySelector("#available_exemptions").textContent = "No Exemption Information Available";
+                $("#available_exemptions").text("No Exemption Information Available");
+                //elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
+                $("#hos_data_view_logs_button").attr("hidden", "");
             } else if (deviceRelatedData[0][0].driver == "UnknownDriverId") {
                 console.log("This Vehicle does not have an assigned Driver to get the HOS Data");
-                elt.querySelector("#driver_details").textContent = "No Driver assigned to the vehicle";
-                elt.querySelector("#malfunctions").textContent = "No malfunction information available";
-                elt.querySelector("#driver_availability").textContent = "No Availability information available";
-                elt.querySelector("#active_violation").textContent = "No violation information available";
-                elt.querySelector("#current_status").classList.remove("available_status");
-                elt.querySelector("#current_status").style.background = "initial";
-                elt.querySelector("#current_status").textContent = "No Current Status Information Available";
-                elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+                //elt.querySelector("#driver_details").textContent = "No Driver assigned to the vehicle";
+                $('#driver_details').text("No Driver assigned to the vehicle");
+                //elt.querySelector("#malfunctions").textContent = "No malfunction information available";
+                $('#malfunctions').text("No malfunction information available");
+                //elt.querySelector("#driver_availability").textContent = "No Availability information available";
+                $('#driver_availability').text("No Availability information available");
+                //elt.querySelector("#active_violation").textContent = "No violation information available";
+                $('#active_violation').text("No violation information available");
+                //elt.querySelector("#current_status").classList.remove("available_status");
+                $("#current_status").removeClass("available_status");
+                //elt.querySelector("#current_status").style.background = "initial";
+                $("#current_status").css("background","initial");
+                //elt.querySelector("#current_status").textContent = "No Current Status Information Available";
+                $('#current_status').text("No Current Status Information Available");
+                //elt.querySelector("#daily_Summaries").textContent = "No Daily Summary Information Available";
+                $('#daily_Summaries').text("No Daily Summary Information Available");
                 //elt.querySelector("#driver_availability_heading").textContent = "";
                 //elt.querySelector("#driver_availability_body").textContent = "";
-                elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
-                elt.querySelector("#available_exemptions").textContent = "No Exemption Information Available";
-                elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
+                //elt.querySelector("#shipment_attached").textContent = "No Active Shipments";
+                $("#shipment_attached").text("No Active Shipments");
+                //elt.querySelector("#available_exemptions").textContent = "No Exemption Information Available";
+                $("#available_exemptions").text("No Exemption Information Available");
+                //elt.querySelector("#hos_data_view_logs_button").setAttribute("hidden", "");
+                $("#hos_data_view_logs_button").attr("hidden", "");
             }
         });
     }
@@ -765,12 +786,9 @@ geotab.addin.request = (elt, service) => {
             trailerName: ""
         };
     
-        var rows = elt.querySelectorAll(".hos_data_addin_row");
+        $(".hos_data_addin_row").removeAttr("hidden");
 
-        for (var i = 0; i < rows.length; i++) {
-            rows[i].removeAttribute("hidden");
-        }
-        elt.querySelector(".hos_data_addin_row_initial_Message").setAttribute("hidden", "");
+        $(".hos_data_addin_row_initial_Message").attr("hidden", "");
     }
 
     attachMenuFunction();
