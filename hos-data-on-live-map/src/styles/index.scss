@@ -1,6 +1,5 @@
-.body {
-    margin:0;
-}
+@import "~bootstrap/scss/bootstrap";
+
 
 .addin .hos_data_addin_row {
     /* display: flex; */
@@ -96,4 +95,15 @@
   color: #48BB48;
   font-weight: bold;
   fill: #48BB48;
+}
+
+.avalability-card div {
+    
+}
+
+.avalability-card div h5 {
+   
+}
+
+.avalability-card div p {
 }

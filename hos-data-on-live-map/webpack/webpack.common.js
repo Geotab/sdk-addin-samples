@@ -1,4 +1,5 @@
 const Path = require('path');
+const webpack = require("webpack");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -18,6 +19,12 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'window.jQuery': 'jquery',
+        Popper: ['popper.js', 'default']
+    }),
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({ patterns: [
       { from: Path.resolve(__dirname, '../public'), to: 'public' },

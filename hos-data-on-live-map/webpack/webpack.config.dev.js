@@ -21,7 +21,8 @@ module.exports = merge(common, {
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
     new MiniCssExtractPlugin({
-      filename: 'bundle.css',
+      filename: '[name].js',
+      chunkFilename: '[id].[chunkhash].js'
     }),
   ],
   devServer: {
@@ -65,9 +66,21 @@ module.exports = merge(common, {
         loader: 'babel-loader',
       },
       {
-        test: /\.s?css/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+        test: /\.(scss)$/,
+        use: [{
+          loader: 'style-loader', // inject CSS to page
+        }, {
+          loader: 'css-loader', // translates CSS into CommonJS modules
+        }, {
+          loader: 'postcss-loader'
+        }, {
+          loader: 'sass-loader' // compiles Sass to CSS
+        }]
       },
+      {
+        test: /\.css/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+      }
     ],
   },
 });

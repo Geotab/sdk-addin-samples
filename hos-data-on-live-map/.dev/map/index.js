@@ -20,16 +20,17 @@ class map {
           <div class="form-container">
             <h6>${itemresults.title}</h6>
             <div class="textfield">
-        			<input name="driver_id" type="text" value="">
+        			<input name="driver_id" type="text" value="b14">
         			<label>Driver ID</label>
         		</div>
-            <div class="textfield">
+            <div class="textfield" style="display:block">
               <input type="submit" value="Send Event">
             </div>
           </div>
         </form>
       `);
       $(menu).submit(function(ev) {
+        console.log(ev);
         ev.preventDefault();
         global.events.emit(itemresults.clickEvent, {
           "x": 402,
@@ -40,7 +41,7 @@ class map {
             "lng": -79.83887479999999
           },
           "device": {
-            "id": ev.target.value
+            "id": ev.target[0].value
           }
         })
       })

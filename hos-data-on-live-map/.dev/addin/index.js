@@ -8,9 +8,9 @@ import '../styles/form.scss'
 
 let addin = $('.addin').clone();
 $('.addin').remove();
-$('body').append(`<div class="container"></div>`);
-$('.container').append(navbar);
-$('.container').append(map.template);
-$('.container').append(addin);
+$('body').append(`<div class="addin_container"></div>`);
+$('.addin_container').append(navbar);
+$('.addin_container').append(map.template);
+$('.addin_container').append(addin);
 initNavbar();
 
