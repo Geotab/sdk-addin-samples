@@ -2,6 +2,7 @@
 import "../styles/index.scss";
 import $ from 'jquery';
 import 'bootstrap';
+
 //import "../styles/dropdown.scss";
 // eslint-disable-next-line no-undef
 
@@ -18,8 +19,114 @@ geotab.addin.request = (elt, service) => {
         trailerName: ""
     };
 
+    
 
+    function getAllDriversInfo(){
+        let drivers = {};
+        return new Promise((resolve, reject) => {
+            service.api.call("Get",{
+                "typeName":"User",
+                "search":{
+                    "isDriver":true,
+                }
+            
+            }).then(results =>{
+                results.filter(s => s).forEach(driver => {
+                    drivers[driver.id] = driver;                    
+                });                
+                let dutyStatusLogs = service.api.multiCall(results.map(driver=>{
+                    return ["Get", {
+                        typeName: "DutyStatusLog",
+                        search:
+                        {
+                            UserSearch: { id: driver.id },
+                            fromDate: (new Date()).toISOString(),
+                            statuses: ["D", "ON", "OFF", "SB", "YM", "PC", "WT"],
+                            includeBoundaryLogs: true
+                        }
+                    }];
+                }));
+            
+                let driverRegulations = service.api.multiCall(results.map(driver=>{
+                    return ["Get", {
+                        typeName:"DriverRegulation",
+                        search: {
+                            userSearch: {
+                                id: driver.id
+                            }
+                        }
+                    }];
+                }));
+            
+                Promise.all([dutyStatusLogs,driverRegulations])
+                .then(async function(result){
+                    var dutyStatusResults = result[0];
+                    let dutyStatus = dutyStatusResults.map(s => s[0]);
+                    
+                    //let deviceIds =  dutyStatusResults.map(s => s[0]).map(dutyStatus=>dutyStatus?dutyStatus.device.id:"No_Device");
+                    let deviceIds =  dutyStatusResults.filter(s => s).map(s => s[0]).map(dutyStatus=>dutyStatus && (dutyStatus.device!="NoDeviceId")?dutyStatus.device.id:"NoDeviceId");
+                    let addresses = await getAddresses(deviceIds);
+                    var driverRegulationsResult=result[1];
+                    let driverAvailability = driverRegulationsResult.map(s =>s[0]);
+                    driverAvailability.filter(s => s).forEach(value => {
+                        const id = value.availability.driver.id;
+                        drivers[id].availability = value;
+                    });
+                    dutyStatus.filter(s => s).forEach((value, i) => {
+                        const id = value.driver.id;
+                        drivers[id].dutyStatus = value;
+                        drivers[id].address = addresses[i];
+                    });
+                    resolve(Object.values(drivers));
+                });
+            });
+        });
+    };
+
+    async function getAddresses (deviceIds){
+        return new Promise((resolve, reject) => {
+            const today = (new Date()).toISOString();
+
+            service.api.multiCall(deviceIds.map(id =>{
+                return [
+                    "Get", {
+                        "typeName":"LogRecord",
+                        "resultsLimit": 1,
+                        "search": {
+                            fromDate: today,
+                            toDate: today,
+                            "deviceSearch": {
+                                "id": id
+                            }
+                        }
+                    }];
+            }))
+            .then(results =>{
+                let logRecords = results.map(s =>s[0]).map(result=>result?
+                    ({
+                        x:result.longitude,y:result.latitude
+                    }):({
+                    x:0,y:0 
+                    }));
+                console.log("Log",logRecords);
+                service.api.multiCall(logRecords.map(coords=>{
+                    return [
+                        "GetAddresses", {
+                            "coordinates":[coords],
+                            "movingAddresses":true
+                        }];
+                }))
+                .then(addresses=>{
+                    let address=addresses.map(s=>s[0]).map(address=>(address.country!="Unknown")?address.formattedAddress:"Unknown");
+                    resolve(address);
+                });
+            });
+        });
+    }
+
+    
     createTransferLog();
+    compareDriver();
 
     function createDriverButtons(driverId) {
         var now = new Date();
@@ -45,9 +152,107 @@ geotab.addin.request = (elt, service) => {
         });
     }
 
+    function getCurrentStatusBadge(currentStatus) {
+        var currStatusElt = $(`<p id="current_status"></p>`);
+
+        if (!currentStatus) {
+            
+            currStatusElt.text("No Current Status Information Available");
+        
+            currStatusElt.removeClass("available_status");
+            
+            currStatusElt.css("background","initial");
+            return;
+        }
+      
+        currStatusElt.addClass("available_status");
+        
+        currStatusElt.text(currentStatus);
+
+        if (currentStatus === "OFF") {         
+            currStatusElt.css("background","#888888");
+        } else if (currentStatus === "SB") {
+            currStatusElt.css("background","#E95353");
+        } else if (currentStatus === "D") {
+            currStatusElt.css("background","#48BB48");
+        } else if (currentStatus === "ON") {
+            currStatusElt.css("background","#FFA500");
+        } else if (currentStatus === "YM") {
+            currStatusElt.css("background","#FFA500");
+        } else {
+            currStatusElt.css("background","#888888");
+        }
+        return currStatusElt;
+    }
+
+
+    async function listDrivers() {
+        const driverInformation = await getAllDriversInfo();        
+        for(let i=0;i<driverInformation.length;i++){
+            let availabilityCard = $(`
+            <div class="card text-center avalability-card">
+                <div class="card-body">
+                    <h5 class="card-title" id="driver_availability_heading">
+                    </h5>
+                    <p class="card-text" id="driver_availability_body">
+                    </p>
+                </div>
+            </div>
+        `);
+            let status = getCurrentStatusBadge(driverInformation[i].dutyStatus ? driverInformation[i].dutyStatus.status : "NO_STATUS")[0].outerHTML;
+            let address = driverInformation[i].address?driverInformation[i].address:"Unknown";
+            
+            let card = $(`
+            <div class="container">
+            <div class="card">
+              <div class="card-body">
+                <div class="row justify-content-start">
+                  <div class="col-2 p-0 pl-3"><span class="avatar avatar-32 bg-primary text-white rounded-circle">DN</span>
+                  </div>
+                  <div class="col-8 p-0 text-center">
+                      <h5>${driverInformation[i].firstName} ${driverInformation[i].lastName}</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">${address}</h6>
+                  </div>
+                  <div class="col-2 p-0 pr-2 text-center">
+                      ${status}
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <button type="button" class="btn btn-primary mr-3" id="message_driver"}>Message</button>
+                  <a type="button" class="btn btn-danger ml-3" id="call_driver">Phone</a> 
+                </div>
+                <br>
+                <p class="mb-1" id="driver_availability"></p>
+                <div class="justify-content-start card-columns" id="driver_availability_card">
+                </div>
+                </div>
+                <div class="alert alert-secondary" role="alert">
+                  A simple primary alert—check it out!
+                </div>
+              </div>
+            </div>  
+            `);            
+            $('.addin-driver-compare').append(card);
+            card.find("#message_driver").click(() => gotoMessagePage(driverInformation[i].id));
+            card.find("#call_driver").attr('href', `tel:${driverInformation[i].phoneNumber}`);
+            card.find('#driver_availability_card').append(availabilityCard);
+            
+        }
+        console.log(driverInformation);
+    }
+
+    function compareDriver(){
+        createMenuItem("compare-driver","Compare Driver",(e)=>{
+            $(".addin-driver-info").attr("hidden","");
+            $(".addin-driver-compare").removeAttr("hidden");
+            listDrivers();
+        });
+    }
+
     function deleteMenuItems() {
         $('.dropdown-menu').html("");
         createTransferLog();
+        compareDriver();
     }
 
     function createSeperator() {
@@ -386,6 +591,7 @@ geotab.addin.request = (elt, service) => {
             }]
 
         ]).then(deviceRelatedData => {
+            console.log("Multicall result",deviceRelatedData);
             var deviceName = deviceRelatedData[1][0].name;
             console.log("This is the devicename:", deviceName);
             setDriverInfo({deviceName: deviceName});
@@ -542,32 +748,6 @@ geotab.addin.request = (elt, service) => {
                     }
                 });
 
-                console.log("DutyStatusLog", JSON.stringify([["Get", {
-                    typeName: "DutyStatusLog",
-                    search:
-                    {
-                        UserSearch: { id: CurrentDriver },
-                        fromDate: currentDate,
-                        statuses: ["D", "ON", "OFF", "SB", "YM", "PC", "WT"],
-                        includeBoundaryLogs: true
-                    }
-                }],
-                ["Get", {
-                    typeName: "User",
-                    search: {
-                        id: CurrentDriver,
-                    }
-                }],
-
-                ["Get", {
-                    typeName: "ShipmentLog",
-                    search:
-                    {
-                        deviceSearch: { id: "b4" },
-                        fromDate: currentMidnight,
-                        toDate: nextMidnight
-                    }
-                }]]));
 
                 var statusLogs = service.api.multiCall([
                     ["Get", {

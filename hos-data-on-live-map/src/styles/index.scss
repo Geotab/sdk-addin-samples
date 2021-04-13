@@ -1,5 +1,81 @@
 @import "~bootstrap/scss/bootstrap";
 
+.avatar {
+position: relative;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+vertical-align: middle;
+margin: 0;
+padding: 0;
+text-align: center;
+text-transform: uppercase;
+font-weight: normal;
+font-style: normal;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+height: 32px;
+width: 32px;
+font-size: 14px;
+line-height: 32px;
+}
+.avatar.img-thumbnail {
+padding: 4px;
+max-width: none;
+}
+.avatar > * {
+height: 100%;
+width: 100%;
+}
+
+.avatar-16 {
+height: 16px;
+width: 16px;
+font-size: 6px;
+line-height: 16px;
+}
+
+.avatar-24 {
+height: 24px;
+width: 24px;
+font-size: 10px;
+line-height: 24px;
+}
+
+.avatar-32 {
+height: 32px;
+width: 32px;
+font-size: 14px;
+line-height: 32px;
+}
+
+.avatar-48 {
+height: 48px;
+width: 48px;
+font-size: 26px;
+line-height: 48px;
+}
+
+.avatar-64 {
+height: 64px;
+width: 64px;
+font-size: 30px;
+line-height: 64px;
+}
+
+.avatar-96 {
+height: 96px;
+width: 96px;
+font-size: 45px;
+line-height: 96px;
+}
+
+.avatar-128 {
+height: 128px;
+width: 128px;
+font-size: 65px;
+line-height: 128px;
+}  
 
 .addin .hos_data_addin_row {
     /* display: flex; */
