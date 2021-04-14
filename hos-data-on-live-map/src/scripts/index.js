@@ -185,29 +185,34 @@ geotab.addin.request = (elt, service) => {
         return currStatusElt;
     }
 
+    function getStatusDuration(dateTime){
+        console.log();
+        var statusTime = (new Date(dateTime)).getTime();
+        var now = (new Date()).getTime();
+        let duration = now-statusTime;
+        let hours = Math.floor(duration / 1000 / 60 / 60);
+        let minutes = (duration - (hours * 1000 * 60 * 60)) / 1000 / 60;
+        let seconds = (duration - (hours * 1000 * 60 * 60 * 60)) / 1000;
+        console.log(dateTime, hours);
+        return formatDuration(`${hours}:${minutes}:${seconds}`);
+    }
+
 
     async function listDrivers() {
         const driverInformation = await getAllDriversInfo();        
         for(let i=0;i<driverInformation.length;i++){
-            let availabilityCard = $(`
-            <div class="card text-center avalability-card">
-                <div class="card-body">
-                    <h5 class="card-title" id="driver_availability_heading">
-                    </h5>
-                    <p class="card-text" id="driver_availability_body">
-                    </p>
-                </div>
-            </div>
-        `);
-            let status = getCurrentStatusBadge(driverInformation[i].dutyStatus ? driverInformation[i].dutyStatus.status : "NO_STATUS")[0].outerHTML;
+            let textStatus = driverInformation[i].dutyStatus ? driverInformation[i].dutyStatus.status : "NO_STATUS";
+            let status = getCurrentStatusBadge(textStatus)[0].outerHTML;
             let address = driverInformation[i].address?driverInformation[i].address:"Unknown";
-            
+            let initials = driverInformation[i].firstName.charAt(0)+driverInformation[i].lastName.charAt(0);
+            let currentStautusDuration = driverInformation[i].dutyStatus?(getStatusDuration(driverInformation[i].dutyStatus.dateTime)):false;
+            console.log(currentStautusDuration);
             let card = $(`
             <div class="container">
             <div class="card">
               <div class="card-body">
                 <div class="row justify-content-start">
-                  <div class="col-2 p-0 pl-3"><span class="avatar avatar-32 bg-primary text-white rounded-circle">DN</span>
+                  <div class="col-2 p-0 pl-3"><span class="avatar avatar-32 bg-primary text-white rounded-circle">${initials}</span>
                   </div>
                   <div class="col-8 p-0 text-center">
                       <h5>${driverInformation[i].firstName} ${driverInformation[i].lastName}</h5>
@@ -227,19 +232,62 @@ geotab.addin.request = (elt, service) => {
                 </div>
                 </div>
                 <div class="alert alert-secondary" role="alert">
-                  A simple primary alert—check it out!
+                  ${currentStautusDuration? `Driver has been ${textStatus} For ${currentStautusDuration}!` : "Duty Status not available!"}
                 </div>
               </div>
             </div>  
             `);            
             $('.addin-driver-compare').append(card);
+            if(driverInformation[i].availability) {
+                setCardAvailability(card, driverInformation[i].availability);
+            } else {
+                card.find('#driver_availability_card').text("User is on no ruleset");
+            }            
             card.find("#message_driver").click(() => gotoMessagePage(driverInformation[i].id));
             card.find("#call_driver").attr('href', `tel:${driverInformation[i].phoneNumber}`);
-            card.find('#driver_availability_card').append(availabilityCard);
             
         }
         console.log(driverInformation);
     }
+
+    function setCardAvailability(card, availabilities){
+        if(!availabilities) {  
+            return;
+        }
+
+
+        var availabilityArrayDuration = [];
+
+        if(!availabilities.availability.cycleAvailabilities) 
+            availabilities.availability.cycleAvailabilities = [{}];
+
+        var cycleAvailableTomorrow = availabilities.availability.cycleAvailabilities[0].available;
+        availabilities.availability.availabilities.push({
+            duration: cycleAvailableTomorrow || "00:00:00",
+            type: "Cycle Tommorrow"
+        });
+        for (var j = 0; j < availabilities.availability.availabilities.length; j++) {
+            var availabilityType =availabilities.availability.availabilities[j].type;
+            var availabilityDuration = availabilities.availability.availabilities[j].duration;
+            availabilityArrayDuration.push(formatDuration(availabilityDuration));
+            
+            let availabilityCard = $(`
+                    <div class="card text-center avalability-card">
+                        <div class="card-body">
+                            <h5 class="card-title" id="driver_availability_heading">
+                            </h5>
+                            <p class="card-text" id="driver_availability_body">
+                            </p>
+                        </div>
+                    </div>
+                `);
+            
+            availabilityCard.find("#driver_availability_heading").append(availabilityIcons(availabilityType));
+            availabilityCard.find("#driver_availability_body").append(formatDuration(availabilityDuration));
+
+            card.find('#driver_availability_card').append(availabilityCard);
+        };
+    }   
 
     function compareDriver(){
         createMenuItem("compare-driver","Compare Driver",(e)=>{
@@ -312,7 +360,6 @@ geotab.addin.request = (elt, service) => {
 
     function availabilityIcons(availabilityType){
         var html;
-        console.log(availabilityType);
        switch(availabilityType){
             case "Rest":
                 html=$(`<svg class="svgIcon hos-avail__header-icon" aria-label="The time remaining before the driver is required to rest." focusable="false">
