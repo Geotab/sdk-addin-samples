@@ -10,6 +10,11 @@
 <body>
     <div class="addin">
       <nav class="navbar navbar-dark bg-primary justify-content-between menu-heading">
+        <button type="button" class="btn btn-primary" id="backButton" hidden>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"></path>
+          </svg>
+        </button>
         <a class="navbar-brand hos-data-heading">Compliance Data Summary</a>            
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="false">
@@ -19,7 +24,7 @@
             </ul>
         </div>
     </nav>
-    <div class="addin-driver-info" hidden>
+    <div class="addin-driver-info">
       <div class="hos_data_addin_row_initial_Message">
           <label for="pre-click-message"></label>
           <p id="pre-click-message">Click on a vehicle on the map and select <strong>Display HOS data</strong> from the menu. This will give you a summary of data related to HOS and DVIR.</p>
@@ -91,9 +96,23 @@
           </li>      
         </ul>
     </div>
-    <div class="addin-driver-compare">  
-    </div>     
-  </div>       
+    <div class="addin-driver-compare" hidden>
+      
+    </div>  
+    
+  </div>  
+  <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <div class="loader"></div>
+          <div clas="loader-txt">
+            <p>Loading</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>          
 </body>
 
 </html>

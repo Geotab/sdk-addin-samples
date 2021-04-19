@@ -2,6 +2,7 @@
 import "../styles/index.scss";
 import $ from 'jquery';
 import 'bootstrap';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 //import "../styles/dropdown.scss";
 // eslint-disable-next-line no-undef
@@ -247,6 +248,8 @@ geotab.addin.request = (elt, service) => {
             card.find("#call_driver").attr('href', `tel:${driverInformation[i].phoneNumber}`);
             
         }
+        
+        $("#loadMe").modal("hide");
         console.log(driverInformation);
     }
 
@@ -292,9 +295,24 @@ geotab.addin.request = (elt, service) => {
     function compareDriver(){
         createMenuItem("compare-driver","Compare Driver",(e)=>{
             $(".addin-driver-info").attr("hidden","");
+            $("#backButton").removeAttr("hidden");
             $(".addin-driver-compare").removeAttr("hidden");
-            listDrivers();
+            $("#loadMe").modal({
+                backdrop: "static", //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });      
+            listDrivers();      
         });
+    }
+
+    $("#backButton").click(() => backToOriginalDriver());
+
+    function backToOriginalDriver(){
+        $("#backButton").attr("hidden","");
+        $(".addin-driver-compare").attr("hidden","");
+        $(".addin-driver-info").removeAttr("hidden","");
+
     }
 
     function deleteMenuItems() {

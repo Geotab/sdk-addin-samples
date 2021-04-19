@@ -60,6 +60,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "bootstrap": "^4.6.0",
+    "bootstrap-icons": "^1.4.1",
     "core-js": "^3.8.1",
     "popper.js": "^1.16.1"
   }
