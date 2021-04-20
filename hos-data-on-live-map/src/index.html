@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div class="addin">
+    <div class="addin hosaddin">
       <nav class="navbar navbar-dark bg-primary justify-content-between menu-heading">
         <button type="button" class="btn btn-primary" id="backButton" hidden>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -97,22 +97,34 @@
         </ul>
     </div>
     <div class="addin-driver-compare" hidden>
-      
-    </div>  
-    
-  </div>  
-  <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
-    <div class="modal-dialog modal-sm" role="document">
-      <div class="modal-content">
-        <div class="modal-body text-center">
-          <div class="loader"></div>
-          <div clas="loader-txt">
-            <p>Loading</small></p>
+      <div class="container">
+      <form class="form-row textarea">
+        <div class="form-group col-md-10">
+          <label for="inputPassword2" class="sr-only">Driver Name</label>
+          <input type="text" class="form-control" id="inputDriver" placeholder="Driver Name">
+        </div>
+        <div class="form-group col-md-2">
+        <button type="search" class="btn btn-primary" id="searchDriver"> Search </button>
+      </div>
+      </form>
+    </div>     
+    <div id="driversearches" class="container">
+    </div>
+    </div>   
+    <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div class="loader"></div>
+            <div clas="loader-txt">
+              <p>Loading</small></p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>          
+    </div>          
+  </div>  
+  
 </body>
 
 </html>

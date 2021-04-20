@@ -23,10 +23,6 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.s?css/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
-      },
-      {
         type: 'javascript/auto',
         test: /\.(json)/,
         exclude: /(node_modules)/,
@@ -40,6 +36,22 @@ module.exports = merge(common, {
         exclude: /node_modules/,
         use: 'babel-loader',
       },
+      {
+        test: /\.(scss)$/,
+        use: [{
+          loader: 'style-loader', // inject CSS to page
+        }, {
+          loader: 'css-loader', // translates CSS into CommonJS modules
+        }, {
+          loader: 'postcss-loader'
+        }, {
+          loader: 'sass-loader' // compiles Sass to CSS
+        }]
+      },
+      {
+        test: /\.css/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+      }
     ],
   },
 });

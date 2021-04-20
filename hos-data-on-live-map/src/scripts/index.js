@@ -22,15 +22,18 @@ geotab.addin.request = (elt, service) => {
 
     
 
-    function getAllDriversInfo(){
+    function getAllDriversInfo(input){
         let drivers = {};
+        let search = `%${input}%`;
         return new Promise((resolve, reject) => {
             service.api.call("Get",{
                 "typeName":"User",
                 "search":{
                     "isDriver":true,
-                }
-            
+                    "keywords": [
+                        search
+                    ]
+                }                
             }).then(results =>{
                 results.filter(s => s).forEach(driver => {
                     drivers[driver.id] = driver;                    
@@ -199,11 +202,11 @@ geotab.addin.request = (elt, service) => {
     }
 
 
-    async function listDrivers() {
-        const driverInformation = await getAllDriversInfo();        
+    async function listDrivers(driverName) {
+        const driverInformation = await getAllDriversInfo(driverName);        
         for(let i=0;i<driverInformation.length;i++){
             let textStatus = driverInformation[i].dutyStatus ? driverInformation[i].dutyStatus.status : "NO_STATUS";
-            let status = getCurrentStatusBadge(textStatus)[0].outerHTML;
+            let status = textStatus == 'NO_STATUS' ? '': getCurrentStatusBadge(textStatus)[0].outerHTML;
             let address = driverInformation[i].address?driverInformation[i].address:"Unknown";
             let initials = driverInformation[i].firstName.charAt(0)+driverInformation[i].lastName.charAt(0);
             let currentStautusDuration = driverInformation[i].dutyStatus?(getStatusDuration(driverInformation[i].dutyStatus.dateTime)):false;
@@ -238,7 +241,7 @@ geotab.addin.request = (elt, service) => {
               </div>
             </div>  
             `);            
-            $('.addin-driver-compare').append(card);
+            $('#driversearches').append(card);
             if(driverInformation[i].availability) {
                 setCardAvailability(card, driverInformation[i].availability);
             } else {
@@ -277,8 +280,8 @@ geotab.addin.request = (elt, service) => {
             let availabilityCard = $(`
                     <div class="card text-center avalability-card">
                         <div class="card-body">
-                            <h5 class="card-title" id="driver_availability_heading">
-                            </h5>
+                            <div class="card-title" id="driver_availability_heading">
+                            </div>
                             <p class="card-text" id="driver_availability_body">
                             </p>
                         </div>
@@ -297,14 +300,32 @@ geotab.addin.request = (elt, service) => {
             $(".addin-driver-info").attr("hidden","");
             $("#backButton").removeAttr("hidden");
             $(".addin-driver-compare").removeAttr("hidden");
-            $("#loadMe").modal({
+            $("#searchDriver").click(searchDriver);
+            // $("#loadMe").modal({
+            //     backdrop: "static", //remove ability to close modal with click
+            //     keyboard: false, //remove option to close with keyboard
+            //     show: true //Display loader!
+            // });      
+            // listDrivers();      
+        });
+    }
+
+    function searchDriver(e){
+        e.preventDefault();
+        let userInput = $("#inputDriver");
+        let input = userInput.val();
+        if (!input || input == "") return;
+        $("#loadMe").modal({
                 backdrop: "static", //remove ability to close modal with click
                 keyboard: false, //remove option to close with keyboard
                 show: true //Display loader!
             });      
-            listDrivers();      
-        });
+            listDrivers(input);
+            userInput.val("");
+            $('#driversearches').html('');
+
     }
+
 
     $("#backButton").click(() => backToOriginalDriver());
 
