@@ -5,6 +5,15 @@ body {
 
 .addin.hosaddin {
     @import "~bootstrap/scss/bootstrap";
+    @import "~bootstrap-select/sass/bootstrap-select.scss";
+
+    .driver-dropdown-menu-item {
+
+    }
+
+    .driver-dropdown-menu-item:hover {
+        cursor: pointer;
+    }
 
     .avatar {
     position: relative;
