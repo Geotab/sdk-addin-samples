@@ -1,8 +1,14 @@
 
+
+.mapAddinInjection {
+  margin: 0px;
+  @import url(https://my112.geotab.com/geotab/checkmate/app.less?skin=my_geotab);
+}
+
 .addin {
     min-width: 450px !important;
     width: 450px!important;
-    z-index: 1500!important;
+    z-index: 1!important;
     float: right!important;
     border-left: 1px solid #2c7ab1!important;
     margin-top:0!important;

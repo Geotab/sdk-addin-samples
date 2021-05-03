@@ -4,7 +4,6 @@ import xIcon from '../images/close-round.svg';
 import addinIcon from '../../public/icon.svg';
 let loginExample = `
 
-    <link rel="stylesheet" href="https://my112.geotab.com/geotab/checkmate/app.less?skin=my_geotab">
 
 <style>
     body {
@@ -275,6 +274,7 @@ let loginExample = `
         background-image: url("${addinIcon}");
     } 
     </style>
+    <div class="mapAddinInjection">
     <header class="dev-header">
     
         <div id="languages-target"></div>
@@ -319,5 +319,6 @@ let loginExample = `
             </div>
         </form>
     </dialog>
+    </div>
 `;
 body.innerHTML = loginExample + body.innerHTML;
