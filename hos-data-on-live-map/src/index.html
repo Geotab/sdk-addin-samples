@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+
+<body>
+    <div class="addin hosaddin">
+      <nav class="navbar navbar-dark bg-primary justify-content-between menu-heading">
+        <button type="button" class="btn btn-primary" id="backButton" hidden>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"></path>
+          </svg>
+        </button>
+        <a class="navbar-brand hos-data-heading">Compliance Data Summary</a>            
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="false">
+              Actions
+            </button>
+            <ul class="dropdown-menu main-dropdown dropdown-menu-right" aria-labelledby="dropdownMenu2">
+            </ul>
+        </div>
+    </nav>
+    <div class="addin-driver-info">
+      <div class="hos_data_addin_row_initial_Message">
+          <label for="pre-click-message"></label>
+          <p id="pre-click-message">Click on a vehicle on the map and select <strong>Display HOS data</strong> from the menu. This will give you a summary of data related to HOS and DVIR.</p>
+      </div>
+
+      <ul class="list-group hos_data_addin_row" hidden>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1" id="information">Information</h5>
+            </div>
+            <p class="mb-1"><span id="device_name"></span>&nbsp;(<span id="trailer_attached"></span><span id="driver_details"></span>)</p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Current Ruleset</h5>
+            </div>
+            <p class="mb-1" id="current_ruleset"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Current Status</h5>
+              <button type="button" class="btn btn-primary" id="hos_data_view_logs_button" hidden>View Logs</button>
+            </div>
+            <p class="mb-1" id="current_status"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">Availability </h5>
+              </div>
+              <p class="mb-1" id="driver_availability"></p>
+              <div class="justify-content-center card-columns" id="driver_availability_table">                     
+              </div>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Violations</h5>
+              </div>
+              <p class="mb-1" id="active_violation"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Active Shipments from last 24 hours:</h5>
+              </div>
+              <p class="mb-1" id="shipment_attached"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Malfunctions</h5>
+              </div>
+              <p class="mb-1" id="malfunctions"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">DVIR</h5>
+              </div>
+              <p class="mb-1" id="dvir"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Daily Summary</h5>
+              </div>
+              <p class="mb-1" id="daily_Summaries"></p>
+          </li>
+          <li class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Available Exceptions</h5>
+              </div>
+              <p class="mb-1" id="available_exemptions"></p>
+          </li>      
+        </ul>
+    </div>
+    <div class="addin-driver-compare" hidden>
+    <br>  
+    <div class="row justify-content-center ml-0">
+      <div class="col-10">
+        <div class="form-group">
+          <select class="selectpicker form-control text-center" multiple data-live-search="true" data-none-selected-text="No Driver Selected" data-live-search-placeholder="Search" data-actions-box="true">
+            <optgroup class="driver-dropdown">
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>      
+    <div id="driversearches" class="container">
+    </div>
+    </div>   
+    <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div class="loader"></div>
+            <div clas="loader-txt">
+              <p>Loading</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>          
+  </div>  
+  
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+/* Form element setup */
+
+.map-functions {
+  .form-container {
+    width: 230px;
+    background: #ddd;
+    margin: 0 auto;
+    padding: 16px;
+    left:60px;
+    box-sizing: border-box;
+    position:absolute;
+    overflow: hidden;
+  }
+  
+  .textfield{
+    position: relative;
+    font-family: Arial,Sans-serif;
+    display: inline-block;
+    float: left;
+  }
+  .textfield input{
+    padding: 12px;
+    margin: 0;
+    background: #fff;
+    border:1px solid #ddd;
+    border-radius:3px;
+    display: block;
+    font-size: 14px;
+    width:200px;
+  }
+  .textfield label{
+    position: absolute;
+    top:14px;
+    left:12px;
+    font-size:14px;
+    color:#666;
+    -webkit-transition: top .2s;
+    transition: top .2s;
+  }
+  .textfield input:valid{
+    padding-bottom: 0;
+    line-height: 29px;
+  }
+  .textfield input:valid + label{
+    top:6px;
+    font-size: 11px;
+    -webkit-transition: top .2s;
+    transition: top .2s;
+  }
+  
+  .textfield>[type='submit']{
+    line-height: 17px!important;
+    padding-top: 12px!important;
+    padding-bottom: 12px!important;
+    margin-top: 12px!important;
+    background: #00afec;
+    color:#fff;
+    width:100px;
+    margin-left: 0px;
+    cursor: pointer;
+  }
+  .textfield>[type='submit']:hover{
+    background: #029fd9;
+  }
+}

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Public Style</title>
+	<link rel="stylesheet" href="https://my.geotab.com/geotab/checkmate/app.less?skin=my_geotab">
+	<link rel="stylesheet" href="styleGuide.css">
+</head>
+<body>
+	<div id="parent" class="container">
+		<div class="item">
+			<h2>Main colors</h2>
+			<div class="example">
+				<div class="boxWrapper">
+					<div>
+						Background colors
+					</div>
+					<div class="box geotabPrimaryFill"></div>
+					<div class="box geotabSecondaryFill"></div>
+				</div>
+				<div class="boxWrapper">
+					<div>
+						Text colors
+					</div>
+					<div class="box geotabPrimaryText">A</div>
+					<div class="box geotabSecondaryText">B</div>
+					<div class="box geotabUsualText">C</div>
+				</div>
+				<div class="boxWrapper">
+					<div>
+						Border colors
+					</div>
+					<div class="box geotabPrimaryBorder"></div>
+					<div class="box geotabSecondaryBorder"></div>
+				</div>
+
+				<div class="boxWrapper">
+					<div>
+						Standard UI element
+					</div>
+					<div class="box geotabUIElement">A</div>
+				</div>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;div class="<mark>geotabPrimaryFill</mark>"&gt;&lt;/div&gt;</code>
+					<code>&lt;div class="<mark>geotabSecondaryFill</mark>"&gt;&lt;/div&gt;</code>
+					<br>
+					<code>&lt;div class="<mark>geotabPrimaryText</mark>"&gt;A&lt;/div&gt;</code>
+					<code>&lt;div class="<mark>geotabSecondaryText</mark>"&gt;B&lt;/div&gt;</code>
+					<code>&lt;div class="<mark>geotabUsualText</mark>"&gt;C&lt;/div&gt;</code>
+					<br>
+					<code>&lt;div class="<mark>geotabPrimaryBorder</mark>"&gt;&lt;/div&gt;</code>
+					<code>&lt;div class="<mark>geotabSecondaryBorder</mark>"&gt;&lt;/div&gt;</code>
+					<br>
+					<code>&lt;div class="<mark>geotabUIElement</mark>"&gt;A&lt;/div&gt;</code>
+				</pre>
+			</div>
+		</div>
+
+		<div class="item">
+			<h2>Page Name</h2>
+			<div class="example">
+				<div class="geotabPageHeader">
+					<h1 class="geotabPageName">Page Name <span class="subdued">with sub title</span></h1>
+					<div class="pageNameSecondary">
+						<h3 class="geotabSecondaryTitle">and additional information</h3>
+					</div>
+				</div>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;div class="<mark>geotabPageHeader</mark>"&gt;</code>
+					<code>	&lt;h1 class="<mark>geotabPageName</mark>"&gt;Page Name &lt;span class="<mark>subdued</mark>"&gt;with sub title&lt;/span&gt;&lt;/h1&gt;</code>
+					<code>	&lt;div class="<mark>pageNameSecondary</mark>"&gt;</code>
+					<code>		&lt;h3 class="<mark>geotabSecondaryTitle</mark>"&gt;and additional information&lt;/h3&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<code>&lt;/div&gt;</code>
+				</pre>
+			</div>
+		</div>
+
+		<div class="item">
+			<h2>Buttons</h2>
+			<div class="example">
+				<div class="buttons">
+					<button class="geotabButton">Button</button>
+
+					<button class="geotabButton" disabled>Disabled button</button>
+
+					<button class="geotabButton negativeButton">Refuse</button>
+
+					<button class="geotabButton positiveButton">Approve</button>
+
+					<a href="https://www.geotab.com/connect.html" target="_blank" class="geotabButton">Link to Connect</a>
+
+					<input type="checkbox" id="someCheckbox" class="geotabSwitchButton">
+					<label class="geotabButton" for="someCheckbox">Checkbox</label>
+
+					<input type="radio" name="someRadio" id="someRadio1" class="geotabSwitchButton" checked>
+					<label class="geotabButton" for="someRadio1">On</label>
+					<input type="radio" name="someRadio" id="someRadio2" class="geotabSwitchButton">
+					<label class="geotabButton" for="someRadio2">Off</label>
+				</div>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;button class="<mark>geotabButton</mark>"&gt;Button&lt;/button&gt;</code>
+					<br>
+					<code>&lt;button class="<mark>geotabButton</mark> disabled"&gt;Disabled button&lt;/button&gt;</code>
+					<br>
+					<code>&lt;button class="<mark>geotabButton negativeButton</mark>"&gt;Button&lt;/button&gt;</code>
+					<br>
+					<code>&lt;button class="<mark>geotabButton positiveButton</mark>"&gt;Button&lt;/button&gt;</code>
+					<br>
+					<code>&lt;a href="#" class="<mark>geotabButton</mark>"&gt;Link&lt;/a&gt;</code>
+					<br>
+					<code>&lt;input type="checkbox" id="someCheckbox" class="<mark>geotabSwitchButton</mark>"&gt;</code>
+					<code>&lt;label class="<mark>geotabButton</mark>" for="someCheckbox"&gt;Checkbox&lt;/label&gt;</code>
+					<br>
+					<code>&lt;input type="radio" name="someRadio" id="someRadio1" class="<mark>geotabSwitchButton</mark>" checked&gt;</code>
+					<code>&lt;label class="<mark>geotabButton</mark>" for="someRadio1"&gt;On&lt;/label&gt;</code>
+					<code>&lt;input type="radio" name="someRadio" id="someRadio2" class="<mark>geotabSwitchButton</mark>"&gt;</code>
+					<code>&lt;label class="<mark>geotabButton</mark>" for="someRadio2"&gt;Off&lt;/label&gt;</code>
+				</pre>
+			</div>
+		</div>
+
+		<div class="item">
+			<h2>Horizontal button sets</h2>
+			<div class="example">
+				<div class="horizontalButtonSet">
+					<button class="geotabButton">Button 1</button>
+					<button class="geotabButton">Button 2</button>
+					<button class="geotabButton">Button 3</button>
+				</div>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;div class="<mark>horizontalButtonSet</mark>"&gt;</code>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button 1&lt;/button&gt;</code>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button 2&lt;/button&gt;</code>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button 3&lt;/button&gt;</code>
+					<code>&lt;/div&gt;</code>
+				</pre>
+			</div>
+		</div>
+
+		<div class="item">
+			<h2>Vertical button sets</h2>
+			<div class="example">
+				<div class="verticalButtonSet w">
+					<button class="geotabButton">Button 1</button>
+					<button class="geotabButton">Button 2</button>
+					<button class="geotabButton">Button 3</button>
+				</div>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;div class="<mark>verticalButtonSet</mark>"&gt;</code>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button 1&lt;/button&gt;</code>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button 2&lt;/button&gt;</code>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button 3&lt;/button&gt;</code>
+					<code>&lt;/div&gt;</code>
+				</pre>
+			</div>
+		</div>
+
+		<div class="item">
+			<h2>Form</h2>
+			<div class="example">
+				<fieldset class="geotabFieldset">
+					<div class="geotabField">
+						<label>Name:</label>
+						<input placeholder="Field with label" type="text" class="geotabFormEditField" maxlength="255">
+					</div>
+					<div class="geotabField">
+						<label>Disabled field:</label>
+						<input placeholder="Disabled field" type="text" class="geotabFormEditField" maxlength="255" disabled>
+					</div>
+					<div class="geotabField">
+						<input placeholder="Field without label" class="fieldWithoutLabel geotabFormEditField" maxlength="255">
+					</div>
+					<div class="geotabField">
+						<label>Comment:</label>
+						<textarea placeholder="Textarea with label"  cols="30" class="geotabFormEditField" rows="5"></textarea>
+					</div>
+					<div class="geotabField">
+						<div class="fieldWithoutLabel singleField">
+							<q>Sir, in my heart there was a kind of fighting
+							That would not let me sleep. Methought I lay
+							Worse than the mutines in the bilboes. Rashly—
+							And prais'd be rashness for it—let us know
+							Our indiscretion sometimes serves us well...</q>
+
+							<cite class="quote">Hamlet, Act 5, Scene 2, 4–8</cite>
+						</div>
+					</div>
+					<div class="geotabField">
+						<label>Switcher:</label>
+
+						<span class="horizontalButtonSet">
+							<input type="radio" name="switcher" class="geotabSwitchButton" id="switcher1" checked>
+							<label class="geotabButton" for="switcher1">Yes</label>
+							<input type="radio" name="switcher" id="switcher2" class="geotabSwitchButton">
+							<label class="geotabButton" for="switcher2">No</label>
+						</span>
+					</div>
+					<div class="geotabField">
+						<label>Actions</label>
+						<div class="verticalButtonSet">
+							<input type="checkbox" class="geotabSwitchButton" id="Actions1" />
+							<label class="geotabButton" for="Actions1">Action 1</label>
+							<input type="checkbox" id="Actions2" class="geotabSwitchButton">
+							<label class="geotabButton" for="Actions2">Action 2</label>
+							<input type="checkbox" id="Actions3" class="geotabSwitchButton">
+							<label class="geotabButton" for="Actions3">Action 3</label>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;fieldset class="<mark>geotabFieldset</mark>"&gt;</code>
+					<code>	&lt;div class="<mark>geotabField</mark>"&gt;</code>
+					<code>		&lt;label&gt;Name:&lt;/label&gt;</code>
+					<code>		&lt;input type="text" class="<mark>geotabFormEditField</mark>" maxlength="255"&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<br>
+					<code>	&lt;div class="<mark>geotabField</mark>"&gt;</code>
+					<code>		&lt;input type="text" class="<mark>fieldWithoutLabel geotabFormEditField</mark>" maxlength="255"&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<br>
+					<code>	&lt;div class="<mark>geotabField</mark>"&gt;</code>
+					<code>		&lt;label&gt;Comment:&lt;/label&gt;</code>
+					<code>		&lt;textarea cols="30" class="<mark>geotabFormEditField</mark>" rows="5"&gt;&lt;/textarea&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<br>
+					<code>	&lt;div class="<mark>geotabField</mark>"&gt;</code>
+					<code>		&lt;div class="<mark>fieldWithoutLabel singleField</mark>"&gt;&lt;q&gt;Sir, in ... us well&lt;/q&gt;&lt;/div&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<br>
+					<code>	&lt;div class="<mark>geotabField</mark>"&gt;</code>
+					<code>		&lt;label&gt;Switcher:&lt;/label&gt;</code>
+					<code>		&lt;span class="<mark>horizontalButtonSet</mark>"&gt;</code>
+					<code>			&lt;input type="radio" name="switcher" class="geotabSwitchButton" id="switcher1" checked&gt;</code>
+					<code>			&lt;label class="geotabButton" for="switcher1"&gt;Yes&lt;/label&gt;</code>
+					<code>			&lt;input type="radio" name="switcher" id="switcher2" class="geotabSwitchButton"&gt;</code>
+					<code>			&lt;label class="geotabButton" for="switcher2"&gt;No&lt;/label&gt;</code>
+					<code>		&lt;/span&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<br>
+					<code>	&lt;div class="<mark>geotabField</mark>"&gt;</code>
+					<code>		&lt;label&gt;Actions&lt;/label&gt;</code>
+					<code>		&lt;div class="<mark>verticalButtonSet</mark>"&gt;</code>
+					<code>			&lt;input type="checkbox" class="geotabSwitchButton" id="Actions1" /&gt;</code>
+					<code>			&lt;label class="geotabButton" for="Actions1"&gt;Action 1&lt;/label&gt;</code>
+					<code>			&lt;input type="checkbox" id="Actions2" class="geotabSwitchButton"&gt;</code>
+					<code>			&lt;label class="geotabButton" for="Actions2"&gt;Action 2&lt;/label&gt;</code>
+					<code>			&lt;input type="checkbox" id="Actions3" class="geotabSwitchButton"&gt;</code>
+					<code>			&lt;label class="geotabButton" for="Actions3"&gt;Action 3&lt;/label&gt;</code>
+					<code>		&lt;/div&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<code>&lt;/fieldset&gt;</code>
+				</pre>
+			</div>
+		</div>
+
+		<div class="item">
+			<h2>Toolbar</h2>
+			<div class="example">
+				<div class="geotabToolbar">
+					<input type="text" placeholder="Search something" class="geotabFormEditField w" />
+					<button class="geotabButton">Button</button>
+					<a href="https://www.geotab.com/connect.html" target="_blank" class="geotabButton">Link to Connect</a>
+
+					<div class="horizontalButtonSet">
+						<input type="radio" name="someRadio2" id="toolbarRadio1" class="geotabSwitchButton" checked>
+						<label class="geotabButton" for="toolbarRadio1">First option</label>
+						<input type="radio" name="someRadio2" id="toolbarRadio2" class="geotabSwitchButton">
+						<label class="geotabButton" for="toolbarRadio2">Second option</label>
+					</div>
+				</div>
+			</div>
+			<div class="code">
+				<pre>
+					<code>&lt;div class="<mark>geotabToolbar</mark>"&gt;</code>
+					<code>	&lt;input type="text" placeholder="Search something" class="<mark>geotabFormEditField</mark>" /&gt;</code>
+					<br>
+					<code>	&lt;button class="<mark>geotabButton</mark>"&gt;Button&lt;/button&gt;</code>
+					<br>
+					<code>	&lt;a href="https://www.geotab.com/connect.html" target="_blank" class="<mark>geotabButton</mark>"&gt;Link to Connect&lt;/a&gt;</code>
+					<br>
+					<code>	&lt;div class="<mark>horizontalButtonSet</mark>"&gt;</code>
+					<code>		&lt;input type="radio" name="someRadio2" id="toolbarRadio1" class="<mark>geotabSwitchButton</mark>" checked&gt;    </code>
+					<code>		&lt;label class="<mark>geotabButton</mark>" for="toolbarRadio1"&gt;First option&lt;/label&gt;</code>
+					<code>		&lt;input type="radio" name="someRadio2" id="toolbarRadio2" class="<mark>geotabSwitchButton</mark>"&gt;    </code>
+					<code>		&lt;label class="<mark>geotabButton</mark>" for="toolbarRadio2"&gt;Second option&lt;/label&gt;</code>
+					<code>	&lt;/div&gt;</code>
+					<code>&lt;/div&gt;</code>
+				</pre>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

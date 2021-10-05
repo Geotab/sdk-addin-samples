@@ -1,0 +1,39 @@
+
+
+.mapAddinInjection {
+  margin: 0px;
+  @import url(https://my112.geotab.com/geotab/checkmate/app.less?skin=my_geotab);
+}
+
+.addin {
+    min-width: 450px !important;
+    width: 450px!important;
+    z-index: 1!important;
+    float: right!important;
+    border-left: 1px solid #2c7ab1!important;
+    margin-top:0!important;
+    background-color: white;
+  }
+  
+  #hos-data-heading {
+    margin-top:0;
+  }
+  
+  .addin_container {
+    display: flex;
+    height: calc(100% - 41px)!important;
+    flex-wrap: nowrap;
+    margin:0;
+    padding:0;
+  }
+  
+  .addin_container .map-functions  {
+    margin-top: 10px;
+    width: 100%;
+    padding-left: 50px;
+  }
+  
+  
+  body {
+    height: 100%!important;
+  }
