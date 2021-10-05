@@ -4,6 +4,7 @@ body {
 }
 
 .addin.hosaddin {
+    min-height: 500px;
     @import "~bootstrap/scss/bootstrap";
     @import "~bootstrap-select/sass/bootstrap-select.scss";
 

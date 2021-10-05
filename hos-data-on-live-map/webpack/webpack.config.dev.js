@@ -13,8 +13,10 @@ module.exports = merge(common, {
     chunkFilename: 'js/[name].chunk.js',
   },
   devServer: {
-    inline: true,
+    allowedHosts: 'all',
     hot: true,
+    compress: true,
+    port: 8080
   },
   plugins: [
     new Webpack.DefinePlugin({
@@ -25,13 +27,6 @@ module.exports = merge(common, {
       chunkFilename: '[id].[chunkhash].js'
     }),
   ],
-  devServer: {
-      contentBase: Path.join(__dirname),
-      disableHostCheck: true,
-      compress: true,
-      port: 8080,
-      index: 'index.html'
-  },
   module: {
     rules: [
       {
