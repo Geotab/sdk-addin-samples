@@ -374,9 +374,7 @@ geotab.addin.proximity = () => {
                 totalFound = -1;
             }
 
-            let limitedMessage = limitedDevices.length === 0 ? '' : (
-                `<p>* ${limitedDevices.join(',')} ${limitedDevices.length > 1 ? 'were' : 'was'} limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`
-            );
+            let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
             if (totalFound > 0) {
                 logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             } 
