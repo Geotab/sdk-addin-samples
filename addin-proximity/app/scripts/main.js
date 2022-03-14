@@ -277,12 +277,15 @@ geotab.addin.proximity = () => {
                     const toRadians = d => {
                         return d * (Math.PI / 180.0);
                     };
+                    let fromDate = new Date(params.fromDate);
+                    let toDate = new Date(params.toDate);
+
                     arr.forEach(logRecord => {
                         if (!logRecord.id) {
                             return;
                         }
                         // checking if the log records fall outside the selected date range
-                        if ((new Date(logRecord.dateTime) >= new Date(params.fromDate)) && (new Date(logRecord.dateTime) <= new Date(params.toDate))) {
+                        if ((new Date(logRecord.dateTime) >= fromDate) && (new Date(logRecord.dateTime) <= toDate)) {
                             let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
                             let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
                             let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
@@ -343,18 +346,17 @@ geotab.addin.proximity = () => {
                 let minBatchSize = 50;
 
                 let batchSize = getBatchSize(device.length, utcFrom, utcTo);
-                console.log(batchSize);
                 if (batchSize >= minBatchSize) {
-                    for(var j=0;j<device.length;j++){
+                    for(let j=0;j<device.length;j++){
                         temp.push(buildGetRequest(device[j].id, utcFrom, utcTo));
                     
-                        if(temp.length == batchSize){
+                        if(temp.length === batchSize){
                             request.push(temp);
                             temp = [];
                         }
                     }
                     request.push(temp);
-                    for(var i=0;i<request.length;i++){
+                    for(let i=0;i<request.length;i++){
                         totalPoints += await LogRecordMultiCall(request[i]);
                     }             
                     resolve(totalPoints);
