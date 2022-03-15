@@ -256,15 +256,17 @@ geotab.addin.proximity = () => {
             let getLogRecord = results => new Promise((resolve) => {         
                 // if results have been limited, let the user know they may need to narrow search
                 if (results.length === maxLogRecordResults) {
-                    limitedDevices.push(encodeHTML(device.name));
+                    limitedDevices.push(encodeHTML(results[0].device.id));
                 }
-
+                
                 let params = {
                     array: results,
                     center,
                     radiusFactor,
                     aggregate: true,
-                    maxThreads: navigator.hardwareConcurrency || 1
+                    maxThreads: navigator.hardwareConcurrency || 1,
+                    fromDate: utcFrom,
+                    toDate: utcTo
                 };
 
                 // do CPU intense calculation off the UI thread
@@ -275,17 +277,23 @@ geotab.addin.proximity = () => {
                     const toRadians = d => {
                         return d * (Math.PI / 180.0);
                     };
+                    let fromDate = new Date(params.fromDate);
+                    let toDate = new Date(params.toDate);
+
                     arr.forEach(logRecord => {
                         if (!logRecord.id) {
                             return;
                         }
-                        let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
-                        let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
-                        let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
-                        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                        logRecord.distance = 6371000.0 * c;
-                        if (logRecord.distance < maxRadius) {
-                            rtn.data.push(logRecord);
+                        // checking if the log records fall outside the selected date range
+                        if ((new Date(logRecord.dateTime) >= fromDate) && (new Date(logRecord.dateTime) <= toDate)) {
+                            let dLat = toRadians(centerPoint.latitude - logRecord.latitude);
+                            let dLon = toRadians(centerPoint.longitude - logRecord.longitude);
+                            let a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) + Math.cos(toRadians(logRecord.latitude)) * Math.cos(toRadians(centerPoint.latitude)) * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+                            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                            logRecord.distance = 6371000.0 * c;
+                            if (logRecord.distance < maxRadius) {
+                                rtn.data.push(logRecord);
+                            }
                         }
                     });                  
                 })
@@ -301,8 +309,10 @@ geotab.addin.proximity = () => {
                 else{
                     api.multiCall(calls, async function(results){
                         var foundPoints = 0;
-                        for(var k=0;k<results.length;k++){             
-                            foundPoints += await getLogRecord(results[k]);
+                        for(var k=0;k<results.length;k++){  
+                            if(results[k]) {
+                                foundPoints += await getLogRecord(results[k]);
+                            }    
                         }
                         resolve(foundPoints);
                     },  error => {
@@ -313,23 +323,47 @@ geotab.addin.proximity = () => {
                 }
             })
 
+            const getBatchSize = (deviceLength, utcFrom, utcTo) => {
+                //variable created to limit the api multiCall size. 
+                //1209600000 is 2 weeks in milliseconds 
+                // 1000 is device limit for proximity add-in
+                let maxBatchSize = 400;
+                let twoWeeksInSeconds = 1209600000;
+                let deviceLimit = 1000;
+                let variable = twoWeeksInSeconds * maxBatchSize * deviceLimit;
+
+                let batchSize = Math.round(variable / ((new Date(utcTo) - new Date(utcFrom)) * deviceLength));
+                if (batchSize > maxBatchSize) {
+                    batchSize = maxBatchSize;
+                }
+                return batchSize;
+            }
+
             let getDeviceLogs = device => new Promise(async (resolve) => {
                 var request = [];  
                 var temp = [];
                 var totalPoints = 0;
+                let minBatchSize = 50;
 
-                for(var j=0;j<device.length;j++){
-                    temp.push(buildGetRequest(device[j].id, utcFrom, utcTo));
-                    if(temp.length == 400){
-                        request.push(temp);
-                        temp = [];
+                let batchSize = getBatchSize(device.length, utcFrom, utcTo);
+                if (batchSize >= minBatchSize) {
+                    for(let j=0;j<device.length;j++){
+                        temp.push(buildGetRequest(device[j].id, utcFrom, utcTo));
+                    
+                        if(temp.length === batchSize){
+                            request.push(temp);
+                            temp = [];
+                        }
                     }
+                    request.push(temp);
+                    for(let i=0;i<request.length;i++){
+                        totalPoints += await LogRecordMultiCall(request[i]);
+                    }             
+                    resolve(totalPoints);
+                } else {
+                    alert('Request too large. Please narrow down the date range or select fewer vehicles.');
+                    resolve();
                 }
-                request.push(temp);
-                for(var i=0;i<request.length;i++){
-                    totalPoints += await LogRecordMultiCall(request[i]);
-                }             
-                resolve(totalPoints); 
             });
 
             var totalFound = 0;
@@ -342,7 +376,9 @@ geotab.addin.proximity = () => {
                 totalFound = -1;
             }
 
-            let limitedMessage = limitedDevices.length === 0 ? '' : `<p>* ${limitedDevices.join(',')} was limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`;
+            let limitedMessage = limitedDevices.length === 0 ? '' : (
+                `<p>* ${limitedDevices.join(',')} ${limitedDevices.length > 1 ? 'were' : 'was'} limited to ${maxLogRecordResults} GPS positions, try narrowing date range to see all positions.</p>`
+            );
             if (totalFound > 0) {
                 logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             } 
