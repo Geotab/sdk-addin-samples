@@ -80,7 +80,7 @@ geotab.addin.ioxOutput = () => {
         initialize(geotabApi, pageState, initializeCallback) {
             api = geotabApi;
 
-            elContainer = document.getElementById('ioxoutput');
+            elContainer = document.getElementById('ioxOutput');
             elVehicleSelect = document.getElementById('ioxoutput-vehicles');
             elSendButton = document.getElementById('ioxoutput-send');
             elSendHistory = document.getElementById('ioxoutput-history');
