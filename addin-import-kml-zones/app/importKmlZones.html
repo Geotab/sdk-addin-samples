@@ -39,14 +39,22 @@
 </head>
 
 <body>
-
   <div id="importKmlZones" class="hidden">
 
+    <div id="disclaimer">
+        <label id="disclaimerLabel">Sample add-in/tool</label>
+        <p>This tool is provided as an example and is available on an As-Is basis. You must assume all the risks and
+            costs associated with the use of the sample tool, including, without limitation, any damage to any
+            equipment, software, information or data. In addition, we are not obligated to provide any maintenance,
+            technical or other support for the sample tool. In order to improve our products, we may at any time,
+            and without warning, change the design, presentation, or functionality of the software.</p>
+    </div>
+    
     <div class="checkmatePageHeader">
       <h1 class="checkmatePageName">Import KML Zones</h1>
-  </div>
+    </div>
 
-  <div ng-controller="optionsController" id="optionsControllerElement" style="margin-top: 20px;">
+    <div ng-controller="optionsController" id="optionsControllerElement" style="margin-top: 20px;">
       <button ng-click="toggleModal()" class="geotabButton">Options</button>
       <button ng-click="clear()" class="geotabButton">Clear</button>
       <modal-dialog show="modalShown">

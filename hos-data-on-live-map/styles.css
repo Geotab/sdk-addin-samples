@@ -1,3 +1,7 @@
+.addin {
+    font-family: "Segoe UI",Segoe,"Helvetica Neue",Helvetica,sans-serif;
+}
+
 .addin .hos_data_addin_row {
     /* display: flex; */
     /* margin-bottom: 10px; */
@@ -10,7 +14,6 @@
     padding-bottom: auto;
     cursor: pointer;
     color: #25477b;
-    font-family: "Segoe UI",Segoe,"Helvetica Neue",Helvetica,sans-serif;
 }
 
 #hos_data_view_logs_button{
@@ -35,7 +38,6 @@
     padding: 5px 8px;
     margin-top: 5px;
     font-size: 1.3em;
-    font-family: "Segoe UI",Segoe,"Helvetica Neue",Helvetica,sans-serif;
 }
 
 .hos_data_addin_row_initial_Message p {
@@ -43,7 +45,6 @@
     margin-bottom: auto;
     font-size: 18px;
     color: black;
-    font-family: "Segoe UI",Segoe,"Helvetica Neue",Helvetica,sans-serif;
 }
 
 .hos_data_addin_row p {
@@ -93,4 +94,43 @@
   color: #48BB48;
   font-weight: bold;
   fill: #48BB48;
+}
+
+#disclaimer {
+    background-color: #E5F7FD;
+    border: 1px solid #E5F7FD;
+    color: #25477B;
+    fill: #25477B;
+    align-items: center;
+    width: fit-content;
+    border-radius: 6px;
+    padding: 4px 6px;
+    position: relative;
+    display: block;
+    font-size: 12px;
+}
+
+#disclaimerLabel {
+    font-size: 14px;
+    line-height: 16px;
+    padding-right: 5px;
+    color: #25477B;
+    fill: #25477B;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-right: 0px;
+    text-transform: uppercase;
+
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
