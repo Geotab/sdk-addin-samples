@@ -61,6 +61,8 @@
         }
     },
     "dependencies": {
-        "@babel/polyfill": "^7.2.5"
+        "@babel/polyfill": "^7.2.5",
+        "leaflet": "^1.7.1",
+        "leaflet.markercluster": "^1.5.3"
     }
 }

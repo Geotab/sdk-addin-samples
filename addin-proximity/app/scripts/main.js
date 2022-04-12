@@ -191,7 +191,7 @@ geotab.addin.proximity = () => {
         let calculateAndRender = async (result) => {
             if (!result || result.length < 1 || !result[0]) {
                 toggleLoading(false);
-                logger('Could not find the address');               
+                logger('Could not find the address');
                 return;
             }
 
@@ -253,12 +253,12 @@ geotab.addin.proximity = () => {
 
             let limitedDevices = [];
 
-            let getLogRecord = results => new Promise((resolve) => {         
+            let getLogRecord = results => new Promise((resolve) => {
                 // if results have been limited, let the user know they may need to narrow search
                 if (results.length === maxLogRecordResults) {
                     limitedDevices.push(encodeHTML(results[0].device.id));
                 }
-                
+
                 let params = {
                     array: results,
                     center,
@@ -295,29 +295,29 @@ geotab.addin.proximity = () => {
                                 rtn.data.push(logRecord);
                             }
                         }
-                    });                  
+                    });
                 })
                     .then(rtn => rtn.data[0])
                     .then(render)
                     .then(resolve);
             });
-            
+
             let LogRecordMultiCall = calls => new Promise((resolve, reject) => {
-                if(isCancelled){
+                if (isCancelled) {
                     resolve();
                 }
-                else{
-                    api.multiCall(calls, async function(results){
+                else {
+                    api.multiCall(calls, async function (results) {
                         var foundPoints = 0;
-                        for(var k=0;k<results.length;k++){  
-                            if(results[k]) {
+                        for (var k = 0; k < results.length; k++) {
+                            if (results[k]) {
                                 foundPoints += await getLogRecord(results[k]);
-                            }    
+                            }
                         }
                         resolve(foundPoints);
-                    },  error => {
+                    }, error => {
                         toggleLoading(false);
-                        logger(error);               
+                        logger(error);
                         reject(error);
                     })
                 }
@@ -340,26 +340,32 @@ geotab.addin.proximity = () => {
             }
 
             let getDeviceLogs = device => new Promise(async (resolve) => {
-                var request = [];  
+                var request = [];
                 var temp = [];
                 var totalPoints = 0;
                 let minBatchSize = 50;
 
                 let batchSize = getBatchSize(device.length, utcFrom, utcTo);
                 if (batchSize >= minBatchSize) {
-                    for(let j=0;j<device.length;j++){
+                    for (let j = 0; j < device.length; j++) {
                         temp.push(buildGetRequest(device[j].id, utcFrom, utcTo));
-                    
-                        if(temp.length === batchSize){
+
+                        if (temp.length === batchSize) {
                             request.push(temp);
                             temp = [];
                         }
                     }
                     request.push(temp);
-                    for(let i=0;i<request.length;i++){
-                        totalPoints += await LogRecordMultiCall(request[i]);
-                    }             
-                    resolve(totalPoints);
+                    try {
+                        for (let i = 0; i < request.length; i++) {
+                            totalPoints += await LogRecordMultiCall(request[i]);
+                        }
+                        resolve(totalPoints);
+                    } catch (error) {
+                        if (error.toString().includes("SyntaxError: Unexpected end of JSON input")) {
+                            logger('Request too large. Please narrow down the date range or select fewer vehicles.');
+                        }
+                    }
                 } else {
                     alert('Request too large. Please narrow down the date range or select fewer vehicles.');
                     resolve();
@@ -371,7 +377,7 @@ geotab.addin.proximity = () => {
 
             totalFound = found;
 
-            if(isNaN(found)){
+            if (isNaN(found)) {
                 clearMap();
                 totalFound = -1;
             }
@@ -381,10 +387,10 @@ geotab.addin.proximity = () => {
             );
             if (totalFound > 0) {
                 logger(`<p>There were ${totalFound} locations recorded nearby to ${elAddressInput.value}. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
-            } 
-            else if (totalFound == 0){
+            }
+            else if (totalFound == 0) {
                 logger(`<p>There was no one near this area during this time frame. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
-            } 
+            }
             else {
                 logger(`<p>The operation was cancelled. <br><br> Press Deselect All button to start new search.</p>${limitedMessage}`);
             }
@@ -443,7 +449,7 @@ geotab.addin.proximity = () => {
 
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: ['a','b','c']
+            subdomains: ['a', 'b', 'c']
         }).addTo(map);
 
         markers = L.markerClusterGroup({
@@ -488,7 +494,7 @@ geotab.addin.proximity = () => {
         sizeChanged(300);
 
         // initialize multiselect/autocomplte
-        vehicleMultiselect = new Choices(elVehicleSelect, {removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 1000, maxItemCount: 1000, noChoicesText: 'Start typing to search for vehicles'});
+        vehicleMultiselect = new Choices(elVehicleSelect, { removeItemButton: true, duplicateItemsAllowed: false, searchResultLimit: 1000, maxItemCount: 1000, noChoicesText: 'Start typing to search for vehicles' });
 
         // events
         elVehicleMultiSelectContainer.addEventListener('keyup', debounce(e => {
@@ -497,8 +503,8 @@ geotab.addin.proximity = () => {
             let manualSearch = '%' + e.target.value + '%';
             let deviceList = [];
             console.log('manualSearch: ', manualSearch);
-            
-            if(manualSearch!=='%%'){
+
+            if (manualSearch !== '%%') {
                 api.call('Get', {
                     typeName: 'Device',
                     search: {
@@ -512,39 +518,39 @@ geotab.addin.proximity = () => {
                         return;
                     };
 
-                    for(var i=0;i<newDevices.length;i++){
-                        if(selected.includes(newDevices[i].id)){
+                    for (var i = 0; i < newDevices.length; i++) {
+                        if (selected.includes(newDevices[i].id)) {
                             continue;
                         }
-                        else{
+                        else {
                             deviceList.push(newDevices[i])
                         }
-                    }  
-    
+                    }
+
                     let deviceChoices = deviceList.map(device => {
                         deviceLookup[device.id] = device;
                         return { 'value': device.id, 'label': encodeHTML(device.name) };
                     });
-    
+
                     vehicleMultiselect = vehicleMultiselect.setChoices(deviceChoices, 'value', 'label', true);
-    
+
                     toggleLoading(false);
-    
+
                 }, error => {
                     logger(error);
                     toggleLoading(false);
                 });
-            }         
-        },1000))
+            }
+        }, 1000))
 
         function debounce(fn, d) {
             let timer;
-            return function() {
+            return function () {
                 let context = this, args = arguments;
                 clearTimeout(timer);
                 timer = setTimeout(() => {
                     fn.apply(context, args);
-                },d);
+                }, d);
             }
         }
 
@@ -561,11 +567,11 @@ geotab.addin.proximity = () => {
             });
         })
 
-        elProximitySelectAll.addEventListener('click', async () => {    
-            toggleLoading(true);        
+        elProximitySelectAll.addEventListener('click', async () => {
+            toggleLoading(true);
             logger('');
-             
-            if(Object.keys(deviceLookup).length === 0 && selected.length === 0){  
+
+            if (Object.keys(deviceLookup).length === 0 && selected.length === 0) {
                 let currentScope = await currentDevicesInUserScope();
                 let alldeviceList = [];
 
@@ -579,37 +585,37 @@ geotab.addin.proximity = () => {
                     return { 'value': device.id, 'label': encodeHTML(device.name) };
                 });
 
-                if(currentScope.length === 1000){
+                if (currentScope.length === 1000) {
                     logger('1000 vehicle limit reached. The proximity add-in will show 1000 vehicles only.');
                     vehicleMultiselect.disable();
                 }
-                else{
+                else {
                     vehicleMultiselect.setValue(allChoices);
                 }
-                console.log('Devices included: ', allChoices);             
-            }                
-            else{
+                console.log('Devices included: ', allChoices);
+            }
+            else {
                 var temp = [];
-                for (let vehicle in deviceLookup) {   
+                for (let vehicle in deviceLookup) {
                     if (selected.includes(vehicle)) {
                         continue;
                     }
                     else {
-                        if(selected.length < 1000){
-                            selected.push(vehicle);       
+                        if (selected.length < 1000) {
+                            selected.push(vehicle);
                             temp.push({ 'value': vehicle, 'label': deviceLookup[vehicle].name })
                         }
-                        else{
+                        else {
                             logger('1000 vehicle limit reached.')
                             vehicleMultiselect.clearChoices();
                             break;
                         }
-                    }       
-                }               
-                vehicleMultiselect.setValue(temp); 
-            }       
-            vehicleMultiselect.clearInput(); 
-            vehicleMultiselect.clearChoices();    
+                    }
+                }
+                vehicleMultiselect.setValue(temp);
+            }
+            vehicleMultiselect.clearInput();
+            vehicleMultiselect.clearChoices();
             toggleLoading(false);
         });
 
@@ -629,15 +635,15 @@ geotab.addin.proximity = () => {
         });
 
         elRun.addEventListener('click', () => {
-            if(elRun.innerText == 'Run'){            
+            if (elRun.innerText == 'Run') {
                 if (checkInputs()) {
                     displayProximity();
                 }
             }
-            else{
+            else {
                 elRun.textContent = 'Canceling...'
                 isCancelled = true;
-            }           
+            }
         });
 
         function checkInputs() {
@@ -685,7 +691,7 @@ geotab.addin.proximity = () => {
         elDateToInput.addEventListener('change', event => {
             event.preventDefault();
         });
-       
+
     };
 
     /**
