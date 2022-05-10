@@ -15,7 +15,7 @@
   "dev": {
     "root": "proximity",
     "dist": {
-      "host": "https://cdn.jsdelivr.net/gh/mominsahil/sdk-addin-samples@esup-15010/addin-proximity/dist/"
+      "host": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/"
     }
   }
 }
