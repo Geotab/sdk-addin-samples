@@ -1,7 +1,7 @@
 {
   "name": "Proximity",
   "supportEmail": "support@geotab.com",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "items": [{
     
     "url": "proximity.html",
@@ -15,7 +15,7 @@
   "dev": {
     "root": "proximity",
     "dist": {
-      "host": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/"
+      "host": "https://cdn.jsdelivr.net/gh/mominsahil/sdk-addin-samples@esup-15010/addin-proximity/dist/"
     }
   }
 }
