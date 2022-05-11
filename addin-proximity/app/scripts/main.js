@@ -362,7 +362,7 @@ geotab.addin.proximity = () => {
                         }
                         resolve(totalPoints);
                     } catch (error) {
-                        if (error.toString().includes("SyntaxError: Unexpected end of JSON input")) {
+                        if (error.toString().includes('SyntaxError: Unexpected end of JSON input')) {
                             logger('Request too large. Please narrow down the date range or select fewer vehicles.');
                         }
                     }
@@ -452,7 +452,7 @@ geotab.addin.proximity = () => {
             subdomains: ['a', 'b', 'c']
         }).addTo(map);
 
-        markers = L.markerClusterGroup({
+        markers = new L.MarkerClusterGroup({
             spiderfyOnMaxZoom: false,
             disableClusteringAtZoom: 18
         }).addTo(map);
