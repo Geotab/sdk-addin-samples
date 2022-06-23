@@ -101,6 +101,12 @@ This add-in demonstrates a visual report for determining whether a vehicle has b
 
 [Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-proximity)
 
+### Storage API Sample Add-in
+
+The purpose of this add-in is to show an example on how to use the AddInData API Calls. It features a to-do list that allows a user in MyGeotab to add new tasks and mark them as complete.
+
+[Source](https://github.com/Geotab/sdk-addin-samples/tree/master/storage-api-sample)
+
 ## Trips Timeline
 
 This add-in demonstrates a compact visualization of the times vehicles made their trips throughout the day using [vis.js](http://visjs.org/).

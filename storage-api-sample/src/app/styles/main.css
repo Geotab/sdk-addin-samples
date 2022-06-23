@@ -1,0 +1,87 @@
+.hidden {
+    display: none;
+}
+
+.storageApiSample-content-container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.storageApiSample-content-container>h1 {
+    text-align: center;
+}
+
+.storageApiSample-add-task-container {
+    display: flex;
+    justify-content: center;
+}
+
+.storageApiSample-add-task-container>input {
+    flex-basis: 60%;
+}
+
+@keyframes storageApiSample-strike {
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes storageApiSample-remove-strike {
+    0% {
+        width: 100%;
+    }
+
+    100% {
+        width: 0%;
+    }
+}
+
+.storageApiSample-strike, .storageApiSample-remove-strike {
+    position: relative;
+}
+
+.storageApiSample-remove-strike::after {
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background: black;
+    animation-name: storageApiSample-remove-strike;
+    animation-duration: 0.2s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.storageApiSample-strike::after {
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: black;
+    animation-name: storageApiSample-strike;
+    animation-duration: 0.2s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.storageApiSample-meta-data-container div {
+    margin-left: 20px;
+    color: rgba(97, 201, 49, 0.897);
+    font-style: italic;
+}
+
+.storageApiSample-meta-data-container div:first-child {
+    margin-left: 20px;
+    color: gray;
+    font-style: italic;
+}
