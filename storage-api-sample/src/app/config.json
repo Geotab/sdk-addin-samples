@@ -1,0 +1,20 @@
+{
+  "name": "storage api sample",
+  "supportEmail": "support@geotab.com",
+  "version": "1.0.0",
+  "items": [{
+    "url": "storageApiSample.html",
+    "path": "ActivityLink/",
+    "menuName": {
+      "en": "Storage API Sample"
+    },
+    "icon": "images/icon.svg"
+  }],
+  
+  "dev": {
+    "root": "storageApiSample",
+    "dist": {
+      "host": "https://www.example.com/myaddin/"
+    }
+  }
+}
