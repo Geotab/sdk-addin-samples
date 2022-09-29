@@ -295,7 +295,6 @@ input[type="range"].vanillaSlider::-ms-track {
 }
 
 #pointList,
-#polygonList,
 .importToolbar .geotabButton {
     margin-right: 20px;
 }
