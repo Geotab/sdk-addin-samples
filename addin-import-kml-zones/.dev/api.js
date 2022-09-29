@@ -218,7 +218,7 @@ var GeotabApi = function (getCredentialsCallback, newOptions, customCredentialSt
     callXHR = function (method, params, callbackSuccess, callbackError) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', getCallUrl(), true);
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.addEventListener('abort', function (e) {
         if (callbackError) {
           callbackError('Cancelled', e);
@@ -265,7 +265,7 @@ var GeotabApi = function (getCredentialsCallback, newOptions, customCredentialSt
       if (options.timeout) {
         xhr.timeout = options.timeout * 1000;
       }
-      xhr.send('JSON-RPC=' + encodeURIComponent(rpcString));
+      xhr.send(rpcString);
       return {
         abort: function () {
           xhr.abort();
