@@ -60,5 +60,8 @@
             "GeotabApi": true,
             "rison": true
         }
+    },
+    "dependencies": {
+        "bower": "^1.8.14"
     }
 }
