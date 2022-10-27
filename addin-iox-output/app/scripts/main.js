@@ -111,16 +111,12 @@ geotab.addin.ioxOutput = () => {
 
                 devices.sort(sortNameEntities);
 
-                elVehicleSelect.innerHTML = '';
-
                 for (let i = 0; i < devices.length; i++) {
                     let option = new Option();
                     option.text = devices[i].name;
                     option.value = devices[i].id;
                     elVehicleSelect.add(option);
                 }
-
-                elSendButton.disabled = false;
                 elContainer.style.display = '';
             }, errorHandler);
         },
