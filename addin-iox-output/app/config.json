@@ -1,7 +1,7 @@
 {
   "name": "IOX Output",
-  "supportEmail": "support@geotab.com",
-  "version": "1.0.0",
+  "supportEmail": "integrations@geotab.com",
+  "version": "1.0.1",
   "items": [{
     
     "url": "ioxOutput.html",
