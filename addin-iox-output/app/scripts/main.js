@@ -76,6 +76,12 @@ geotab.addin.ioxOutput = () => {
         }
     };
 
+    let removeSelectOptions = () => {
+        for (let i = elVehicleSelect.options.length - 1; i >= 0; i--) {
+            elVehicleSelect.remove(i);
+        }
+    };
+
     return {
         initialize(geotabApi, pageState, initializeCallback) {
             api = geotabApi;
@@ -95,16 +101,18 @@ geotab.addin.ioxOutput = () => {
 
             initializeCallback();
         },
-        focus(geotabApi) {
+        focus(geotabApi, pageState) {
             api = geotabApi;
 
             api.call('Get', {
                 typeName: 'Device',
                 resultsLimit: 1000,
                 search: {
-                    fromDate: new Date().toISOString()
+                    fromDate: new Date().toISOString(),
+                    groups: pageState.getGroupFilter()
                 }
             }, devices => {
+                removeSelectOptions();
                 if (!devices || devices.length < 1) {
                     return;
                 }
