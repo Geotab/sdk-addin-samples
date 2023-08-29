@@ -1,8 +1,0 @@
-{
-  "name": "startstop",
-  "private": true,
-  "dependencies": {},
-  "devDependencies": {
-    "dialog-polyfill": "^0.4.3"
-  }
-}
