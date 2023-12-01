@@ -48,6 +48,7 @@
     text-align: center;
     color: #838383;
     display: table-cell;
+    vertical-align: middle;
 }
 
 #tripstimeline-chart-prev:hover,
