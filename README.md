@@ -31,14 +31,6 @@ Alternatively, you can install the add-ins on your production database individua
             "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-heatmap/dist/images/icon.svg"
         },
         {
-            "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/proximity.html",
-            "path": "sdkAddinsLink/",
-            "menuName": {
-                "en": "Proximity"
-            },
-            "icon": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-proximity/dist/images/icon.svg"
-        },
-        {
             "url": "https://cdn.jsdelivr.net/gh/Geotab/sdk-addin-samples@master/addin-trips-timeline/dist/tripsTimeline.html",
             "path": "sdkAddinsLink/",
             "menuName": {
@@ -94,12 +86,6 @@ Alternatively, you can install the add-ins on your production database individua
 This add-in visualizes the location history of a vehicle by displaying areas of "heat" on a map corresponding to the frequency in which they were at a certain location using [leaflet](http://leafletjs.com/) and [Leaflet.heat](https://github.com/Leaflet/Leaflet.heat).
 
 [Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-heatmap)
-
-### Proximity
-
-This add-in demonstrates a visual report for determining whether a vehicle has been to, or near, a particular location in a given date range using [leaflet](http://leafletjs.com/).
-
-[Source](https://github.com/Geotab/sdk-addin-samples/tree/master/addin-proximity)
 
 ### Storage API Sample Add-in
 
